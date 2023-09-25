@@ -1,4 +1,5 @@
 using Luban;
+using System.Threading.Tasks;
 
 {{namespace_with_grace_begin __namespace}}
     public partial class {{__name}}
@@ -11,16 +12,38 @@ using Luban;
         /// {{escape_comment table.comment}}
         /// </summary>
         {{~end~}}
-        public {{table.full_name}} {{format_property_name __code_style table.name}} {get; }
+        public {{table.full_name}} {{format_property_name __code_style table.name}} {get; private set; }
         {{~end~}}
         public static readonly int TABLE_COUNT = {{count}};
 
-        public {{__name}}(System.Func<string, ByteBuf> offsetLoader,  System.Func<string, int, int, ByteBuf> byteBufLoader)
+        //public {{__name}}(System.Func<string, ByteBuf> offsetLoader,  System.Func<string, int, int, ByteBuf> byteBufLoader)
+        //{
+        //    {{~for table in __tables ~}}
+        //    {{format_property_name __code_style table.name}} = new {{table.full_name}}(offsetLoader("{{table.output_data_file}}"), "{{table.output_data_file}}", byteBufLoader);
+        //    {{~end~}}
+        //    ResolveRef();
+        //}
+        
+        public {{__name}} () { }
+        
+        public async Task Init(System.Func<string, ByteBuf> offsetLoader,  System.Func<string, int, int, ByteBuf> byteBufLoader, float timeSlice = -1)
         {
+            float time = 0;
+            if (timeSlice < 0)
+            {
+                timeSlice = float.MaxValue;
+            }
+            
             {{~for table in __tables ~}}
+            time = UnityEngine.Time.realtimeSinceStartup;
+            UnityEngine.Profiling.Profiler.BeginSample("[Tables] Load Config : {{table.output_data_file}}");
             {{format_property_name __code_style table.name}} = new {{table.full_name}}(offsetLoader("{{table.output_data_file}}"), "{{table.output_data_file}}", byteBufLoader);
+            UnityEngine.Profiling.Profiler.EndSample();
+            if (UnityEngine.Time.realtimeSinceStartup - time > timeSlice) await WaitOneFrameAsync();
+            
             {{~end~}}
             ResolveRef();
+            await WaitOneFrameAsync();
         }
 
         private void ResolveRef()
@@ -28,6 +51,18 @@ using Luban;
             {{~for table in __tables ~}}
             {{format_property_name __code_style table.name}}.ResolveRef(this);
             {{~end~}}
+        }
+        
+        async Task WaitOneFrameAsync()
+        {
+            var frameCount = UnityEngine.Time.frameCount;
+            var tcs = new TaskCompletionSource<bool>();
+            while (UnityEngine.Time.frameCount <= frameCount)
+            {
+                await Task.Delay(100);
+            }
+
+            tcs.TrySetResult(true);
         }
     }
 

@@ -13,6 +13,7 @@ public class BinaryRecordOffsetLengthDataTarget : DataTargetBase
 
     private void WriteList(DefTable table, List<Record> datas, ByteBuf x)
     {
+        Console.Write($"[Debug] BinaryRecordOffsetLengthDataTarget => {table.Name}");
         ByteBuf buf = new ByteBuf(10 * 1024);
         x.WriteSize(datas.Count);
         buf.WriteSize(datas.Count);

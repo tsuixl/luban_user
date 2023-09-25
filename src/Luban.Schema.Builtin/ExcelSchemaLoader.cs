@@ -50,6 +50,7 @@ public class ExcelSchemaLoader : SchemaLoaderBase
                 new() { Name = "input", Type = "string" },
                 new() { Name = "output", Type = "string" },
                 new() { Name = "tags", Type = "string" },
+                new() { Name = "isLazy", Type = "bool" },
             }
         })
         {

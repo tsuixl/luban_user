@@ -1,0 +1,20 @@
+{
+  "profiles": {
+    "cs-bin": {
+      "commandName": "Project",
+      "commandLineArgs": "-t\r\nall\r\n-c\r\ncs-bin\r\n-d\r\nbin\r\n--conf\r\nD:\\workspace2\\luban_examples\\DataTables\\luban.conf\r\n--validationFailAsError\r\n-x\r\noutputCodeDir=D:\\workspace2\\luban_examples\\Projects\\Csharp_Unity_bin\\Assets\\Gen\r\n-x\r\noutputDataDir=D:\\workspace2\\luban_examples\\Projects\\GenerateDatas\\bytes\r\n-x\r\npathValidator.rootDir=D:\\workspace2\\luban_examples\\Projects\\Csharp_Unity_bin\r\n-x\r\nl10n.textProviderFile=*@D:\\workspace2\\luban_examples\\DataTables\\Datas\\l10n\\texts.json"
+    },
+    "cs-bin-namingConvention": {
+      "commandName": "Project",
+      "commandLineArgs": "-t\r\nall\r\n-c\r\ncs-bin\r\n-d\r\nbin\r\n--conf\r\nD:\\workspace2\\luban_examples\\DataTables\\luban.conf\r\n--validationFailAsError\r\n-x\r\noutputCodeDir=D:\\workspace2\\luban_examples\\Projects\\Csharp_Unity_bin\\Assets\\Gen\r\n-x\r\noutputDataDir=D:\\workspace2\\luban_examples\\Projects\\GenerateDatas\\bytes\r\n-x\r\npathValidator.rootDir=D:\\workspace2\\luban_examples\\Projects\\Csharp_Unity_bin\r\n-x\r\nl10n.textProviderFile=*@D:\\workspace2\\luban_examples\\DataTables\\Datas\\l10n\\texts.json\r\n-x namingConvention.property=upper"
+    },
+    "text-list": {
+      "commandName": "Project",
+      "commandLineArgs": "-t\r\nall\r\n-d\r\ntext-list\r\n--conf\r\nD:\\workspace2\\luban_examples\\DataTables\\luban.conf\r\n--validationFailAsError\r\n-x\r\noutputDataDir=D:\\workspace2\\luban_examples\\Projects\\GenerateDatas\\text\r\n-x l10n.textListFile=texts.txt"
+    },
+    "cs-bin-lazyload-bin": {
+      "commandName": "Project",
+      "commandLineArgs": "-t\r\nall\r\n-c\r\ncs-lazyload-bin\r\n-d\r\nbin bin-offsetlength\r\n--conf\r\n/Users/tsuixl/Documents/tsuixl/unity-project/LubanDemo/Design/DataTables/luban.conf\r\n-x\r\noutputCodeDir=/Users/tsuixl/Documents/tsuixl/unity-project/LubanDemo/Design/Output/Binary\r\n-x\r\noutputDataDir=/Users/tsuixl/Documents/tsuixl/unity-project/LubanDemo/Design/Output/bin\r\n-x\r\nbin-offsetlength.outputDataDir=/Users/tsuixl/Documents/tsuixl/unity-project/LubanDemo/Design/Output/offset\r\n-x\r\n"
+    }
+  }
+}
