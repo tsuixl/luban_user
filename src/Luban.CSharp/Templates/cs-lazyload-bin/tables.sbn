@@ -24,6 +24,11 @@ using System.Threading.Tasks;
         //    ResolveRef();
         //}
         
+        public async Task Init(System.Func<string, Task<JSONNode>> loader, float timeSlice = -1)
+        {
+            await Task.Yield();
+        }
+        
         public async Task Init(System.Func<string, Task<SimpleJSON.JSONNode>> loader, float timeSlice = -1)
         {
             await Task.Yield();
