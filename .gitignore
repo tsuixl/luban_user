@@ -274,3 +274,5 @@ __pycache__/
 /src/.vscode
 /src/Luban/Properties/*.json
 Luban/
+win64/
+*.DS_Store

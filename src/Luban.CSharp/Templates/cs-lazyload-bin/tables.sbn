@@ -24,9 +24,14 @@ using System.Threading.Tasks;
         //    ResolveRef();
         //}
         
+        public async Task Init(System.Func<string, Task<SimpleJSON.JSONNode>> loader, float timeSlice = -1)
+        {
+            await Task.Yield();
+        }
+        
         public {{__name}} () { }
         
-        public async Task Init(System.Func<string, ByteBuf> offsetLoader,  System.Func<string, int, int, ByteBuf> byteBufLoader, float timeSlice = -1)
+        public async Task Init(System.Func<string, Task<ByteBuf>> offsetLoader,  System.Func<string, int, int, Task<ByteBuf>> byteBufLoader, float timeSlice = -1)
         {
             float time = 0;
             if (timeSlice < 0)
@@ -34,16 +39,19 @@ using System.Threading.Tasks;
                 timeSlice = float.MaxValue;
             }
             
+            Task<ByteBuf> result = null;
+            
             {{~for table in __tables ~}}
             time = UnityEngine.Time.realtimeSinceStartup;
             UnityEngine.Profiling.Profiler.BeginSample("[Tables] Load Config : {{table.output_data_file}}");
-            {{format_property_name __code_style table.name}} = new {{table.full_name}}(offsetLoader("{{table.output_data_file}}"), "{{table.output_data_file}}", byteBufLoader);
+            result = offsetLoader("{{table.output_data_file}}"); await result;
+            {{format_property_name __code_style table.name}} = new {{table.full_name}}(result.Result, "{{table.output_data_file}}", byteBufLoader);
             UnityEngine.Profiling.Profiler.EndSample();
-            if (UnityEngine.Time.realtimeSinceStartup - time > timeSlice) await WaitOneFrameAsync();
+            if (UnityEngine.Time.realtimeSinceStartup - time > timeSlice) await Task.Yield();
             
             {{~end~}}
             ResolveRef();
-            await WaitOneFrameAsync();
+            await Task.Yield();
         }
 
         private void ResolveRef()
@@ -53,17 +61,17 @@ using System.Threading.Tasks;
             {{~end~}}
         }
         
-        async Task WaitOneFrameAsync()
-        {
-            var frameCount = UnityEngine.Time.frameCount;
-            var tcs = new TaskCompletionSource<bool>();
-            while (UnityEngine.Time.frameCount <= frameCount)
-            {
-                await Task.Delay(100);
-            }
-
-            tcs.TrySetResult(true);
-        }
+        //async Task WaitOneFrameAsync()
+        //{
+        //    var frameCount = UnityEngine.Time.frameCount;
+        //    var tcs = new TaskCompletionSource<bool>();
+        //    while (UnityEngine.Time.frameCount <= frameCount)
+        //    {
+        //        await Task.Delay(100);
+        //    }
+//
+        //    tcs.TrySetResult(true);
+        //}
     }
 
 {{namespace_with_grace_end __namespace}}
