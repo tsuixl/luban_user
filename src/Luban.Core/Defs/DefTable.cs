@@ -25,6 +25,7 @@ public class DefTable : DefTypeBase
         ReadSchemaFromFile = b.ReadSchemaFromFile;
         Tags = b.Tags;
         _outputFile = b.OutputFile;
+        IsLazy = b.isLazy;
     }
 
     public string Index { get; private set; }
@@ -60,6 +61,9 @@ public class DefTable : DefTypeBase
     public bool IsUnionIndex { get; private set; }
 
     public bool MultiKey { get; private set; }
+    
+    // TODO: TSUIXL
+    public bool IsLazy { get; private set; }
 
     public List<IndexInfo> IndexList { get; } = new();
 

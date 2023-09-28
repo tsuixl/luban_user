@@ -12,7 +12,7 @@ public static class SchemaLoaderUtil
     }
     
     public static RawTable CreateTable(string schemaFile, string name, string module, string valueType, string index, string mode, string group,
-        string comment, bool readSchemaFromFile, string input, string tags, string outputFileName)
+        string comment, bool readSchemaFromFile, string input, string tags, string outputFileName, string isLazy = "")
     {
         var p = new RawTable()
         {
@@ -26,7 +26,11 @@ public static class SchemaLoaderUtil
             Mode = ConvertMode( schemaFile, name, mode, index),
             Tags = DefUtil.ParseAttrs(tags),
             OutputFile = outputFileName,
+            
+            // TODO: TSUIXL
+            isLazy = bool.Parse(isLazy.ToLower())
         };
+        
         if (string.IsNullOrWhiteSpace(name))
         {
             throw new Exception($"定义文件:{schemaFile} table:'{p.Name}' name:'{p.Name}' 不能为空");

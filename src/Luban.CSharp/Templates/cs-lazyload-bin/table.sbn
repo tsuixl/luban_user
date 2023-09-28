@@ -101,6 +101,21 @@ using System.Linq;
                 _lengthMap.Add(key, length);
             }
         }
+        
+        public {{__name}}(ByteBuf _buf)
+        {
+            var size = buff.ReadSize();
+            _dataMap = new System.Collections.Generic.Dictionary<{{declaring_type_name key_type}}, {{declaring_type_name value_type}}>(size);
+            _dataList = new System.Collections.Generic.List<{{declaring_type_name value_type}}>(size);
+            
+            for(int n = size ; n > 0 ; --n)
+            {
+                {{declaring_type_name value_type}} _v;
+                {{deserialize '_buf' '_v' value_type}}
+                _dataList.Add(_v);
+                _dataMap.Add(_v.{{format_property_name __code_style __table.index_field.name}}, _v);
+            }
+        }
 
         public void LoadAll(System.Action<{{declaring_type_name key_type}},{{declaring_type_name value_type}}> onLoad = null)
         {

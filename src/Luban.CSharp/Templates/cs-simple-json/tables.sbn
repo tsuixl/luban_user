@@ -48,9 +48,14 @@ public partial class {{__name}}
         time = UnityEngine.Time.realtimeSinceStartup;
         result = loader("{{table.output_data_file}}"); await result;
         {{format_property_name __code_style table.name}} = new {{table.full_name}}(result.Result);
+        {{ if table.is_lazy }}
+        int i = 0;
+        {{ else }}
+        int j = 0;
+        {{ end }}
         if (UnityEngine.Time.realtimeSinceStartup - time > timeSlice) await Task.Yield();
-        
         {{~end~}}
+        
         ResolveRef();
         await Task.Yield();
     }
