@@ -24,11 +24,6 @@ using System.Threading.Tasks;
         //    ResolveRef();
         //}
         
-        public async Task Init(System.Func<string, Task<JSONNode>> loader, float timeSlice = -1)
-        {
-            await Task.Yield();
-        }
-        
         public async Task Init(System.Func<string, Task<SimpleJSON.JSONNode>> loader, float timeSlice = -1)
         {
             await Task.Yield();
@@ -36,7 +31,10 @@ using System.Threading.Tasks;
         
         public {{__name}} () { }
         
-        public async Task Init(System.Func<string, Task<ByteBuf>> offsetLoader,  System.Func<string, int, int, Task<ByteBuf>> byteBufLoader, float timeSlice = -1)
+        public async Task Init(System.Func<string, Task<ByteBuf>> offsetLoader,  
+                                System.Func<string, int, int, ByteBuf> byteBufLoader, 
+                                System.Func<string, Task<ByteBuf>> loader,
+                                float timeSlice = -1)
         {
             float time = 0;
             if (timeSlice < 0)
@@ -47,11 +45,11 @@ using System.Threading.Tasks;
             Task<ByteBuf> result = null;
             
             {{~for table in __tables ~}}
-            time = UnityEngine.Time.realtimeSinceStartup;
-            UnityEngine.Profiling.Profiler.BeginSample("[Tables] Load Config : {{table.output_data_file}}");
+            time = UnityEngine.Time.realtimeSinceStartup;{{ if table.is_lazy }}
             result = offsetLoader("{{table.output_data_file}}"); await result;
-            {{format_property_name __code_style table.name}} = new {{table.full_name}}(result.Result, "{{table.output_data_file}}", byteBufLoader);
-            UnityEngine.Profiling.Profiler.EndSample();
+            {{format_property_name __code_style table.name}} = new {{table.full_name}}(result.Result, "{{table.output_data_file}}", byteBufLoader);{{ else }}
+            result = loader("{{table.output_data_file}}"); await result;
+            {{format_property_name __code_style table.name}} = new {{table.full_name}}(result.Result);{{ end }}
             if (UnityEngine.Time.realtimeSinceStartup - time > timeSlice) await Task.Yield();
             
             {{~end~}}

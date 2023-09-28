@@ -13,7 +13,13 @@ public class BinaryRecordOffsetLengthDataTarget : DataTargetBase
 
     private void WriteList(DefTable table, List<Record> datas, ByteBuf x)
     {
-        Console.Write($"[Debug] BinaryRecordOffsetLengthDataTarget => {table.Name}");
+        // TODO: TSUIXL
+        if (!table.IsLazy)
+        {
+            Console.WriteLine($"[Warn] BinaryRecordOffsetLengthDataTarget => {table.Name} is not lazy");
+            return;
+        }
+        Console.WriteLine($"[Debug] LazyTable => {table.Name}");
         ByteBuf buf = new ByteBuf(10 * 1024);
         x.WriteSize(datas.Count);
         buf.WriteSize(datas.Count);
@@ -36,6 +42,10 @@ public class BinaryRecordOffsetLengthDataTarget : DataTargetBase
 
     public override OutputFile ExportTable(DefTable table, List<Record> records)
     {
+        if (!table.IsLazy)
+        {
+            return null;
+        }
         var bytes = new ByteBuf();
         WriteList(table, records, bytes);
         return new OutputFile()
