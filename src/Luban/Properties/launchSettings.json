@@ -15,6 +15,10 @@
     "cs-bin-lazyload-bin": {
       "commandName": "Project",
       "commandLineArgs": "-t\r\nall\r\n-c\r\ncs-lazyload-bin\r\n-d\r\nbin bin-offsetlength\r\n--conf\r\n/Users/tsuixl/Documents/tsuixl/unity-project/LubanDemo/Design/DataTables/luban.conf\r\n-x\r\noutputCodeDir=/Users/tsuixl/Documents/tsuixl/unity-project/LubanDemo/Design/Output/Binary\r\n-x\r\noutputDataDir=/Users/tsuixl/Documents/tsuixl/unity-project/LubanDemo/Design/Output/bin\r\n-x\r\nbin-offsetlength.outputDataDir=/Users/tsuixl/Documents/tsuixl/unity-project/LubanDemo/Design/Output/offset\r\n-x\r\n"
+    },
+    "cs-bin-lazyload-bin-win": {
+      "commandName": "Project",
+      "commandLineArgs": "-t\r\nall\r\n-c\r\ncs-lazyload-bin\r\n-d\r\nbin bin-offsetlength\r\n--conf\r\nG:\\Dev\\Github\\LubanDemo\\Design\\DataTables\\luban.conf\r\n-x\r\noutputCodeDir=G:\\Dev\\Github\\LubanDemo\\Design\\Output\\Binary\r\n-x\r\noutputDataDir=G:\\Dev\\Github\\LubanDemo\\Design\\Output\\bin\r\n-x\r\nbin-offsetlength.outputDataDir=G:\\Dev\\Github\\LubanDemo\\Design\\Output\\offset\r\n-x\r\n"
     }
   }
 }
