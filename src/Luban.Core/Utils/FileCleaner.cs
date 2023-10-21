@@ -93,6 +93,7 @@ public class FileCleaner
 
     public static void Clean(string outputDir, List<string> savedFiles)
     {
+        s_logger.Info("[FileCleaner] clean start");
         var cleaner = new FileCleaner();
         cleaner.AddOutputDir(outputDir);
         cleaner.AddIgnoreExtension("meta"); // for unity
@@ -102,5 +103,6 @@ public class FileCleaner
         }
 
         cleaner.RemoveUnusedFiles();
+        s_logger.Info("[FileCleaner] clean finish");
     }
 }

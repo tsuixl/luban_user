@@ -191,6 +191,7 @@ public static class FileUtil
             if (oldBytes.Length == bytes.Length &&
                 StructuralComparisons.StructuralEqualityComparer.Equals(bytes, oldBytes))
             {
+                s_logger.Warn($"file not change : {file}");
                 return false;
             }
         }
