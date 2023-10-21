@@ -151,7 +151,9 @@ using System.Linq;
         }
         public {{declaring_type_name value_type}} this[{{declaring_type_name key_type}} key] => this.Get(key);
 
-
+    {{ if !__table.is_lazy }}
+    public System.Collections.Generic.List<{{declaring_type_name value_type}}> DataList => _dataList;
+    {{ end }}
         public void ResolveRef({{__manager_name}} tables)
         {
             this._tables = tables;
