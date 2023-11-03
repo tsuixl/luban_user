@@ -52,7 +52,7 @@ public abstract class ToLiteralVisitorBase : IDataFuncVisitor<string>
     
     public virtual string Accept(DTable type)
     {
-        return "{"+ DataUtil.EscapeString(type.Value) + "}";
+        return "{"+ type.Value + "}";
     }
 
     public virtual string Accept(DDateTime type)
