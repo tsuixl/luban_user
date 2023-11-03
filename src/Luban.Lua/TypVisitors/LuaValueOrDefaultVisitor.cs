@@ -77,6 +77,11 @@ public class LuaValueOrDefaultVisitor : ITypeFuncVisitor<string, string>
         return $"{x} or {{}}";
     }
 
+    public string Accept(TTable type, string x)
+    {
+        return $"{x} or 0";
+    }
+
     public string Accept(TDateTime type, string x)
     {
         return $"{x} or 0";

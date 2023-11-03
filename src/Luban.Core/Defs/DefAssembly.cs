@@ -334,6 +334,7 @@ public class DefAssembly
             case "text": tags.Add("text", "1"); return TString.Create(nullable, tags);
             case "time":
             case "datetime": return TDateTime.Create(nullable, tags);
+            case "table": return TTable.Create(nullable, tags);
             default:
             {
                 var dtype = GetDefTType(module, type, nullable, tags);

@@ -80,6 +80,11 @@ public abstract class DecoratorFuncVisitor<TR> : ITypeFuncVisitor<TR>
     {
         return DoAccept(type);
     }
+
+    public TR Accept(TTable type)
+    {
+        return DoAccept(type);
+    }
 }
 
 public abstract class DecoratorFuncVisitor<T1, TR> : ITypeFuncVisitor<T1, TR>
@@ -157,6 +162,11 @@ public abstract class DecoratorFuncVisitor<T1, TR> : ITypeFuncVisitor<T1, TR>
     }
 
     public virtual TR Accept(TMap type, T1 x)
+    {
+        return DoAccept(type, x);
+    }  
+    
+    public virtual TR Accept(TTable type, T1 x)
     {
         return DoAccept(type, x);
     }
@@ -239,6 +249,10 @@ public abstract class DecoratorFuncVisitor<T1, T2, TR> : ITypeFuncVisitor<T1, T2
     public virtual TR Accept(TMap type, T1 x, T2 y)
     {
         return DoAccept(type, x, y);
+    }  
+    public virtual TR Accept(TTable type, T1 x, T2 y)
+    {
+        return DoAccept(type, x, y);
     }
 }
 
@@ -318,6 +332,11 @@ public abstract class DecoratorFuncVisitor<T1, T2, T3, TR> : ITypeFuncVisitor<T1
     }
 
     public virtual TR Accept(TMap type, T1 x, T2 y, T3 z)
+    {
+        return DoAccept(type, x, y, z);
+    }  
+    
+    public virtual TR Accept(TTable type, T1 x, T2 y, T3 z)
     {
         return DoAccept(type, x, y, z);
     }

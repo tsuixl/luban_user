@@ -33,6 +33,11 @@ public interface ITypeActionVisitor<T>
     void Accept(TSet type, T x);
 
     void Accept(TMap type, T x);
+    
+    void Accept(TTable type, T x)
+    {
+    
+    }
 }
 
 public interface ITypeActionVisitor<T1, T2>
@@ -66,4 +71,9 @@ public interface ITypeActionVisitor<T1, T2>
     void Accept(TSet type, T1 x, T2 y);
 
     void Accept(TMap type, T1 x, T2 y);
+
+    void Accept(TTable type, T1 x, T2 y)
+    {
+        
+    }
 }

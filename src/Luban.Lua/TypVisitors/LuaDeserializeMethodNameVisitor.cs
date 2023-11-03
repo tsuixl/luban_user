@@ -77,6 +77,11 @@ public class LuaDeserializeMethodNameVisitor : ITypeFuncVisitor<string>
         return "readMap";
     }
 
+    public string Accept(TTable type)
+    {
+        return "readTable";
+    }
+
     public string Accept(TDateTime type)
     {
         return "readLong";

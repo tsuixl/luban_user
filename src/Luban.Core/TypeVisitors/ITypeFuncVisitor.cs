@@ -33,6 +33,11 @@ public interface ITypeFuncVisitor<TR>
     TR Accept(TSet type);
 
     TR Accept(TMap type);
+
+    TR Accept(TTable type)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public interface ITypeFuncVisitor<T, TR>
@@ -66,6 +71,11 @@ public interface ITypeFuncVisitor<T, TR>
     TR Accept(TSet type, T x);
 
     TR Accept(TMap type, T x);
+
+    TR Accept(TTable type, T x)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public interface ITypeFuncVisitor<T, T2, TR>
@@ -99,6 +109,11 @@ public interface ITypeFuncVisitor<T, T2, TR>
     TR Accept(TSet type, T x, T2 y);
 
     TR Accept(TMap type, T x, T2 y);
+
+    TR Accept(TTable type, T x, T2 y)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public interface ITypeFuncVisitor<T, T2, T3, TR>
@@ -132,4 +147,9 @@ public interface ITypeFuncVisitor<T, T2, T3, TR>
     TR Accept(TSet type, T x, T2 y, T3 z);
 
     TR Accept(TMap type, T x, T2 y, T3 z);
+
+    TR Accept(TTable type, T x, T2 y, T3 z)
+    {
+        throw new NotImplementedException();
+    }
 }

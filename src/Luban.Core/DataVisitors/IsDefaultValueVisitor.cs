@@ -51,6 +51,11 @@ public class IsDefaultValueVisitor : IDataFuncVisitor<bool>
     {
         return string.IsNullOrEmpty(type.Value);
     }
+    
+    public bool Accept(DTable type)
+    {
+        return string.IsNullOrEmpty(type.Value);
+    }
 
     public bool Accept(DBean type)
     {

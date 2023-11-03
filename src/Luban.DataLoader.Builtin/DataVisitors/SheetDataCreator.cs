@@ -514,6 +514,20 @@ class SheetDataCreator : ITypeFuncVisitor<RowColumnSheet, TitleRow, DType>
         throw new Exception();
     }
 
+    public DType Accept(TTable type, RowColumnSheet sheet, TitleRow row)
+    {
+        object x = row.Current;
+        if (x == null)
+        {
+            return DString.ValueOf(type, "");
+        }
+        if (CheckDefault(x))
+        {
+            ThrowIfNonEmpty(row);
+        }
+        return DString.ValueOf(type, x.ToString());
+    }
+
     private List<DType> CreateBeanFields(DefBean bean, ExcelStream stream)
     {
         var list = new List<DType>();

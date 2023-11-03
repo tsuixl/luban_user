@@ -33,6 +33,11 @@ public interface IDataFuncVisitor<TR>
     TR Accept(DSet type);
 
     TR Accept(DMap type);
+    
+    TR Accept(DTable type)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public interface IDataFuncVisitor<T, TR>
@@ -66,6 +71,11 @@ public interface IDataFuncVisitor<T, TR>
     TR Accept(DSet type, T x);
 
     TR Accept(DMap type, T x);
+
+    TR Accept(DTable type, T x)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public interface IDataFuncVisitor<T1, T2, TR>
@@ -98,4 +108,9 @@ public interface IDataFuncVisitor<T1, T2, TR>
     TR Accept(DSet type, T1 x, T2 y);
 
     TR Accept(DMap type, T1 x, T2 y);
+    
+    TR Accept(DTable type, T1 x, T2 y)
+    {
+        throw new NotImplementedException();
+    }
 }

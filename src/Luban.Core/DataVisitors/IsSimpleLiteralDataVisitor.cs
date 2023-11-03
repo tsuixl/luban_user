@@ -79,5 +79,10 @@ public class IsSimpleLiteralDataVisitor : IDataFuncVisitor<bool>
     public bool Accept(DMap type)
     {
         return false;
+    } 
+    
+    public bool Accept(DTable type)
+    {
+        return false;
     }
 }

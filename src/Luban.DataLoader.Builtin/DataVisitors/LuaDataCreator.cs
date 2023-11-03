@@ -30,6 +30,11 @@ class LuaDataCreator : ITypeFuncVisitor<object, DefAssembly, DType>
     public DType Accept(TInt type, object x, DefAssembly ass)
     {
         return DInt.ValueOf((int)x);
+    } 
+    
+    public DType Accept(TTable type, object x, DefAssembly ass)
+    {
+        return DTable.ValueOf(type,x.ToString());
     }
 
     private long ToLong(object x)

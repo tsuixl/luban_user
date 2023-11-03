@@ -236,4 +236,9 @@ class DeepCompareTypeDefine : ITypeFuncVisitor<TType, Dictionary<DefTypeBase, bo
         TMap m = (TMap)x;
         return type.KeyType.Apply(this, m.KeyType, y, z) && type.ValueType.Apply(this, m.ValueType, y, z);
     }
+
+    public bool Accept(TTable type, TType x, Dictionary<DefTypeBase, bool> y, HashSet<DefTypeBase> z)
+    {
+        return true;
+    }
 }
