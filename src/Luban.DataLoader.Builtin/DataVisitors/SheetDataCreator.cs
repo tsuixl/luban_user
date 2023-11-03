@@ -519,7 +519,7 @@ class SheetDataCreator : ITypeFuncVisitor<RowColumnSheet, TitleRow, DType>
         object x = row.Current;
         if (x == null)
         {
-            return DString.ValueOf(type, "");
+            return DTable.ValueOf(type, "");
         }
         return DTable.ValueOf(type, x.ToString());
     }
