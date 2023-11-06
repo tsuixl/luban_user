@@ -33,6 +33,8 @@ public static class SheetLoadUtil
         string ext = Path.GetExtension(rawUrl);
         using (var reader = ext != ".csv" ? ExcelReaderFactory.CreateReader(stream) : ExcelReaderFactory.CreateCsvReader(stream, new ExcelReaderConfiguration() { FallbackEncoding = DetectCsvEncoding(stream) }))
         {
+            // 跳过第一行
+            reader.Read();
             do
             {
                 if (sheetName == null || reader.Name == sheetName)
@@ -522,6 +524,8 @@ public static class SheetLoadUtil
         string ext = Path.GetExtension(rawUrl);
         using (var reader = ext != ".csv" ? ExcelReaderFactory.CreateReader(stream) : ExcelReaderFactory.CreateCsvReader(stream, new ExcelReaderConfiguration() { FallbackEncoding = DetectCsvEncoding(stream) }))
         {
+            // 跳过第一行
+            reader.Read();
             do
             {
                 if (sheetName == null || reader.Name == sheetName)
