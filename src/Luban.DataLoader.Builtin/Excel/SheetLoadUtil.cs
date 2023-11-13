@@ -31,11 +31,11 @@ public static class SheetLoadUtil
         s_logger.Trace("{filename} {sheet}", rawUrl, sheetName);
         s_curExcel.Value = rawUrl;
         string ext = Path.GetExtension(rawUrl);
-                int firstIndex = 1;
+        int firstIndex = 1;
         using (var reader = ext != ".csv" ? ExcelReaderFactory.CreateReader(stream) : ExcelReaderFactory.CreateCsvReader(stream, new ExcelReaderConfiguration() { FallbackEncoding = DetectCsvEncoding(stream) }))
         {
-            do
-            {
+            // do
+            // {
                 if (sheetName == null || reader.Name == sheetName)
                 {
                     bool orientRow;
@@ -48,13 +48,6 @@ public static class SheetLoadUtil
                     for (int i = 0; i < reader.RowCount; i++)
                     {
                         var cells = ParseRawSheetContent(reader, orientRow, true);
-                        foreach (var cell in cells)
-                        {
-                            foreach (var ce in cell)
-                            {
-                                Console.WriteLine("ssss:" + ce.Value);
-                            }
-                        }
 
                         int varRowIndex = cells.FindIndex(row => IsVarRow(row));
 
@@ -65,25 +58,27 @@ public static class SheetLoadUtil
                         }
                         else
                         {
-                            Console.WriteLine("firstIndex" + firstIndex);
+                            if (firstIndex > 2 )
+                            {
+                                Console.WriteLine("rawUrl :" + rawUrl +"firstIndex" + firstIndex);
+                            }
                             break;
                         }
                     }
                 }
-            } while (reader.NextResult());
+            // } while (reader.NextResult());
         }
         stream.Close();
         stream = new FileStream(rawUrl, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-        
         using (var reader = ext != ".csv" ? ExcelReaderFactory.CreateReader(stream) : ExcelReaderFactory.CreateCsvReader(stream, new ExcelReaderConfiguration() { FallbackEncoding = DetectCsvEncoding(stream) }))
         {
             // 目前是找到##var做为第一行
-            for (int i = 0; i < firstIndex - 1 ; i++)
+            for (int i = 0; i < firstIndex - 1; i++)
             {
                 reader.Read();
             }
-            do
-            {
+            // do
+            // {
                 if (sheetName == null || reader.Name == sheetName)
                 {
                     RawSheet sheet;
@@ -100,7 +95,7 @@ public static class SheetLoadUtil
                         yield return sheet;
                     }
                 }
-            } while (reader.NextResult());
+            // } while (reader.NextResult());
         }
     }
 
@@ -576,8 +571,8 @@ public static class SheetLoadUtil
         int firstIndex = 1;
         using (var reader = ext != ".csv" ? ExcelReaderFactory.CreateReader(stream) : ExcelReaderFactory.CreateCsvReader(stream, new ExcelReaderConfiguration() { FallbackEncoding = DetectCsvEncoding(stream) }))
         {
-            do
-            {
+            // do
+            // {
                 if (sheetName == null || reader.Name == sheetName)
                 {
                     bool orientRow;
@@ -590,14 +585,6 @@ public static class SheetLoadUtil
                     for (int i = 0; i < reader.RowCount; i++)
                     {
                         var cells = ParseRawSheetContent(reader, orientRow, true);
-                        foreach (var cell in cells)
-                        {
-                            foreach (var ce in cell)
-                            {
-                                Console.WriteLine("ssss:" + ce.Value);
-                            }
-                        }
-
                         int varRowIndex = cells.FindIndex(row => IsVarRow(row));
 
                         if (varRowIndex < 0)
@@ -607,12 +594,15 @@ public static class SheetLoadUtil
                         }
                         else
                         {
-                            Console.WriteLine("firstIndex" + firstIndex);
+                            if (firstIndex > 2)
+                            {
+                                Console.WriteLine("rawUrl :" + rawUrl +"firstIndex" + firstIndex);
+                            }
                             break;
                         }
                     }
                 }
-            } while (reader.NextResult());
+            // } while (reader.NextResult());
         }
         stream.Close();
         stream = new FileStream(rawUrl, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
@@ -625,8 +615,8 @@ public static class SheetLoadUtil
                 reader.Read();
             }
 
-            do
-            {
+            // do
+            // {
                 if (sheetName == null || reader.Name == sheetName)
                 {
                     try
@@ -643,7 +633,8 @@ public static class SheetLoadUtil
                     }
         
                 }
-            } while (reader.NextResult());
+            // } 
+            //while (reader.NextResult());
         }
         throw new Exception($"{rawUrl} 没有找到有效的表定义");
     }
