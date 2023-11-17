@@ -12,7 +12,7 @@ public static class SchemaLoaderUtil
     }
     
     public static RawTable CreateTable(string schemaFile, string name, string module, string valueType, string index, string mode, string group,
-        string comment, bool readSchemaFromFile, string input, string tags, string outputFileName, string isLazy = "")
+        string comment, bool readSchemaFromFile, string input, string tags, string outputFileName, string serverOutput,string isLazy = "" ,string isOnlyLua = "")
     {
         var p = new RawTable()
         {
@@ -28,7 +28,10 @@ public static class SchemaLoaderUtil
             OutputFile = outputFileName,
             
             // TODO: TSUIXL
-            isLazy = bool.Parse(isLazy.ToLower())
+            isLazy = bool.Parse(isLazy.ToLower()),
+            isOnlyLua = bool.Parse(isOnlyLua.ToLower()),
+            serverOutput = serverOutput
+            
         };
         
         if (string.IsNullOrWhiteSpace(name))

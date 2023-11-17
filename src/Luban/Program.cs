@@ -196,6 +196,8 @@ internal static class Program
 
     private static PipelineArguments CreatePipelineArgs(CommandOptions opts)
     {
+        DataUtil.target = opts.Target;
+
         return new PipelineArguments()
         {
             Target = opts.Target,

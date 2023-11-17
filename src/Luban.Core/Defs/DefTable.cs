@@ -25,7 +25,10 @@ public class DefTable : DefTypeBase
         ReadSchemaFromFile = b.ReadSchemaFromFile;
         Tags = b.Tags;
         _outputFile = b.OutputFile;
+        _serverOutputFile = b.serverOutput;
         IsLazy = b.isLazy;
+        IsOnlyLua = b.isOnlyLua;
+        ServerOutput = b.serverOutput;
     }
 
     public string Index { get; private set; }
@@ -47,6 +50,7 @@ public class DefTable : DefTypeBase
     public List<string> InputFiles { get; }
 
     private readonly string _outputFile;
+    private readonly string _serverOutputFile;
 
     public TType KeyTType { get; private set; }
 
@@ -64,12 +68,17 @@ public class DefTable : DefTypeBase
     
     // TODO: TSUIXL
     public bool IsLazy { get; private set; }
+    
+    public bool IsOnlyLua { get; private set; }
+    
+    public string ServerOutput { get; private set; }
 
     public List<IndexInfo> IndexList { get; } = new();
 
     public List<ITableValidator> Validators { get; } = new();
 
     public string OutputDataFile => string.IsNullOrWhiteSpace(_outputFile) ? FullName.Replace('.', '_').ToLower() : _outputFile;
+    public string ServerOutputDataFile => string.IsNullOrWhiteSpace(_serverOutputFile) ? FullName.Replace('.', '_').ToLower() : _serverOutputFile;
 
     public override void Compile()
     {

@@ -51,6 +51,8 @@ public class ExcelSchemaLoader : SchemaLoaderBase
                 new() { Name = "output", Type = "string" },
                 new() { Name = "tags", Type = "string" },
                 new() { Name = "isLazy", Type = "bool" },
+                new() { Name = "isOnlyLua", Type = "bool" },
+                new() { Name = "serverOutput", Type = "string" },
             }
         })
         {
@@ -89,7 +91,9 @@ public class ExcelSchemaLoader : SchemaLoaderBase
             string outputFile = (data.GetField("output") as DString).Value.Trim();
             // string options = (data.GetField("options") as DString).Value.Trim(); 
             bool isLazy = (data.GetField("isLazy") as DBool).Value;
-            var table = SchemaLoaderUtil.CreateTable(fileName, name, module, valueType, index, mode, group, comment, readSchemaFromFile, inputFile, tags, outputFile, isLazy.ToString());
+            bool isOnlyLua = (data.GetField("isOnlyLua") as DBool).Value;
+            string serverOutput =(data.GetField("serverOutput") as DString).Value.Trim();
+            var table = SchemaLoaderUtil.CreateTable(fileName, name, module, valueType, index, mode, group, comment, readSchemaFromFile, inputFile, tags, outputFile,serverOutput, isLazy.ToString(),isOnlyLua.ToString());
             Collector.Add(table);
         };
     }

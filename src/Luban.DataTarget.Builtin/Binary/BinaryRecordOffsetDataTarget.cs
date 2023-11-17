@@ -12,6 +12,10 @@ public class BinaryRecordOffsetDataTarget : DataTargetBase
     
     private void WriteList(DefTable table, List<Record> datas, ByteBuf x)
     {
+        if (table.IsOnlyLua)
+        {
+            return;
+        }
         ByteBuf buf = new ByteBuf();
         buf.WriteSize(datas.Count);
         x.WriteSize(datas.Count);
@@ -29,6 +33,10 @@ public class BinaryRecordOffsetDataTarget : DataTargetBase
 
     public override OutputFile ExportTable(DefTable table, List<Record> records)
     {
+        if (table.IsOnlyLua)
+        {
+            return null;
+        }
         var bytes = new ByteBuf();
         WriteList(table, records, bytes);
         return new OutputFile()

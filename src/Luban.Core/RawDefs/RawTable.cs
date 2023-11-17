@@ -28,4 +28,8 @@ public class RawTable
     
     // TODO: TSUIXL
     public bool isLazy { get; set; }
+
+    public bool isOnlyLua { get; set; }
+    
+    public string serverOutput{ get; set; }
 }

@@ -141,7 +141,9 @@ public class XmlSchemaLoader : SchemaLoaderBase
         string output = XmlUtil.GetOptionalAttribute(e, "output");
         // TODO: TSUIXL
         string isLazy = XmlUtil.GetOptionalAttribute(e, "isLazy");
-        Collector.Add(SchemaLoaderUtil.CreateTable( _fileName, name, module, valueType, index, mode, group, comment, defineFromFile, input, tags, output, isLazy));
+        string isOnlyLua = XmlUtil.GetOptionalAttribute(e, "isOnlyLua");
+        string serverOutput = XmlUtil.GetOptionalAttribute(e, "serverOutput");
+        Collector.Add(SchemaLoaderUtil.CreateTable( _fileName, name, module, valueType, index, mode, group, comment, defineFromFile, input, tags, output, serverOutput,isLazy,isOnlyLua));
     }
     
     private static readonly List<string> _fieldOptionalAttrs = new()

@@ -11,6 +11,10 @@ public class BinaryDataTarget : DataTargetBase
     
     private void WriteList(DefTable table, List<Record> datas, ByteBuf x)
     {
+        if (table.IsOnlyLua)
+        {
+            return;
+        }
         x.WriteSize(datas.Count);
         foreach (var d in datas)
         {
@@ -20,6 +24,10 @@ public class BinaryDataTarget : DataTargetBase
 
     public override OutputFile ExportTable(DefTable table, List<Record> records)
     {
+        if (table.IsOnlyLua)
+        {
+            return null;
+        }
         var bytes = new ByteBuf();
         WriteList(table, records, bytes);
         return new OutputFile()

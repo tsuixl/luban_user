@@ -19,6 +19,13 @@ public class BinaryRecordOffsetLengthDataTarget : DataTargetBase
             Console.WriteLine($"[Warn] BinaryRecordOffsetLengthDataTarget => {table.Name} is not lazy");
             return;
         }
+
+        if (table.IsOnlyLua)
+        {
+            Console.WriteLine("BinaryRecordOffsetLengthDataTarget 仅仅lua");
+            return;
+        }
+        
         Console.WriteLine($"[Debug] LazyTable => {table.Name}");
         ByteBuf buf = new ByteBuf(10 * 1024);
         x.WriteSize(datas.Count);
@@ -43,6 +50,10 @@ public class BinaryRecordOffsetLengthDataTarget : DataTargetBase
     public override OutputFile ExportTable(DefTable table, List<Record> records)
     {
         if (!table.IsLazy)
+        {
+            return null;
+        }
+        if (table.IsOnlyLua)
         {
             return null;
         }

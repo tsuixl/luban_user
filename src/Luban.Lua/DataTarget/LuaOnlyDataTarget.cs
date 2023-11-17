@@ -1,14 +1,13 @@
-using System.Text;
+﻿using System.Text;
 using Luban.Datas;
 using Luban.DataTarget;
 using Luban.Defs;
 using Luban.Lua.DataVisitors;
-using Luban.Utils;
 
-namespace Luban.Lua.DataTarget;
+namespace Luban.LuaOnly.DataTarget;
 
-[DataTarget("lua")]
-public class LuaDataTarget : DataTargetBase
+[DataTarget("luaOnly")]
+public class LuaOnlyDataTarget : DataTargetBase
 {
     public void ExportTableSingleton(DefTable t, Record record, StringBuilder result)
     {
@@ -55,6 +54,10 @@ public class LuaDataTarget : DataTargetBase
     
     public override OutputFile ExportTable(DefTable table, List<Record> records)
     {
+        if (!table.IsOnlyLua)
+        {
+            return null;
+        }
         var ss = new StringBuilder();
         if (table.IsMapTable)
         {
@@ -68,18 +71,9 @@ public class LuaDataTarget : DataTargetBase
         {
             ExportTableList(table, records, ss);
         }
-
-        string outputDataFile = table.OutputDataFile;
-        if (DataUtil.target == "server")
-        {
-            if (table.ServerOutput != "")
-            {
-                outputDataFile = table.ServerOutputDataFile;
-            }
-        }
         return new OutputFile()
         {
-            File = $"{outputDataFile}.{OutputFileExt}",
+            File = $"{table.OutputDataFile}.{OutputFileExt}",
             Content = ss.ToString(),
         };
     }
