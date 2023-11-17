@@ -70,7 +70,8 @@ public class LuaDataTarget : DataTargetBase
         }
 
         string outputDataFile = table.OutputDataFile;
-        if (DataUtil.target == "server")
+        
+        if (GenerationContext.Current.Target.Name == "server")
         {
             if (table.ServerOutput != "")
             {
