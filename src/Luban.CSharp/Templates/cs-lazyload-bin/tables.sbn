@@ -54,7 +54,7 @@ using System.Collections.Generic;
             result = loader("{{table.output_data_file}}"); await result;
             {{format_property_name __code_style table.name}} = new {{table.full_name}}(result.Result);{{ end }}
             if (UnityEngine.Time.realtimeSinceStartup - time > timeSlice) await Task.Yield();
-            configMap.Add("{{table.full_name}}",{{format_property_name __code_style table.name}})
+            configMap.Add("{{table.full_name}}",{{format_property_name __code_style table.name}});
 			
             {{~end~}}
             ResolveRef();

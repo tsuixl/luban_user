@@ -68,7 +68,7 @@ using System.Linq;
     /// {{escape_comment __table.comment}}
     /// </summary>
     {{~end~}}
-    public partial class {{__name}}
+    public partial class {{__name}} : ILubanConfig
     {
         private readonly System.Func<string, int, int, ByteBuf> _byteBufLoader;
         private readonly string _fileName;
@@ -160,7 +160,7 @@ using System.Linq;
 		}
 		{{~end~}}
 
-		public ByteBuf GetByteBuff(object key)
+		public ByteBuf GetByteBuf(object key)
 		{
 			if(key is int || key is float || key is double)
 			{
