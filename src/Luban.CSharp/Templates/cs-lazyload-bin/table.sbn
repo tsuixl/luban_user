@@ -164,7 +164,7 @@ using System.Linq;
 		{
 			if(key is int || key is float || key is double)
 			{
-				return GetByteBuff(int.Parse(key));
+				return GetByteBuff(int.Parse(key.ToString()));
 			}
 			else
 			{
