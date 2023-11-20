@@ -50,6 +50,11 @@ public class BinaryUnderlyingDeserializeVisitor : ITypeFuncVisitor<string, strin
     public string Accept(TString type, string bufName, string fieldName, int depth)
     {
         return $"{fieldName} = {bufName}.ReadString();";
+    }  
+    
+    public string Accept(TTable type, string bufName, string fieldName, int depth)
+    {
+        return $"{fieldName} = {bufName}.ReadString();";
     }
 
     public string Accept(TDateTime type, string bufName, string fieldName, int depth)

@@ -53,6 +53,11 @@ public class UnderlyingDeclaringTypeNameVisitor : ITypeFuncVisitor<string>
         return "string";
     }
 
+    public string Accept(TTable type)
+    {
+        return "string";
+    }
+    
     public string Accept(TBean type)
     {
         return type.DefBean.TypeNameWithTypeMapper() ?? type.DefBean.FullName;

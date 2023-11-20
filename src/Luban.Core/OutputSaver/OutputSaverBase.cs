@@ -29,12 +29,29 @@ public abstract class OutputSaverBase : IOutputSaver
         string outputDir = GetOutputDir(outputFileManifest);
         BeforeSave(outputFileManifest, outputDir);
         var tasks = new List<Task>();
+        var tableList = GenerationContext.Current.Tables;
         foreach (var outputFile in outputFileManifest.DataFiles)
         {
-            tasks.Add(Task.Run(() =>
+            bool IsOnlyLua = false;
+            foreach (var table in tableList)
             {
-                SaveFile(outputFileManifest, outputDir, outputFile);
-            }));
+                string[] array = outputFile.File.Split(".");
+                if (table.ValueType == array[0] || table.FullName == array[0])
+                {
+                    if (table.IsOnlyLua)
+                    {
+                        IsOnlyLua = true;
+                    }
+                }
+            }
+            
+            if (!IsOnlyLua)
+            {
+                tasks.Add(Task.Run(() =>
+                {
+                    SaveFile(outputFileManifest, outputDir, outputFile);
+                }));
+            }
         }
         Task.WaitAll(tasks.ToArray());
         PostSave(outputFileManifest, outputDir);
