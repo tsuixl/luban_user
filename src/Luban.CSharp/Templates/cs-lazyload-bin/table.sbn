@@ -130,7 +130,7 @@ using System.Linq;
 		    }
         }
 
-		{{~if key_type.type_name == 'int' ~}}
+		{{~if key_type.type_name == 'int' || key_type.type_name == 'long' ~}}
 		public ByteBuf GetByteBuff({{declaring_type_name key_type}} key)
 		{	
 			int offset = _offsetMap[key];
@@ -162,7 +162,7 @@ using System.Linq;
 
 		public ByteBuf GetByteBuf(object key)
 		{
-			if(key is int || key is float || key is double)
+			if(key is long || key is int || key is float || key is double)
 			{
 				return GetByteBuff(int.Parse(key.ToString()));
 			}
