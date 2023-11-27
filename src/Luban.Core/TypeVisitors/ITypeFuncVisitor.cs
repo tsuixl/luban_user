@@ -148,5 +148,8 @@ public interface ITypeFuncVisitor<T, T2, T3, TR>
 
     TR Accept(TMap type, T x, T2 y, T3 z);
 
-    TR Accept(TTable type, T x, T2 y, T3 z);
+    TR Accept(TTable type, T x, T2 y, T3 z)
+    {
+        throw new NotImplementedException();
+    }
 }
