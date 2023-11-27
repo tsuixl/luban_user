@@ -149,9 +149,4 @@ public interface IDataActionVisitor2<T1, T2>
     void Accept(DSet data, TType type, T1 x, T2 y);
 
     void Accept(DMap data, TType type, T1 x, T2 y);
-
-    void Accept(DTable data, TType type, T1 x, T2 y)
-    {
-        
-    }
 }

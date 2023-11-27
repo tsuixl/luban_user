@@ -108,9 +108,4 @@ public interface IDataFuncVisitor<T1, T2, TR>
     TR Accept(DSet type, T1 x, T2 y);
 
     TR Accept(DMap type, T1 x, T2 y);
-    
-    TR Accept(DTable type, T1 x, T2 y)
-    {
-        throw new NotImplementedException();
-    }
 }

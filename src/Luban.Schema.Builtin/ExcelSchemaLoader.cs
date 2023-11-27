@@ -20,10 +20,17 @@ public class ExcelSchemaLoader : SchemaLoaderBase
     {
         switch (Type)
         {
-            case "table": LoadTableListFromFile(fileName); break;
-            case "bean": LoadBeanListFromFile(fileName); break;
-            case "enum": LoadEnumListFromFile(fileName); break;
-            default: throw new Exception($"unknown type:{Type}");
+            case "table":
+                LoadTableListFromFile(fileName);
+                break;
+            case "bean":
+                LoadBeanListFromFile(fileName);
+                break;
+            case "enum":
+                LoadEnumListFromFile(fileName);
+                break;
+            default:
+                throw new Exception($"unknown type:{Type}");
         }
     }
 
@@ -58,14 +65,14 @@ public class ExcelSchemaLoader : SchemaLoaderBase
         {
             Assembly = new DefAssembly(new RawAssembly()
             {
-                Targets = new List<RawTarget>{new() { Name = "default", Manager = "Tables"}},
+                Targets = new List<RawTarget> { new() { Name = "default", Manager = "Tables" } },
             }, "default", new List<string>()),
         };
         defTableRecordType.PreCompile();
         defTableRecordType.Compile();
         defTableRecordType.PostCompile();
         var tableRecordType = TBean.Create(false, defTableRecordType, null);
-        
+
         (var actualFile, var sheetName) = FileUtil.SplitFileAndSheetName(FileUtil.Standardize(fileName));
         var records = DataLoaderManager.Ins.LoadTableFile(tableRecordType, actualFile, sheetName, new Dictionary<string, string>());
         foreach (var r in records)
@@ -102,7 +109,7 @@ public class ExcelSchemaLoader : SchemaLoaderBase
     {
         var ass = new DefAssembly(new RawAssembly()
         {
-            Targets = new List<RawTarget>{new() { Name = "default", Manager = "Tables"}},
+            Targets = new List<RawTarget> { new() { Name = "default", Manager = "Tables" } },
         }, "default", new List<string>());
 
         var enumItemType = new DefBean(new RawBean()
@@ -157,7 +164,7 @@ public class ExcelSchemaLoader : SchemaLoaderBase
         defTableRecordType.Compile();
         defTableRecordType.PostCompile();
         var tableRecordType = TBean.Create(false, defTableRecordType, null);
-        
+
         (var actualFile, var sheetName) = FileUtil.SplitFileAndSheetName(FileUtil.Standardize(fileName));
         var records = DataLoaderManager.Ins.LoadTableFile(tableRecordType, actualFile, sheetName, new Dictionary<string, string>());
 
@@ -201,7 +208,7 @@ public class ExcelSchemaLoader : SchemaLoaderBase
     {
         var ass = new DefAssembly(new RawAssembly()
         {
-            Targets = new List<RawTarget>{new() { Name = "default", Manager = "Tables"}},
+            Targets = new List<RawTarget> { new() { Name = "default", Manager = "Tables" } },
         }, "default", new List<string>());
 
         var defBeanFieldType = new DefBean(new RawBean()

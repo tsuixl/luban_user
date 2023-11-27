@@ -72,8 +72,5 @@ public interface ITypeActionVisitor<T1, T2>
 
     void Accept(TMap type, T1 x, T2 y);
 
-    void Accept(TTable type, T1 x, T2 y)
-    {
-        
-    }
+    void Accept(TTable type, T1 x, T2 y);
 }

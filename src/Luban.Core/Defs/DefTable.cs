@@ -36,7 +36,7 @@ public class DefTable : DefTypeBase
     public string ValueType { get; }
 
     public TableMode Mode { get; }
-    
+
     public bool ReadSchemaFromFile { get; }
 
     public bool IsSingletonTable => Mode == TableMode.ONE;
@@ -44,7 +44,7 @@ public class DefTable : DefTypeBase
     public bool IsMapTable => Mode == TableMode.MAP;
 
     public bool IsListTable => Mode == TableMode.LIST;
-    
+
     public bool IsExported { get; set; }
 
     public List<string> InputFiles { get; }
@@ -152,10 +152,11 @@ public class DefTable : DefTypeBase
                 MultiKey = IndexList.Count > 1 && Index.Contains(',');
                 break;
             }
-            default: throw new Exception($"unknown mode:'{Mode}'");
+            default:
+                throw new Exception($"unknown mode:'{Mode}'");
         }
 
-        foreach(var index in IndexList)
+        foreach (var index in IndexList)
         {
             TType indexType = index.Type;
             string idxName = index.IndexField.Name;

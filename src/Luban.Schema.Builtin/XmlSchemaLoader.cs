@@ -54,7 +54,7 @@ public class XmlSchemaLoader : SchemaLoaderBase
         }
         _namespaceStack.Pop();
     }
-    
+
     protected void TryGetUpdateParent(XElement e, ref string parent)
     {
         string selfDefParent = XmlUtil.GetOptionalAttribute(e, "parent");
@@ -70,7 +70,7 @@ public class XmlSchemaLoader : SchemaLoaderBase
 
     private static readonly List<string> _enumOptionalAttrs = new() { "flags", "comment", "tags", "unique", "group" };
     private static readonly List<string> _enumRequiredAttrs = new() { "name" };
-    
+
     private static readonly List<string> _enumItemOptionalAttrs = new() { "value", "alias", "comment", "tags" };
     private static readonly List<string> _enumItemRequiredAttrs = new() { "name" };
 
@@ -86,7 +86,7 @@ public class XmlSchemaLoader : SchemaLoaderBase
             Tags = DefUtil.ParseAttrs(XmlUtil.GetOptionalAttribute(e, "tags")),
             IsUniqueItemId = XmlUtil.GetOptionBoolAttribute(e, "unique", true),
             Groups = SchemaLoaderUtil.CreateGroups(XmlUtil.GetOptionalAttribute(e, "group")),
-            Items = new (),
+            Items = new(),
             TypeMappers = new(),
         };
 
@@ -121,7 +121,7 @@ public class XmlSchemaLoader : SchemaLoaderBase
         s_logger.Trace("add enum:{@}", en);
         Collector.Add(en);
     }
-    
+
     private readonly List<string> _tableOptionalAttrs = new() { "index", "mode", "group", "comment", "readSchemaFromFile", "output", "tags" };
     private readonly List<string> _tableRequireAttrs = new() { "name", "value", "input" };
 
@@ -145,7 +145,7 @@ public class XmlSchemaLoader : SchemaLoaderBase
         string serverOutput = XmlUtil.GetOptionalAttribute(e, "serverOutput");
         Collector.Add(SchemaLoaderUtil.CreateTable( _fileName, name, module, valueType, index, mode, group, comment, defineFromFile, input, tags, output, serverOutput,isLazy,isOnlyLua));
     }
-    
+
     private static readonly List<string> _fieldOptionalAttrs = new()
     {
         // "ref",
@@ -206,13 +206,13 @@ public class XmlSchemaLoader : SchemaLoaderBase
         };
         return mapper;
     }
-    
+
 
     protected void AddBean(XElement e)
     {
         AddBean(e, "");
     }
-    
+
     protected void AddBean(XElement e, string parent)
     {
         XmlSchemaUtil.ValidAttrKeys(_fileName, e, _beanOptionsAttrs, _beanRequireAttrs);
@@ -229,7 +229,7 @@ public class XmlSchemaLoader : SchemaLoaderBase
             Tags = DefUtil.ParseAttrs(XmlUtil.GetOptionalAttribute(e, "tags")),
             Groups = SchemaLoaderUtil.CreateGroups(XmlUtil.GetOptionalAttribute(e, "group")),
             Fields = new(),
-            TypeMappers = new (),
+            TypeMappers = new(),
         };
         var childBeans = new List<XElement>();
 
@@ -244,7 +244,8 @@ public class XmlSchemaLoader : SchemaLoaderBase
                     {
                         throw new LoadDefException($"定义文件:{_fileName} 类型:{b.FullName} 的多态子bean必须在所有成员字段 <var> 之后定义");
                     }
-                    b.Fields.Add(CreateField(fe)); ;
+                    b.Fields.Add(CreateField(fe));
+                    ;
                     break;
                 }
                 case "mapper":
