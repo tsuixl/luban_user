@@ -1,6 +1,5 @@
 using Luban;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 
 {{namespace_with_grace_begin __namespace}}
     public partial class {{__name}}
@@ -16,7 +15,6 @@ using System.Collections.Generic;
         public {{table.full_name}} {{format_property_name __code_style table.name}} {get; private set; }
         {{~end~}}
 		
-		public Dictionary<string,ILubanConfig> configMap = new Dictionary<string,ILubanConfig>();
         public static readonly int TABLE_COUNT = {{count}};
 
         //public {{__name}}(System.Func<string, ByteBuf> offsetLoader,  System.Func<string, int, int, ByteBuf> byteBufLoader)
@@ -54,7 +52,6 @@ using System.Collections.Generic;
             result = loader("{{table.output_data_file}}"); await result;
             {{format_property_name __code_style table.name}} = new {{table.full_name}}(result.Result);{{ end }}
             if (UnityEngine.Time.realtimeSinceStartup - time > timeSlice) await Task.Yield();
-            configMap.Add("{{table.full_name}}",{{format_property_name __code_style table.name}});
 			
             {{~end~}}
             ResolveRef();

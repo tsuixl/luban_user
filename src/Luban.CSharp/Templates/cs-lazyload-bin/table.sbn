@@ -68,7 +68,7 @@ using System.Linq;
     /// {{escape_comment __table.comment}}
     /// </summary>
     {{~end~}}
-    public partial class {{__name}} : ILubanConfig
+    public partial class {{__name}} 
     {
         private readonly System.Func<string, int, int, ByteBuf> _byteBufLoader;
         private readonly string _fileName;
@@ -129,48 +129,6 @@ using System.Linq;
 			    }
 		    }
         }
-
-		{{~if key_type.type_name == 'int' || key_type.type_name == 'long' ~}}
-		public ByteBuf GetByteBuff({{declaring_type_name key_type}} key)
-		{	
-			int offset = _offsetMap[key];
-            int length = _lengthMap[key];
-			ByteBuf buf = this._byteBufLoader(this._fileName, offset, length);
-			return buf;
-		}
-		
-		public ByteBuf GetByteBuff(string key)
-		{	
-			return null;
-		}
-		{{~end~}}
-		
-		{{~if key_type.type_name == 'string' ~}}
-		public ByteBuf GetByteBuff({{declaring_type_name key_type}} key)
-		{	
-			int offset = _offsetMap[key];
-            int length = _lengthMap[key];
-			ByteBuf buf = this._byteBufLoader(this._fileName, offset, length);
-			return buf;
-		}
-		
-		public ByteBuf GetByteBuff(int key)
-		{	
-			return null;
-		}
-		{{~end~}}
-
-		public ByteBuf GetByteBuf(object key)
-		{
-			if(key is long || key is int || key is float || key is double)
-			{
-				return GetByteBuff(int.Parse(key.ToString()));
-			}
-			else
-			{
-				return GetByteBuff(key.ToString());
-			}
-		}
 
         {{~if value_type.is_dynamic~}}
         public T GetOrDefaultAs<T>({{declaring_type_name key_type}} key) where T : {{declaring_type_name value_type}} => _dataMap.TryGetValue(key, out var v) ? (T)v : null;
@@ -245,12 +203,6 @@ using System.Linq;
                     onLoad?.Invoke({{table_key_list 'value'}}, value);
                 }
             }
-        }
-
-
-        public ByteBuf GetByteBuf(object key)
-        {
-            return null;
         }
 
         public {{declaring_type_name value_type}} GetOrDefault({{table_param_def_list}}) => this.Get({{table_param_name_list}}) ?? default;
