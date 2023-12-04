@@ -104,7 +104,7 @@ using System.Linq;
             }
         }
         
-        public ByteBuf(ByteBuf buff)
+        public {{__name}}(ByteBuf buff)
         {
             Count = buff.ReadSize();
             _dataMap = new System.Collections.Generic.Dictionary<{{declaring_type_name key_type}}, {{declaring_type_name value_type}}>(Count);
@@ -151,7 +151,7 @@ using System.Linq;
             return v;
         }
 		
-		public {{declaring_type_name value_type}} GetByteBuf({{declaring_type_name key_type}} key)
+		public ByteBuf GetByteBuf({{declaring_type_name key_type}} key)
         {
             if (_byteBufMap.TryGetValue(key, out var v))
             {
@@ -575,11 +575,6 @@ public partial class {{__name}}
         _data.ResolveRef(tables);
     }
     {{~end~}}
-
-    public ByteBuf GetByteBuf(object key)
-    {
-        return null;
-    }
 }
 
 {{namespace_with_grace_end __namespace_with_top_module}}
