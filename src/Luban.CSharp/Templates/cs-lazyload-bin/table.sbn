@@ -104,7 +104,7 @@ using System.Linq;
             }
         }
         
-        public {{__name}}(ByteBuf buff)
+        public ByteBuf(ByteBuf buff)
         {
             Count = buff.ReadSize();
             _dataMap = new System.Collections.Generic.Dictionary<{{declaring_type_name key_type}}, {{declaring_type_name value_type}}>(Count);
