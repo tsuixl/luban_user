@@ -32,7 +32,10 @@ public static class SheetLoadUtil
         s_curExcel.Value = rawUrl;
         string ext = Path.GetExtension(rawUrl);
         int firstIndex = 1;
-        using (var reader = ext != ".csv" ? ExcelReaderFactory.CreateReader(stream) : ExcelReaderFactory.CreateCsvReader(stream, new ExcelReaderConfiguration() { FallbackEncoding = DetectCsvEncoding(stream) }))
+        using (var reader = ext != ".csv" ?
+                   ExcelReaderFactory.CreateReader(stream) 
+                   : ExcelReaderFactory.CreateCsvReader(stream, new ExcelReaderConfiguration() 
+                       { FallbackEncoding = DetectCsvEncoding(stream) }))
         {
             // do
             // {
@@ -569,7 +572,12 @@ public static class SheetLoadUtil
         s_logger.Trace("{filename} {sheet}", rawUrl, sheetName);
         string ext = Path.GetExtension(rawUrl);
         int firstIndex = 1;
-        using (var reader = ext != ".csv" ? ExcelReaderFactory.CreateReader(stream) : ExcelReaderFactory.CreateCsvReader(stream, new ExcelReaderConfiguration() { FallbackEncoding = DetectCsvEncoding(stream) }))
+        using (var reader = ext != ".csv" ? 
+                   ExcelReaderFactory.CreateReader(stream) 
+                   : ExcelReaderFactory.CreateCsvReader(stream, new ExcelReaderConfiguration()
+                   {
+                       FallbackEncoding = DetectCsvEncoding(stream)
+                   }))
         {
             // do
             // {

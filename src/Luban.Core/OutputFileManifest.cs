@@ -4,6 +4,7 @@ public enum OutputType
 {
     Code,
     Data,
+    Custom,
 }
 
 public class OutputFileManifest
@@ -11,6 +12,8 @@ public class OutputFileManifest
     public string TargetName { get; }
 
     public OutputType OutputType { get; }
+
+    public bool CleanBeforeSave { get; } = true;
 
     private readonly List<OutputFile> _dataFiles = new();
 
@@ -33,6 +36,16 @@ public class OutputFileManifest
         lock (this)
         {
             _dataFiles.Add(file);
+            if (file.OtherFiles != null)
+            {
+                foreach (var fileOtherFile in file.OtherFiles)
+                {
+                    if (fileOtherFile != null)
+                    {
+                        _dataFiles.Add(fileOtherFile);
+                    }
+                }
+            }
         }
     }
 }

@@ -7,6 +7,8 @@ public static class BuiltinOptionNames
     public const string OutputCodeDir = "outputCodeDir";
 
     public const string OutputDataDir = "outputDataDir";
+    
+    public const string OutputCustomDir = "outputCustomDir";
 
     public const string CodeStyle = "codeStyle";
 
@@ -22,6 +24,10 @@ public static class BuiltinOptionNames
 
     public const string SchemaCollectorFamily = "schemaCollector";
 
+    public const string LocationFile = "locationFile";
+    
+    public const string LocationDefaultLanguage = "locationDefaultLanguage";
+    
     public const string L10NFamily = "l10n";
 
     public const string TextProviderName = "textProviderName";

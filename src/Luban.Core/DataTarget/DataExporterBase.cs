@@ -10,6 +10,7 @@ public abstract class DataExporterBase : IDataExporter
     public virtual void Handle(GenerationContext ctx, IDataTarget dataTarget, OutputFileManifest manifest)
     {
         List<DefTable> tables = dataTarget.ExportAllRecords ? ctx.Tables : ctx.ExportTables;
+        dataTarget.BeforeExport(tables);
         switch (dataTarget.AggregationType)
         {
             case AggregationType.Table:
@@ -52,6 +53,8 @@ public abstract class DataExporterBase : IDataExporter
                 break;
             }
         }
+        
+        dataTarget.AfterExport(tables);
     }
 
     protected virtual void ExportCustom(List<DefTable> tables, OutputFileManifest manifest, IDataTarget dataTarget)

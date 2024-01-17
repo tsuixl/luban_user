@@ -9,6 +9,13 @@ public abstract class DataTargetBase : IDataTarget
     public virtual AggregationType AggregationType => AggregationType.Table;
 
     public virtual bool ExportAllRecords => false;
+    public virtual void BeforeExport(List<DefTable> tables)
+    {
+    }
+
+    public virtual void AfterExport(List<DefTable> tables)
+    {
+    }
 
     protected abstract string OutputFileExt { get; }
 

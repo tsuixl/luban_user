@@ -205,7 +205,12 @@ public class DefBean : DefTypeBase
             {
                 ParentDefType.Children = new List<DefBean>();
             }
-            ParentDefType.Children.Add(this);
+
+            if (ParentDefType.Children.Contains(this) == false)
+            {
+                ParentDefType.Children.Add(this);
+            }
+
             ParentDefType.SetupParentRecursively();
         }
     }

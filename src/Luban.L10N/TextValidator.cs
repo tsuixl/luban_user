@@ -5,7 +5,7 @@ using Luban.Validator;
 
 namespace Luban.L10N;
 
-[Validator("text")]
+// [Validator("text")]
 public class TextValidator : DataValidatorBase
 {
     private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();

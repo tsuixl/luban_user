@@ -5,6 +5,7 @@ using Luban.CustomBehaviour;
 using Luban.DataLoader;
 using Luban.DataTarget;
 using Luban.L10N;
+using Luban.Location;
 using Luban.OutputSaver;
 using Luban.Pipeline;
 using Luban.PostProcess;
@@ -40,6 +41,7 @@ public class SimpleLauncher
         PipelineManager.Ins.Init();
         L10NManager.Ins.Init();
         CustomBehaviourManager.Ins.Init();
+        LocationManager.Ins.Init();
     }
 
     private void PostInitManagers()

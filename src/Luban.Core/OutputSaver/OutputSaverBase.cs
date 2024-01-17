@@ -8,9 +8,20 @@ public abstract class OutputSaverBase : IOutputSaver
 
     protected virtual string GetOutputDir(OutputFileManifest manifest)
     {
-        string optionName = manifest.OutputType == OutputType.Code
-            ? BuiltinOptionNames.OutputCodeDir
-            : BuiltinOptionNames.OutputDataDir;
+        string optionName = "";
+        switch (manifest.OutputType)
+        {
+            case OutputType.Code:
+                optionName = BuiltinOptionNames.OutputCodeDir;
+                break;
+            case OutputType.Data:
+                optionName = BuiltinOptionNames.OutputDataDir;
+                break;
+            case OutputType.Custom:
+                optionName = BuiltinOptionNames.OutputCustomDir;
+                break;
+        }
+        
         return EnvManager.Current.GetOption($"{manifest.TargetName}", optionName, true);
     }
 

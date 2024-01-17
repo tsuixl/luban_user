@@ -6,6 +6,8 @@ public class OutputFile
 {
     public string File { get; init; }
 
+    public bool IsFullPath { get; init; } = false;
+
     /// <summary>
     /// Data type: string or byte[]
     /// </summary>
@@ -19,4 +21,6 @@ public class OutputFile
         }
         return Encoding.UTF8.GetBytes((string)Content);
     }
+    
+    public List<OutputFile> OtherFiles { get; init; }
 }

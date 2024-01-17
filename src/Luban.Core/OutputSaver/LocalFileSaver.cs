@@ -14,7 +14,12 @@ public class LocalFileSaver : OutputSaverBase
         {
             return;
         }
-        FileCleaner.Clean(outputDir, outputFileManifest.DataFiles.Select(f => f.File).ToList());
+
+        if (outputFileManifest.CleanBeforeSave)
+        {
+            FileCleaner.Clean(outputDir, outputFileManifest.DataFiles.Select(f => f.File).ToList());
+        }
+
         // TSUIL
         // 解决windows上SaveFile()会存盘失败的问题
         // SaveFile是多线程执行，有概率会出现文件被占用的情况，已经被删除的文件，但是文件句柄还在（File.Exists() == true），导致SaveFile失败
@@ -24,7 +29,7 @@ public class LocalFileSaver : OutputSaverBase
     public override void SaveFile(OutputFileManifest fileManifest, string outputDir, OutputFile outputFile)
     {
         var id = Thread.CurrentThread.ManagedThreadId;
-        string fullOutputPath = $"{outputDir}/{outputFile.File}";
+        string fullOutputPath = outputFile.IsFullPath?$"{outputFile.File}": $"{outputDir}/{outputFile.File}";
         Directory.CreateDirectory(Path.GetDirectoryName(fullOutputPath));
         if (FileUtil.WriteAllBytes(fullOutputPath, outputFile.GetContentBytes()))
         {

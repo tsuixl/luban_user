@@ -37,6 +37,10 @@ public class ExcelSchemaLoader : SchemaLoaderBase
 
     private void LoadTableListFromFile(string fileName)
     {
+        var ass = new DefAssembly(new RawAssembly()
+            {
+                Targets = new List<RawTarget> { new() { Name = "default", Manager = "Tables" } },
+            }, "default", new List<string>());
         var defTableRecordType = new DefBean(new RawBean()
         {
             Namespace = "__intern__",
@@ -63,10 +67,7 @@ public class ExcelSchemaLoader : SchemaLoaderBase
             }
         })
         {
-            Assembly = new DefAssembly(new RawAssembly()
-            {
-                Targets = new List<RawTarget> { new() { Name = "default", Manager = "Tables" } },
-            }, "default", new List<string>()),
+            Assembly = ass,
         };
         defTableRecordType.PreCompile();
         defTableRecordType.Compile();
