@@ -1,0 +1,116 @@
+using System.Collections.Generic;
+using Luban;
+using System.Threading.Tasks;
+
+{{namespace_with_grace_begin __namespace}}
+    public partial class {{__name}}
+    {
+	    private System.Func<string, string, Task<string[]>> _loadTextMap;
+		public string Language {get; private set;} = null;
+	
+	    public List<Luban.TableBase> AllConfig { get; private set; } = new();
+	
+        {{count = 0}}
+        {{~for table in __tables ~}}
+        {{count = count + 1}}
+        {{~if table.comment != '' ~}}
+        /// <summary>
+        /// {{escape_comment table.comment}}
+        /// </summary>
+        {{~end~}}
+        public {{table.full_name}} {{format_property_name __code_style table.name}} {get; private set; }
+        {{~end~}}
+		
+        public static readonly int TABLE_COUNT = {{count}};
+
+        //public {{__name}}(System.Func<string, ByteBuf> offsetLoader,  System.Func<string, int, int, ByteBuf> byteBufLoader)
+        //{
+        //    {{~for table in __tables ~}}
+        //    {{format_property_name __code_style table.name}} = new {{table.full_name}}(offsetLoader("{{table.output_data_file}}"), "{{table.output_data_file}}", byteBufLoader);
+        //    {{~end~}}
+        //    ResolveRef();
+        //}
+        
+        public async Task Init(System.Func<string, Task<SimpleJSON.JSONNode>> loader, float timeSlice = -1)
+        {
+            await Task.Yield();
+        }
+        
+        public {{__name}} () { }
+        
+        public async Task Init(string language, System.Func<string, Task<ByteBuf>> offsetLoader,  
+                                System.Func<string, int, int, ByteBuf> byteBufLoader, 
+                                System.Func<string, Task<ByteBuf>> loader,
+                                float timeSlice = -1)
+        {
+            float time = 0;
+            if (timeSlice < 0)
+            {
+                timeSlice = float.MaxValue;
+            }
+			
+			Language = language;
+			_loadTextMap = loadTextMap;
+			
+			AllConfig.Clear();
+            
+            Task<ByteBuf> result = null;
+			Task<string[]> resultTextList = null;
+			string[] textList = null;
+			string fileName = null;
+			TableBase table = null;
+            
+            {{~for table in __tables ~}}
+			{{
+			  $tableName = format_property_name __code_style table.name
+			  $tableFullName = table.full_name
+			  $tableFile = table.output_data_file
+			  $tableExtension = __tables_extension[table]
+			}}
+            time = UnityEngine.Time.realtimeSinceStartup;
+
+			{{$tableName}} = new {{$tableName}}();
+			table = {{$tableName}};
+			fileName = table.FileName;
+			textList = null;
+			if(table.HasLocationText)
+			{
+				textList = await _loadTextMap(fileName, Language);
+			}
+            result = offsetLoader(fileName); await result;
+			{{ if table.is_lazy }}
+            {{$tableFullName}}.LoadData(result.Result, byteBufLoader, textList);
+			{{ else }}
+            {{$tableFullName}}.LoadData(result.Result, textList);
+			{{ end }}
+			AllConfig.Add(table);
+            if (UnityEngine.Time.realtimeSinceStartup - time > timeSlice) await Task.Yield();
+			
+            {{~end~}}
+            ResolveRef();
+			
+            await Task.Yield();
+        }
+
+        private void ResolveRef()
+        {
+            {{~for table in __tables ~}}
+            {{format_property_name __code_style table.name}}.ResolveRef(this);
+            {{~end~}}
+        }
+		
+        
+        //async Task WaitOneFrameAsync()
+        //{
+        //    var frameCount = UnityEngine.Time.frameCount;
+        //    var tcs = new TaskCompletionSource<bool>();
+        //    while (UnityEngine.Time.frameCount <= frameCount)
+        //    {
+        //        await Task.Delay(100);
+        //    }
+//
+        //    tcs.TrySetResult(true);
+        //}
+    }
+
+{{namespace_with_grace_end __namespace}}
