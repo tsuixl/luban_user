@@ -108,7 +108,7 @@ using System.Linq;
 
         public void LoadData(ByteBuf buff, System.Func<string, int, int, ByteBuf> byteBufLoader, string[] textList)
         {
-
+			bool isReload = Loaded;
             _dataMap = new System.Collections.Generic.Dictionary<{{declaring_type_name key_type}}, {{declaring_type_name value_type}}>(Count);
 			_byteBufMap = new System.Collections.Generic.Dictionary<{{declaring_type_name key_type}}, ByteBuf>(Count);
             _offsetMap = new System.Collections.Generic.Dictionary<{{declaring_type_name key_type}}, int>(Count);
@@ -127,11 +127,13 @@ using System.Linq;
                 _offsetMap.Add(key, offset);
                 _lengthMap.Add(key, length);
             }
+			
+			Loaded = true;
         }
         
         public void LoadData(ByteBuf buff, string[] textList)
         {
-
+			bool isReload = Loaded;
             _dataMap = new System.Collections.Generic.Dictionary<{{declaring_type_name key_type}}, {{declaring_type_name value_type}}>(Count);
             _dataList = new System.Collections.Generic.List<{{declaring_type_name value_type}}>(Count);
    
@@ -144,6 +146,8 @@ using System.Linq;
                 _dataList.Add(_v);
                 _dataMap.Add(_v.{{format_property_name __code_style __table.index_field.name}}, _v);
             }
+			
+			Loaded = true;
         }
 
         public void LoadAll(System.Action<{{declaring_type_name key_type}},{{declaring_type_name value_type}}> onLoad = null)
@@ -212,7 +216,7 @@ using System.Linq;
 		
         public void LoadData(ByteBuf _buf, System.Func<string, int, int, ByteBuf> byteBufLoader, string[] textList)
         {
-			
+			bool isReload = Loaded;
             _dataMapUnion = new {{table_union_map_type_name}}();
             _offsetMapUnion = new {{table_union_map_int_name}}();
             _lengthMapUnion = new {{table_union_map_int_name}}();
@@ -232,11 +236,8 @@ using System.Linq;
                 _offsetMapUnion.Add(({{table_union_key_names}}), offset);
                 _lengthMapUnion.Add(({{table_union_key_names}}), length);
             }
-        }
-
-        public void LoadData(ByteBuf _buf, string[] textList)
-        {
-
+			
+			Loaded = true;
         }
 
 
@@ -284,6 +285,7 @@ using System.Linq;
 
         public void LoadData(ByteBuf _buf, System.Func<string, int, int, ByteBuf> byteBufLoader, string[] textList)
         {
+			bool isReload = Loaded;
             {{~for idx in __table.index_list~}}
             _dataMap_{{idx.index_field.name}} = new System.Collections.Generic.Dictionary<{{declaring_type_name idx.type}}, {{declaring_type_name value_type}}>();
             _offsetMap_{{idx.index_field.name}} = new System.Collections.Generic.Dictionary<{{declaring_type_name idx.type}}, int>();
@@ -311,6 +313,8 @@ using System.Linq;
                 _lengthMap_{{idx.index_field.name}}.Add(key_{{idx.index_field.name}}, length);
                 {{~end~}}
             }
+			
+			Loaded = true;
         }
                 {{~for idx in __table.index_list~}}
         public {{declaring_type_name value_type}} GetBy{{format_property_name __code_style idx.index_field.name}}OrDefault({{declaring_type_name idx.type}} key) => this.GetBy{{format_property_name __code_style idx.index_field.name}}(key) ?? default;
@@ -358,6 +362,7 @@ using System.Linq;
 
         public void LoadData(ByteBuf _buf, string fileName, System.Func<string, int, int, ByteBuf> byteBufLoader, string[] textList)
         {
+			bool isReload = Loaded;
             _indexDataMap = new System.Collections.Generic.Dictionary<int, {{declaring_type_name value_type}}>();
             _offsetList = new System.Collections.Generic.List<int>();
             _lengthList = new System.Collections.Generic.List<int>();
@@ -375,6 +380,8 @@ using System.Linq;
                 _offsetList.Add(offset);
                 _lengthList.Add(length);
             }
+			
+			Loaded = true;
         }
 
 
@@ -421,6 +428,7 @@ using System.Linq;
 
         public void LoadData(ByteBuf _buf, string fileName, System.Func<string, int, int, ByteBuf> byteBufLoader, string[] textList)
         {
+			bool isReload = Loaded;
 			m_TextList = textList;
 			Count = Count;
             int n = _buf.ReadSize();
@@ -429,6 +437,8 @@ using System.Linq;
             int length = _buf.ReadInt();
             ByteBuf dataBuf = byteBufLoader(fileName, offset, length);
             {{deserialize 'dataBuf' '_data' value_type}}
+			
+			Loaded = true;
         }
 
 
@@ -517,7 +527,7 @@ public partial class {{__name}} : Luban.TableBase
 	
     public void LoadData(ByteBuf _buf, string[] textList)
     {
-
+		bool isReload = Loaded;
         _dataMap = new System.Collections.Generic.Dictionary<{{declaring_type_name key_type}}, {{declaring_type_name value_type}}>();
         _dataList = new System.Collections.Generic.List<{{declaring_type_name value_type}}>();
 
@@ -530,6 +540,8 @@ public partial class {{__name}} : Luban.TableBase
             _dataList.Add(_v);
             _dataMap.Add(_v.{{format_property_name __code_style __table.index_field.name}}, _v);
         }
+		
+		Loaded = true;
     }
 
     public System.Collections.Generic.Dictionary<{{declaring_type_name key_type}}, {{declaring_type_name value_type}}> DataMap => _dataMap;
@@ -569,6 +581,7 @@ public partial class {{__name}} : Luban.TableBase
 
     public void LoadData(ByteBuf _buf, string[] textList)
     {
+		bool isReload = Loaded;
         _dataList = new System.Collections.Generic.List<{{declaring_type_name value_type}}>();
 		 m_TextList = textList;
 		Count = _buf.ReadSize();
@@ -595,6 +608,8 @@ public partial class {{__name}} : Luban.TableBase
     {{~end~}}
     }
     {{~end~}}
+	
+		Loaded = true;
     }
 
     public System.Collections.Generic.List<{{declaring_type_name value_type}}> DataList => _dataList;
@@ -625,11 +640,14 @@ public partial class {{__name}} : Luban.TableBase
 	
     public void LoadData(ByteBuf _buf, string[] textList)
     {
+		bool isReload = Loaded;
 		m_TextList = textList;
 		Count = _buf.ReadSize();
         int n = Count;
         if (n != 1) throw new SerializationException("table mode=one, but size != 1");
         {{deserialize '_buf' '_data' value_type}}
+		
+		Loaded = true;
     }
 
 
