@@ -14,7 +14,7 @@ using System.Linq;
 
 
 
-namespace cfg
+namespace Luban.Config
 {
 public partial class TestConfig2 : Luban.TableBase
 {

@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using Luban;
 using System.Threading.Tasks;
 
-namespace cfg
+namespace Luban.Config
 {
     public partial class Tables
     {
@@ -45,7 +45,7 @@ namespace cfg
         public async Task Init(string language, System.Func<string, Task<ByteBuf>> offsetLoader,  
                                 System.Func<string, int, int, ByteBuf> byteBufLoader, 
                                 System.Func<string, Task<ByteBuf>> loader,
-                                System.Func<string, string, Task<string[[>> loadTextList,
+                                System.Func<string, string, Task<string[]>> loadTextList,
                                 float timeSlice = -1)
         {
             float time = 0;

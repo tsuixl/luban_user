@@ -12,7 +12,7 @@ using Luban;
 
 
 
-namespace cfg
+namespace Luban.Config
 {
     public sealed partial class TestItem : Luban.BeanBase
     {

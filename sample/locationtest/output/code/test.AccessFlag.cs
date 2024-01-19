@@ -9,7 +9,7 @@
 
 
 
-namespace cfg.test
+namespace Luban.Config.test
 { 
     [System.Flags]
     public enum AccessFlag

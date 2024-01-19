@@ -9,7 +9,7 @@
 
 
 
-namespace cfg.item
+namespace Luban.Config.item
 { 
     public enum EQuality
     {
