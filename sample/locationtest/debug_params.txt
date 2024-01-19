@@ -1,0 +1,8 @@
+-t client -c cs-bin -d bin text-list --conf D:\Moon\work\luban\luban_examples\test\luban.conf --validationFailAsError -x outputCodeDir=D:\Moon\work\luban\luban_examples\test\output -x outputDataDir=D:\Moon\work\luban\luban_examples\test\output -x pathValidator.rootDir=D:/workspace2/luban_examples/Projects/Csharp_Unity_bin -x l10n.textProviderFile=*@D:/workspace2/luban_examples/DataTables/Datas/l10n/texts.json
+
+
+-t client -c sg-cs-bin -d sg-bin --conf D:\Moon\work\luban\luban_examples\test\luban.conf --validationFailAsError -x outputCodeDir=D:\Moon\work\luban\luban_examples\test\output\code -x outputDataDir=D:\Moon\work\luban\luban_examples\test\output\data  -x l10n.textListFile=text\texts.json -x outputCustomDir=D:\Moon\work\luban\luban_examples\test\output\custom -x locationFile=D:\Moon\work\luban\luban_examples\test\output\location\all.txt -x locationExportLanguage=all -x locationDefaultLanguage=zh
+
+
+DataActionHelpVisitor2
+DataActionHelpVisitor2
