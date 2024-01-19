@@ -8,69 +8,69 @@ public class BinaryUnderlyingDeserializeVisitor : ITypeFuncVisitor<string, strin
 {
     public static BinaryUnderlyingDeserializeVisitor Ins { get; } = new();
 
-    public string Accept(TBool type, string bufName, string fieldName, int depth)
+    public virtual string Accept(TBool type, string bufName, string fieldName, int depth)
     {
         return $"{fieldName} = {bufName}.ReadBool();";
     }
 
-    public string Accept(TByte type, string bufName, string fieldName, int depth)
+    public virtual string Accept(TByte type, string bufName, string fieldName, int depth)
     {
         return $"{fieldName} = {bufName}.ReadByte();";
     }
 
-    public string Accept(TShort type, string bufName, string fieldName, int depth)
+    public virtual string Accept(TShort type, string bufName, string fieldName, int depth)
     {
         return $"{fieldName} = {bufName}.ReadShort();";
     }
-    public string Accept(TInt type, string bufName, string fieldName, int depth)
+    public virtual string Accept(TInt type, string bufName, string fieldName, int depth)
     {
         return $"{fieldName} = {bufName}.ReadInt();";
     }
 
-    public string Accept(TLong type, string bufName, string fieldName, int depth)
+    public virtual string Accept(TLong type, string bufName, string fieldName, int depth)
     {
         return $"{fieldName} = {bufName}.ReadLong();";
     }
 
-    public string Accept(TFloat type, string bufName, string fieldName, int depth)
+    public virtual string Accept(TFloat type, string bufName, string fieldName, int depth)
     {
         return $"{fieldName} = {bufName}.ReadFloat();";
     }
 
-    public string Accept(TDouble type, string bufName, string fieldName, int depth)
+    public virtual string Accept(TDouble type, string bufName, string fieldName, int depth)
     {
         return $"{fieldName} = {bufName}.ReadDouble();";
     }
 
-    public string Accept(TEnum type, string bufName, string fieldName, int depth)
+    public virtual string Accept(TEnum type, string bufName, string fieldName, int depth)
     {
         return $"{fieldName} = ({type.Apply(UnderlyingDeclaringTypeNameVisitor.Ins)}){bufName}.ReadInt();";
     }
 
-    public string Accept(TString type, string bufName, string fieldName, int depth)
+    public virtual string Accept(TString type, string bufName, string fieldName, int depth)
     {
         return $"{fieldName} = {bufName}.ReadString();";
     }  
     
-    public string Accept(TTable type, string bufName, string fieldName, int depth)
+    public virtual string Accept(TTable type, string bufName, string fieldName, int depth)
     {
         return $"{fieldName} = {bufName}.ReadString();";
     }
 
-    public string Accept(TDateTime type, string bufName, string fieldName, int depth)
+    public virtual string Accept(TDateTime type, string bufName, string fieldName, int depth)
     {
         string src = $"{bufName}.ReadLong()";
         return $"{fieldName} = {src};";
     }
 
-    public string Accept(TBean type, string bufName, string fieldName, int depth)
+    public virtual string Accept(TBean type, string bufName, string fieldName, int depth)
     {
         string src = $"{type.DefBean.FullName}.Deserialize{type.DefBean.Name}({bufName})";
         string constructor = type.DefBean.TypeConstructorWithTypeMapper();
         return $"{fieldName} = {(string.IsNullOrEmpty(constructor) ? src : $"{constructor}({src})")};";
     }
 
-    public string Accept(TArray type, string bufName, string fieldName, int depth)
+    public virtual string Accept(TArray type, string bufName, string fieldName, int depth)
     {
         string n = $"__n{depth}";
         string e = $"__e{depth}";
@@ -84,31 +84,59 @@ public class BinaryUnderlyingDeserializeVisitor : ITypeFuncVisitor<string, strin
                 typeStr += "[]";
             }
         }
-        return $"{{int {n} = System.Math.Min({bufName}.ReadSize(), {bufName}.Size);{fieldName} = new {typeStr};for(var {index} = 0 ; {index} < {n} ; {index}++) {{ {type.ElementType.Apply(DeclaringTypeNameVisitor.Ins)} {e};{type.ElementType.Apply(this, bufName, $"{e}", depth + 1)} {fieldName}[{index}] = {e};}}}}";
+        
+        return 
+               $"{{int {n} = System.Math.Min({bufName}.ReadSize(), {bufName}.Size);" + "\n" +
+               $"{fieldName} = new {typeStr};" + "\n" +
+               $"for(var {index} = 0 ; {index} < {n} ; {index}++) " + "\n" +
+               $"{{ " + "\n" +
+               $"{type.ElementType.Apply(DeclaringTypeNameVisitor.Ins)} {e};" + "\n" +
+               $"{type.ElementType.Apply(this, bufName, $"{e}", depth + 1)} " + "\n" +
+               $"{fieldName}[{index}] = {e};" + "\n" +
+               $"}}}} ";
     }
 
-    public string Accept(TList type, string bufName, string fieldName, int depth)
+    public virtual string Accept(TList type, string bufName, string fieldName, int depth)
     {
         string n = $"n{depth}";
         string e = $"_e{depth}";
         string i = $"i{depth}";
-        return $"{{int {n} = System.Math.Min({bufName}.ReadSize(), {bufName}.Size);{fieldName} = new {type.Apply(DeclaringTypeNameVisitor.Ins)}({n});for(var {i} = 0 ; {i} < {n} ; {i}++) {{ {type.ElementType.Apply(DeclaringTypeNameVisitor.Ins)} {e};  {type.ElementType.Apply(this, bufName, $"{e}", depth + 1)} {fieldName}.Add({e});}}}}";
+        return $"{{int {n} = System.Math.Min({bufName}.ReadSize(), {bufName}.Size);" + "\n" +
+               $"{fieldName} = new {type.Apply(DeclaringTypeNameVisitor.Ins)}({n});" + "\n" +
+               $"for(var {i} = 0 ; {i} < {n} ; {i}++) " + "\n" +
+               $"{{ {type.ElementType.Apply(DeclaringTypeNameVisitor.Ins)} {e};  " + "\n" +
+               $"{type.ElementType.Apply(this, bufName, $"{e}", depth + 1)}" + "\n" +
+               $" {fieldName}.Add({e});" + "\n" +
+               $"}}}}";
     }
 
-    public string Accept(TSet type, string bufName, string fieldName, int depth)
+    public virtual string Accept(TSet type, string bufName, string fieldName, int depth)
     {
         string n = $"n{depth}";
         string e = $"_e{depth}";
         string i = $"i{depth}";
-        return $"{{int {n} = System.Math.Min({bufName}.ReadSize(), {bufName}.Size);{fieldName} = new {type.Apply(DeclaringTypeNameVisitor.Ins)}(/*{n} * 3 / 2*/);for(var {i} = 0 ; {i} < {n} ; {i}++) {{ {type.ElementType.Apply(DeclaringTypeNameVisitor.Ins)} {e};  {type.ElementType.Apply(this, bufName, $"{e}", +1)} {fieldName}.Add({e});}}}}";
+        return $"{{int {n} = System.Math.Min({bufName}.ReadSize(), {bufName}.Size);" + "\n" +
+               $"{fieldName} = new {type.Apply(DeclaringTypeNameVisitor.Ins)}(/*{n} * 3 / 2*/);" + "\n" +
+               $"for(var {i} = 0 ; {i} < {n} ; {i}++) " + "\n" +
+               $"{{ {type.ElementType.Apply(DeclaringTypeNameVisitor.Ins)} {e}; " + "\n" +
+               $" {type.ElementType.Apply(this, bufName, $"{e}", +1)} " + "\n" +
+               $"{fieldName}.Add({e});" + "\n" +
+               $"}}}}";
     }
 
-    public string Accept(TMap type, string bufName, string fieldName, int depth)
+    public virtual string Accept(TMap type, string bufName, string fieldName, int depth)
     {
         string n = $"n{depth}";
         string k = $"_k{depth}";
         string v = $"_v{depth}";
         string i = $"i{depth}";
-        return $"{{int {n} = System.Math.Min({bufName}.ReadSize(), {bufName}.Size);{fieldName} = new {type.Apply(DeclaringTypeNameVisitor.Ins)}({n} * 3 / 2);for(var {i} = 0 ; {i} < {n} ; {i}++) {{ {type.KeyType.Apply(DeclaringTypeNameVisitor.Ins)} {k};  {type.KeyType.Apply(this, bufName, k, depth + 1)} {type.ValueType.Apply(DeclaringTypeNameVisitor.Ins)} {v};  {type.ValueType.Apply(this, bufName, v, depth + 1)}     {fieldName}.Add({k}, {v});}}}}";
+        return $"{{int {n} = System.Math.Min({bufName}.ReadSize(), {bufName}.Size);" + "\n" +
+               $"{fieldName} = new {type.Apply(DeclaringTypeNameVisitor.Ins)}({n} * 3 / 2);" + "\n" +
+               $"for(var {i} = 0 ; {i} < {n} ; {i}++) " + "\n" +
+               $"{{ {type.KeyType.Apply(DeclaringTypeNameVisitor.Ins)} {k};  " + "\n" +
+               $"{type.KeyType.Apply(this, bufName, k, depth + 1)} {type.ValueType.Apply(DeclaringTypeNameVisitor.Ins)} {v};" + "\n" +
+               $"  {type.ValueType.Apply(this, bufName, v, depth + 1)}" + "\n" +
+               $"     {fieldName}.Add({k}, {v});" + "\n" +
+               $"}}}}";
     }
 }

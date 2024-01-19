@@ -1,10 +1,20 @@
 using Luban;
 using System.Linq;
 
+{{
+  $tableName = format_property_name __code_style __table.name
+  $tableFullName = __table.full_name
+  $tableFile = __table.output_data_file
+  $tableExtension = __tables_extension[__table]
+  key_type = __table.key_ttype
+  value_type =  __table.value_ttype
+  keyTypeName = declaring_type_name key_type
+  valueTypeName = declaring_type_name value_type
+}}
+
 {{~if __table.is_lazy~}}
 {{ 
-    key_type = __table.key_ttype
-    value_type =  __table.value_ttype
+
 
 
     func index_type_name
@@ -62,36 +72,51 @@ using System.Linq;
         ret array.join paramList ', '
     end
 }}
+
 {{namespace_with_grace_begin __namespace_with_top_module}}
     {{~if __table.comment != '' ~}}
     /// <summary>
     /// {{escape_comment __table.comment}}
     /// </summary>
     {{~end~}}
-    public partial class {{__name}} 
+    public partial class {{__name}} : Luban.TableBase
     {
-        private readonly System.Func<string, int, int, ByteBuf> _byteBufLoader;
-        private readonly string _fileName;
-        private Tables _tables;
-        {{~if __table.is_map_table ~}}{{## 单索引表}}
-        private readonly System.Collections.Generic.Dictionary<{{declaring_type_name key_type}}, {{declaring_type_name value_type}}> _dataMap;
-        private readonly System.Collections.Generic.Dictionary<{{declaring_type_name key_type}}, int> _offsetMap;
-        private readonly System.Collections.Generic.Dictionary<{{declaring_type_name key_type}}, int> _lengthMap;
-		private readonly System.Collections.Generic.Dictionary<{{declaring_type_name key_type}}, ByteBuf> _byteBufMap;
+        private System.Func<string, int, int, ByteBuf> _byteBufLoader;
 		
-        private readonly System.Collections.Generic.List<{{declaring_type_name value_type}}> _dataList;
+        private Tables _tables;
+		
+        {{~if __table.is_map_table ~}}{{## 单索引表}}
+        private System.Collections.Generic.Dictionary<{{declaring_type_name key_type}}, {{declaring_type_name value_type}}> _dataMap;
+        private System.Collections.Generic.Dictionary<{{declaring_type_name key_type}}, int> _offsetMap;
+        private System.Collections.Generic.Dictionary<{{declaring_type_name key_type}}, int> _lengthMap;
+		private System.Collections.Generic.Dictionary<{{declaring_type_name key_type}}, ByteBuf> _byteBufMap;
+		
+        private System.Collections.Generic.List<{{declaring_type_name value_type}}> _dataList;
 
-        public int Count { get; private set;}
+        public override string TableName { get { return "{{$tableName}}"; } }
+		
+		public override string FileName { get { return "{{$tableFile}}"; } }
+		
+		public override bool IsLazy { get { return {{__table.is_lazy}}; } }
+		
+		public override bool HasLocationText { get { return {{$tableExtension.has_text}}; } }
 
-        public {{__name}}(ByteBuf buff, string fileName, System.Func<string, int, int, ByteBuf> byteBufLoader)
+        public {{__name}}()
         {
-            Count = buff.ReadSize();
+		
+		}
+
+        public void LoadData(ByteBuf buff, System.Func<string, int, int, ByteBuf> byteBufLoader, string[] textList)
+        {
+
             _dataMap = new System.Collections.Generic.Dictionary<{{declaring_type_name key_type}}, {{declaring_type_name value_type}}>(Count);
 			_byteBufMap = new System.Collections.Generic.Dictionary<{{declaring_type_name key_type}}, ByteBuf>(Count);
             _offsetMap = new System.Collections.Generic.Dictionary<{{declaring_type_name key_type}}, int>(Count);
             _lengthMap = new System.Collections.Generic.Dictionary<{{declaring_type_name key_type}}, int>(Count);
-            _fileName = fileName;
             _byteBufLoader = byteBufLoader;
+			
+			m_TextList =  textList;
+            Count = buff.ReadSize();
 
             for (int n = Count; n > 0; --n)
             {
@@ -104,12 +129,14 @@ using System.Linq;
             }
         }
         
-        public {{__name}}(ByteBuf buff)
+        public void LoadData(ByteBuf buff, string[] textList)
         {
-            Count = buff.ReadSize();
+
             _dataMap = new System.Collections.Generic.Dictionary<{{declaring_type_name key_type}}, {{declaring_type_name value_type}}>(Count);
             _dataList = new System.Collections.Generic.List<{{declaring_type_name value_type}}>(Count);
-            
+   
+			m_TextList =  textList;
+            Count = buff.ReadSize();   
             for(int n = Count ; n > 0 ; --n)
             {
                 {{declaring_type_name value_type}} _v;
@@ -144,7 +171,7 @@ using System.Linq;
             }
             int offset = _offsetMap[key];
             int length = _lengthMap[key];
-            ByteBuf buf = this._byteBufLoader(this._fileName, offset, length);
+            ByteBuf buf = this._byteBufLoader(FileName, offset, length);
             {{deserialize 'buf' 'v' value_type}};
             _dataMap[key] = v;
             v.ResolveRef(_tables);
@@ -159,7 +186,7 @@ using System.Linq;
             }
             int offset = _offsetMap[key];
             int length = _lengthMap[key];
-            ByteBuf buf = this._byteBufLoader(this._fileName, offset, length);
+            ByteBuf buf = this._byteBufLoader(FileName, offset, length);
 			_byteBufMap.Add(key,buf);
             return buf;
         }
@@ -178,17 +205,22 @@ using System.Linq;
         private {{table_union_map_int_name}} _offsetMapUnion;
         private {{table_union_map_int_name}} _lengthMapUnion;
 
-
-        public {{__name}}(ByteBuf _buf, string fileName, System.Func<string, int, int, ByteBuf> byteBufLoader)
+        public {{__name}}()
         {
+		
+		}
+		
+        public void LoadData(ByteBuf _buf, System.Func<string, int, int, ByteBuf> byteBufLoader, string[] textList)
+        {
+			
             _dataMapUnion = new {{table_union_map_type_name}}();
             _offsetMapUnion = new {{table_union_map_int_name}}();
             _lengthMapUnion = new {{table_union_map_int_name}}();
-            _fileName = fileName;
             _byteBufLoader = byteBufLoader;
 
-
-            for (int n = _buf.ReadSize() ; n > 0 ; --n)
+			m_TextList = textList;
+			Count = _buf.ReadSize();
+            for (int n = Count ; n > 0 ; --n)
             {   {{~for idx in __table.index_list~}}{{key_name = table_union_key_name idx}}
                 {{declaring_type_name idx.type}} {{key_name}};
                 {{deserialize '_buf' key_name idx.type}}
@@ -202,7 +234,7 @@ using System.Linq;
             }
         }
 
-        public {{__name}}(ByteBuf _buf)
+        public void LoadData(ByteBuf _buf, string[] textList)
         {
 
         }
@@ -229,7 +261,7 @@ using System.Linq;
             }
             int offset = _offsetMapUnion[({{table_param_name_list}})];
             int length = _lengthMapUnion[({{table_param_name_list}})];
-            ByteBuf buf = this._byteBufLoader(this._fileName, offset, length);
+            ByteBuf buf = this._byteBufLoader(FileName, offset, length);
 
 
             {{deserialize 'buf' 'v' value_type}};
@@ -245,19 +277,24 @@ using System.Linq;
         private System.Collections.Generic.Dictionary<{{declaring_type_name idx.type}}, int> _lengthMap_{{idx.index_field.name}};
                 {{~end~}}
 
+        public {{__name}}()
+        {
+		
+		}
 
-        public {{__name}}(ByteBuf _buf, string fileName, System.Func<string, int, int, ByteBuf> byteBufLoader)
+        public void LoadData(ByteBuf _buf, System.Func<string, int, int, ByteBuf> byteBufLoader, string[] textList)
         {
             {{~for idx in __table.index_list~}}
             _dataMap_{{idx.index_field.name}} = new System.Collections.Generic.Dictionary<{{declaring_type_name idx.type}}, {{declaring_type_name value_type}}>();
             _offsetMap_{{idx.index_field.name}} = new System.Collections.Generic.Dictionary<{{declaring_type_name idx.type}}, int>();
             _lengthMap_{{idx.index_field.name}} = new System.Collections.Generic.Dictionary<{{declaring_type_name idx.type}}, int>();
             {{~end~}}
-            _fileName = fileName;
             _byteBufLoader = byteBufLoader;
 
-
-            for (int n = _buf.ReadSize(); n > 0; --n)
+		 	m_TextList = textList;
+			Count = _buf.ReadSize();
+			
+            for (int n = Count; n > 0; --n)
             {   
                 {{~for idx in __table.index_list~}}
                 {{declaring_type_name idx.type}} key_{{idx.index_field.name}};
@@ -285,7 +322,7 @@ using System.Linq;
             }
             int offset = _offsetMap_{{idx.index_field.name}}[key];
             int length = _lengthMap_{{idx.index_field.name}}[key];
-            ByteBuf buf = this._byteBufLoader(this._fileName, offset, length);
+            ByteBuf buf = this._byteBufLoader(FileName, offset, length);
             {{deserialize 'buf' 'v' value_type}};
                     {{~for idx in __table.index_list~}}
             _dataMap_{{idx.index_field.name}}[v.{{format_property_name __code_style idx.index_field.name}}] = v;
@@ -310,12 +347,16 @@ using System.Linq;
             }
         }
             {{~else~}}{{## 无索引表}}
-        private readonly System.Collections.Generic.Dictionary<int,{{declaring_type_name value_type}}> _indexDataMap;
-        private readonly System.Collections.Generic.List<int> _offsetList;
-        private readonly System.Collections.Generic.List<int> _lengthList;
+        private System.Collections.Generic.Dictionary<int,{{declaring_type_name value_type}}> _indexDataMap;
+        private System.Collections.Generic.List<int> _offsetList;
+        private System.Collections.Generic.List<int> _lengthList;
 
+        public {{__name}}()
+        {
+		
+		}
 
-        public {{__name}}(ByteBuf _buf, string fileName, System.Func<string, int, int, ByteBuf> byteBufLoader)
+        public void LoadData(ByteBuf _buf, string fileName, System.Func<string, int, int, ByteBuf> byteBufLoader, string[] textList)
         {
             _indexDataMap = new System.Collections.Generic.Dictionary<int, {{declaring_type_name value_type}}>();
             _offsetList = new System.Collections.Generic.List<int>();
@@ -323,8 +364,9 @@ using System.Linq;
             _fileName = fileName;
             _byteBufLoader = byteBufLoader;
 
-
-            for (int n = _buf.ReadSize(); n > 0; --n)
+		 	m_TextList = textList;
+			Count = _buf.ReadSize();
+            for (int n = Count; n > 0; --n)
             {
                 int offset = _buf.ReadInt();
                 int length = _buf.ReadInt();
@@ -344,7 +386,7 @@ using System.Linq;
             }
             int offset = _offsetList[index];
             int length = _lengthList[index];
-            ByteBuf buf = this._byteBufLoader(this._fileName, offset, length);
+            ByteBuf buf = this._byteBufLoader(FileName, offset, length);
             {{deserialize 'buf' 'v' value_type}};
             _indexDataMap[index] = v;
             v.ResolveRef(_tables);
@@ -370,11 +412,17 @@ using System.Linq;
             this._tables = tables;
         }
     {{~else~}}{{## 单例表}}
-        private readonly {{declaring_type_name value_type}} _data;
-
-
-        public {{__name}}(ByteBuf _buf, string fileName, System.Func<string, int, int, ByteBuf> byteBufLoader)
+        private {{declaring_type_name value_type}} _data;
+		
+        public {{__name}}()
         {
+		
+		}
+
+        public void LoadData(ByteBuf _buf, string fileName, System.Func<string, int, int, ByteBuf> byteBufLoader, string[] textList)
+        {
+			m_TextList = textList;
+			Count = Count;
             int n = _buf.ReadSize();
             if (n != 1) throw new SerializationException("table mode=one, but size != 1");
             int offset = _buf.ReadInt();
@@ -448,18 +496,34 @@ using System.Linq;
 /// {{escape_comment __table.comment}}
 /// </summary>
 {{~end~}}
-public partial class {{__name}}
+public partial class {{__name}} : Luban.TableBase
 {
     {{~if __table.is_map_table ~}}
-    private readonly System.Collections.Generic.Dictionary<{{declaring_type_name key_type}}, {{declaring_type_name value_type}}> _dataMap;
-    private readonly System.Collections.Generic.List<{{declaring_type_name value_type}}> _dataList;
+    private System.Collections.Generic.Dictionary<{{declaring_type_name key_type}}, {{declaring_type_name value_type}}> _dataMap;
+    private System.Collections.Generic.List<{{declaring_type_name value_type}}> _dataList;
     
-    public {{__name}}(ByteBuf _buf)
+	public override string TableName { get { return "{{$tableName}}"; } }
+	
+	public override string FileName { get { return "{{$tableFile}}"; } }
+	
+	public override bool IsLazy { get { return {{__table.is_lazy}}; } }
+	
+	public override bool HasLocationText { get { return {{$tableExtension.has_text}}; } }
+	
+    public {{__name}}()
     {
+	
+	}
+	
+    public void LoadData(ByteBuf _buf, string[] textList)
+    {
+
         _dataMap = new System.Collections.Generic.Dictionary<{{declaring_type_name key_type}}, {{declaring_type_name value_type}}>();
         _dataList = new System.Collections.Generic.List<{{declaring_type_name value_type}}>();
 
-        for(int n = _buf.ReadSize() ; n > 0 ; --n)
+		m_TextList = textList;
+		Count = _buf.ReadSize();
+        for(int n = Count ; n > 0 ; --n)
         {
             {{declaring_type_name value_type}} _v;
             {{deserialize '_buf' '_v' value_type}}
@@ -488,7 +552,7 @@ public partial class {{__name}}
     }
 
         {{~else if __table.is_list_table ~}}
-    private readonly System.Collections.Generic.List<{{declaring_type_name value_type}}> _dataList;
+    private System.Collections.Generic.List<{{declaring_type_name value_type}}> _dataList;
 
     {{~if __table.is_union_index~}}
     private {{table_union_map_type_name}} _dataMapUnion;
@@ -497,11 +561,17 @@ public partial class {{__name}}
     private System.Collections.Generic.Dictionary<{{declaring_type_name idx.type}}, {{declaring_type_name value_type}}> _dataMap_{{idx.index_field.name}};
     {{~end~}}
     {{~end~}}
+	
+    public {{__name}}()
+    {
+		
+    }
 
-    public {{__name}}(ByteBuf _buf)
+    public void LoadData(ByteBuf _buf, string[] textList)
     {
         _dataList = new System.Collections.Generic.List<{{declaring_type_name value_type}}>();
-        
+		 m_TextList = textList;
+		Count = _buf.ReadSize();
         for(int n = _buf.ReadSize() ; n > 0 ; --n)
         {
             {{declaring_type_name value_type}} _v;
@@ -546,11 +616,18 @@ public partial class {{__name}}
     }
     {{~else~}}
 
-     private readonly {{declaring_type_name value_type}} _data;
-
-    public {{__name}}(ByteBuf _buf)
+    private {{declaring_type_name value_type}} _data;
+	
+    public {{__name}}()
     {
-        int n = _buf.ReadSize();
+		
+    }
+	
+    public void LoadData(ByteBuf _buf, string[] textList)
+    {
+		m_TextList = textList;
+		Count = _buf.ReadSize();
+        int n = Count;
         if (n != 1) throw new SerializationException("table mode=one, but size != 1");
         {{deserialize '_buf' '_data' value_type}}
     }

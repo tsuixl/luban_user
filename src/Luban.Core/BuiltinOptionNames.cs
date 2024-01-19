@@ -28,6 +28,8 @@ public static class BuiltinOptionNames
     
     public const string LocationDefaultLanguage = "locationDefaultLanguage";
     
+    public const string LocationExportLanguage = "locationExportLanguage";
+    
     public const string L10NFamily = "l10n";
 
     public const string TextProviderName = "textProviderName";

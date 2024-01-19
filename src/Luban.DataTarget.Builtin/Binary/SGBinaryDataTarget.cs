@@ -15,34 +15,11 @@ public class SGBinaryDataTarget : DataTargetBase
     private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
     protected override string OutputFileExt => "bytes";
 
-    private class TableExtensionData
-    {
-        public DefTable table;
-        public Dictionary<string, int> localtionTextMap;
-        public List<string> localtionTextList;
-    }
 
-    private Dictionary<DefTable, TableExtensionData> m_ExtensionDataMap = new();
 
     public override void BeforeExport(List<DefTable> tables)
     {
-        bool buildLocation = LocationManager.Ins.IsNeedBuildLocation;
-       m_ExtensionDataMap.Clear();
-       foreach (var table in tables)
-       {
-           var records = GenerationContext.Current.GetTableExportDataList(table);
-           List<string> textList = null;
-           Dictionary<string, int> textMap = buildLocation? GetTableAllText(table, records, null, out textList) : null;
-           var extensionData = new TableExtensionData() { table = table, localtionTextMap = textMap, localtionTextList = textList};
-           m_ExtensionDataMap.Add(table, extensionData);
-           if (extensionData.localtionTextMap != null)
-           {
-               foreach (var text in extensionData.localtionTextMap.Keys)
-               {
-                   LocationManager.Ins.AddText(text);
-               }
-           }
-       }
+
     }
 
     public override void AfterExport(List<DefTable> tables)
@@ -64,11 +41,11 @@ public class SGBinaryDataTarget : DataTargetBase
 
         s_logger.Debug($"[Debug] ExportTable => {table.Name} {table.IsLazy} {table.IsOnlyLua}");
 
-        var extension = m_ExtensionDataMap[table];
+        var extension = LocationManager.Ins.GetExtensionData(table);
         List<OutputFile> subFile = new();
         bool buildLocation = LocationManager.Ins.IsNeedBuildLocation;
-        Dictionary<string, int> tableText = extension.localtionTextMap;
-        List<string> textList = extension.localtionTextList;
+        Dictionary<string, int> tableText = extension.locationTextMap;
+        List<string> textList = extension.locationTextList;
 
         var isLazy = table.IsLazy;
         var offsetBuf = isLazy ? new ByteBuf() : null;
@@ -81,7 +58,7 @@ public class SGBinaryDataTarget : DataTargetBase
 
         if (buildLocation)
         {
-            foreach (var language in LocationManager.Ins.AllLanguages)
+            foreach (var language in LocationManager.Ins.ExportLanguages)
             {
                 var textBuf = buildLocation ? new ByteBuf() : null;
                 textBuf.WriteSize(textList.Count);
@@ -92,7 +69,7 @@ public class SGBinaryDataTarget : DataTargetBase
                 }
                 subFile.Add(new OutputFile()
                 {
-                    File = $"localtion/{table.OutputDataFile}_{language}.{OutputFileExt}", 
+                    File = $"location/{table.OutputDataFile}_{language}.{OutputFileExt}", 
                     Content = textBuf.CopyData(), OtherFiles = null,
                 });
             }
@@ -104,7 +81,7 @@ public class SGBinaryDataTarget : DataTargetBase
         SGBinaryDataVisitorContext visitorContext = new SGBinaryDataVisitorContext()
         {
             byteBuf = dataBuf, 
-            localtionTextMap = tableText,
+            locationTextMap = tableText,
             buildLocation = buildLocation,
         };
         dataBuf.WriteSize(records.Count);
@@ -154,47 +131,4 @@ public class SGBinaryDataTarget : DataTargetBase
         return file;
     }
 
-    private Dictionary<string, int> GetTableAllText(DefTable table, List<Record> records, List<string> oldData, out List<string> textList)
-    {
-        var textCollection = new TextKeyCollection();
-
-        var visitor = new DataActionHelpVisitor2<TextKeyCollection>(TextKeyListCollectorVisitor.Ins);
-
-        TableVisitor.Ins.Visit(table, visitor, textCollection);
-
-        var keys = textCollection.Keys.ToList();
-        keys.Sort((a, b) => string.Compare(a, b, StringComparison.Ordinal));
-
-        var datas = new List<string>();
-        textList = datas;
-        datas.Add("");
-        if (oldData != null)
-        {
-            foreach (var key in oldData)
-            {
-                if (datas.Contains(key) == false)
-                {
-                    datas.Add(key);
-                }
-            }
-        }
-
-        foreach (var key in keys)
-        {
-            if (datas.Contains(key) == false)
-            {
-                datas.Add(key);
-            }
-        }
-
-        var map = new Dictionary<string, int>();
-        for(int i=0; i<datas.Count; i++)
-        {
-            map.Add(datas[i], i);
-        }
-
-        // string outputFile = EnvManager.Current.GetOption(BuiltinOptionNames.L10NFamily, BuiltinOptionNames.TextKeyListFile, false);
-
-        return map;
-    }
 }

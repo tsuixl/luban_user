@@ -69,7 +69,7 @@ public class SGBinaryDataVisitor : IDataActionVisitor2<SGBinaryDataVisitorContex
             {
                 x.byteBuf.WriteSize(0);
             }
-            else if (x.localtionTextMap.TryGetValue(data.Value, out var id))
+            else if (x.locationTextMap.TryGetValue(data.Value, out var id))
             {
                 x.byteBuf.WriteSize(id);
             }

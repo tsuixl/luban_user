@@ -51,7 +51,7 @@ using Luban;
     public {{class_modifier __bean}} partial class {{__name}} : {{if parent_def_type}}{{__bean.parent}}{{else}}Luban.BeanBase{{end}}
     {{~end~}}
     {
-        public {{__name}}(ByteBuf _buf) {{if parent_def_type}} : base(_buf) {{end}}
+        public {{__name}}(ByteBuf _buf, string[] textList) {{if parent_def_type}} : base(_buf, textList) {{end}}
         {
             {{~ for field in export_fields
                 fieldName = format_property_name __code_style field.name
@@ -69,18 +69,18 @@ using Luban;
             {{~end~}}
         }
 
-        public static {{__name}} Deserialize{{__name}}(ByteBuf _buf)
+        public static {{__name}} Deserialize{{__name}}(ByteBuf _buf, string[] textList)
         {
         {{~if __bean.is_abstract_type~}}
             switch (_buf.ReadInt())
             {
             {{~for child in __bean.hierarchy_not_abstract_children~}}
-                case {{child.full_name}}.__ID__: return new {{child.full_name}}(_buf);
+                case {{child.full_name}}.__ID__: return new {{child.full_name}}(_buf, textList);
             {{~end~}}
                 default: throw new SerializationException();
             }
         {{~else~}}
-            return new {{__bean.full_name}}(_buf);
+            return new {{__bean.full_name}}(_buf, textList);
         {{~end~}}
         }
 

@@ -77,14 +77,18 @@ using System.Threading.Tasks;
 			{
 				textList = await _loadTextMap(fileName, Language);
 			}
-            result = offsetLoader(fileName); await result;
-			{{ if table.is_lazy }}
+            result = offsetLoader(fileName);
+			await result;
+			{{~ if table.is_lazy ~}}
             {{$tableFullName}}.LoadData(result.Result, byteBufLoader, textList);
-			{{ else }}
+			{{~ else ~}}
             {{$tableFullName}}.LoadData(result.Result, textList);
-			{{ end }}
+			{{~ end ~}}
 			AllConfig.Add(table);
-            if (UnityEngine.Time.realtimeSinceStartup - time > timeSlice) await Task.Yield();
+            if (UnityEngine.Time.realtimeSinceStartup - time > timeSlice)
+			{
+				await Task.Yield();
+			}
 			
             {{~end~}}
             ResolveRef();

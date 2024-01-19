@@ -1,6 +1,10 @@
 ﻿using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Luban.DataVisitors;
+using Luban.Defs;
+using Luban.L10N;
+using Luban.Types;
 
 namespace Luban.Location;
 
@@ -60,9 +64,11 @@ public class LocationManager
     private LocationAllData m_AllData = null;
     private Dictionary<string, LocationContent> m_AllDataMap = null;
     private List<string> m_AllLanguages = null;
+    private List<string> m_ExportLanguages = null;
 
     public string DefaultLanguage { get; set; } = "zh";
     public List<string> AllLanguages => m_AllLanguages;
+    public List<string> ExportLanguages => m_ExportLanguages;
 
     private bool m_IsNeedBuildLocation = false;
 
@@ -77,13 +83,15 @@ public class LocationManager
     public void Init()
     {
         var locationFile = EnvManager.Current.GetOptionOrDefaultRaw(BuiltinOptionNames.LocationFile, "");
-        bool buildLocation = string.IsNullOrEmpty(locationFile) == false;
+        var exportLanguage = EnvManager.Current.GetOptionOrDefaultRaw(BuiltinOptionNames.LocationExportLanguage, "all");
+        bool buildLocation = exportLanguage=="none" || string.IsNullOrEmpty(locationFile) == false;
         m_IsNeedBuildLocation = buildLocation;
         if (m_AllData == null)
         {
             if (IsNeedBuildLocation)
             {
                 m_AllLanguages = new();
+                m_ExportLanguages = new();
                 m_AllDataMap = new();
                 DefaultLanguage = EnvManager.Current.GetOptionOrDefaultRaw(BuiltinOptionNames.LocationDefaultLanguage, "zh");
                 m_AllLanguages.Add(DefaultLanguage);
@@ -117,7 +125,7 @@ public class LocationManager
             var defaultItem = data.GetItem(DefaultLanguage);
             if (defaultItem == null)
             {
-                s_logger.Error($"LocationFile 没找到默认key {data.ToDebugString()}");
+                s_logger.Error($"LocationFile 有数据没找到默认文本 language:{DefaultLanguage} data:{data.ToDebugString()}");
                 throw new Exception();
             }
 
@@ -136,6 +144,30 @@ public class LocationManager
                 if (m_AllLanguages.Contains(item.language) == false)
                 {
                     m_AllLanguages.Add(item.language);
+                }
+            }
+        }
+        
+        m_ExportLanguages.Clear();
+        var exportLanguage = EnvManager.Current.GetOptionOrDefaultRaw(BuiltinOptionNames.LocationExportLanguage, "all");
+        if (exportLanguage == "all")
+        {
+            m_ExportLanguages.AddRange(m_AllLanguages);
+        }
+        else
+        {
+            m_ExportLanguages.Add(DefaultLanguage);
+            var lanList = exportLanguage.Split('|');
+            foreach (var lan in lanList)
+            {
+                if (m_AllLanguages.Contains(lan) == false)
+                {
+                    throw new Exception($"{BuiltinOptionNames.LocationExportLanguage} error, language not find，{lan}");
+                    return;
+                }
+                if (m_ExportLanguages.Contains(lan) == false)
+                {
+                    m_ExportLanguages.Add(lan);
                 }
             }
         }
@@ -209,7 +241,8 @@ public class LocationManager
             {
                 idx2++;
                 sb.Append("\t");
-                sb.Append( JsonSerializer.Serialize(item));
+                // sb.Append( JsonSerializer.Serialize(item));
+                sb.Append( $"{{\"language\":\"{item.language}\", \"content\":\"{item.content}\"}}");
                 if (idx2 != content.items.Count-1)
                 {
                     sb.Append(",");
@@ -234,5 +267,118 @@ public class LocationManager
         }
 
         File.WriteAllText(newFile, text);
+    }
+    
+    
+    public class TableExtensionData
+    {
+        public DefTable table;
+        public bool hasText = false;
+        public Dictionary<string, int> locationTextMap;
+        public List<string> locationTextList;
+        public List<DefField> textFields;
+    }
+
+    private Dictionary<DefTable, TableExtensionData> m_ExtensionDataMap = new();
+
+    public Dictionary<DefTable, TableExtensionData> ExtensionDataMap => m_ExtensionDataMap;
+    
+    public TableExtensionData GetExtensionData(DefTable table)
+    {
+        if (m_ExtensionDataMap.TryGetValue(table, out var extensionData))
+        {
+            return extensionData;
+        }
+        return null;
+    }
+
+    public void OnLoadDatas()
+    {
+        var tables = GenerationContext.Current.ExportTables;
+        bool buildLocation = LocationManager.Ins.IsNeedBuildLocation;
+        m_ExtensionDataMap.Clear();
+        foreach (var table in tables)
+        {
+            var records = GenerationContext.Current.GetTableExportDataList(table);
+            List<string> textList = null;
+            Dictionary<string, int> textMap = buildLocation? GetTableAllText(table, records, null, out textList) : null;
+            var extensionData = new TableExtensionData() { table = table, locationTextMap = textMap, locationTextList = textList};
+            extensionData.hasText = textList != null && textList.Count > 1;
+            m_ExtensionDataMap.Add(table, extensionData);
+            if (extensionData.locationTextMap != null)
+            {
+                foreach (var text in extensionData.locationTextMap.Keys)
+                {
+                    LocationManager.Ins.AddText(text);
+                }
+            }
+
+            List<DefField> textFields = new();
+            foreach (var field in table.ValueTType.DefBean.Fields)
+            {
+                if (IsTextField(field.CType))
+                {
+                    textFields.Add(field);
+                }
+            }
+
+            extensionData.textFields = textFields;
+        }
+    }
+
+    public static bool IsTextField(TType type)
+    {
+        if (type is TString)
+        {
+            if (type != null && type.HasTag("text"))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private Dictionary<string, int> GetTableAllText(DefTable table, List<Record> records, List<string> oldData, out List<string> textList)
+    {
+        var textCollection = new TextKeyCollection();
+
+        var visitor = new DataActionHelpVisitor2<TextKeyCollection>(TextKeyListCollectorVisitor.Ins);
+
+        TableVisitor.Ins.Visit(table, visitor, textCollection);
+
+        var keys = textCollection.Keys.ToList();
+        keys.Sort((a, b) => string.Compare(a, b, StringComparison.Ordinal));
+
+        var datas = new List<string>();
+        textList = datas;
+        datas.Add("");
+        if (oldData != null)
+        {
+            foreach (var key in oldData)
+            {
+                if (datas.Contains(key) == false)
+                {
+                    datas.Add(key);
+                }
+            }
+        }
+
+        foreach (var key in keys)
+        {
+            if (datas.Contains(key) == false)
+            {
+                datas.Add(key);
+            }
+        }
+
+        var map = new Dictionary<string, int>();
+        for(int i=0; i<datas.Count; i++)
+        {
+            map.Add(datas[i], i);
+        }
+
+        // string outputFile = EnvManager.Current.GetOption(BuiltinOptionNames.L10NFamily, BuiltinOptionNames.TextKeyListFile, false);
+
+        return map;
     }
 }

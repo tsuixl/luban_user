@@ -1,6 +1,7 @@
 using Luban.CodeTarget;
 using Luban.DataTarget;
 using Luban.Defs;
+using Luban.Location;
 using Luban.OutputSaver;
 using Luban.PostProcess;
 using Luban.RawDefs;
@@ -81,6 +82,13 @@ public class DefaultPipeline : IPipeline
 
     protected void ProcessTargets()
     {
+        if (_args.ForceLoadTableDatas || _args.DataTargets.Count > 0)
+        {
+            LoadDatas();
+        }
+        
+        LocationManager.Ins.OnLoadDatas();
+        
         var tasks = new List<Task>();
         tasks.Add(Task.Run(() =>
         {
@@ -91,12 +99,9 @@ public class DefaultPipeline : IPipeline
                 ProcessCodeTarget(target, m);
             }
         }));
-
-        if (_args.ForceLoadTableDatas || _args.DataTargets.Count > 0)
-        {
-            LoadDatas();
-        }
-
+        Task.WaitAll(tasks.ToArray());
+        
+        var tasksData = new List<Task>();
         if (_args.DataTargets.Count > 0)
         {
             string dataExporterName = EnvManager.Current.GetOptionOrDefault("", BuiltinOptionNames.DataExporter, true, "default");
@@ -105,10 +110,10 @@ public class DefaultPipeline : IPipeline
             foreach (string mission in _args.DataTargets)
             {
                 IDataTarget dataTarget = DataTargetManager.Ins.CreateDataTarget(mission);
-                tasks.Add(Task.Run(() => ProcessDataTarget(mission, dataExporter, dataTarget)));
+                tasksData.Add(Task.Run(() => ProcessDataTarget(mission, dataExporter, dataTarget)));
             }
         }
-        Task.WaitAll(tasks.ToArray());
+        Task.WaitAll(tasksData.ToArray());
     }
 
     protected void ProcessCodeTarget(string name, ICodeTarget codeTarget)

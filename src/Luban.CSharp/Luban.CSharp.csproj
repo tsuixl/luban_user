@@ -43,12 +43,12 @@
             <Private>false</Private>
             <ExcludeAssets>runtime</ExcludeAssets>
         </ProjectReference>
-        <ProjectReference Include="..\Luban.DataValidator.Builtin\Luban.DataValidator.Builtin.csproj"/>
+        <ProjectReference Include="..\Luban.DataValidator.Builtin\Luban.DataValidator.Builtin.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Templates\common\"/>
-        <Folder Include="Templates\cs-editor-json\"/>
+        <Folder Include="Templates\common\" />
+        <Folder Include="Templates\cs-editor-json\" />
     </ItemGroup>
 
     <ItemGroup>
@@ -96,6 +96,24 @@
         </None>
         <None Update="Templates\cs-editor-json\enum.sbn">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Templates\sg-bin\bean.sbn">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Templates\sg-bin\table.sbn">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Templates\sg-bin\tables.sbn">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Templates\sg-cs-bin\bean.sbn">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Templates\sg-cs-bin\table.sbn">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Templates\sg-cs-bin\tables.sbn">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
     </ItemGroup>
 
