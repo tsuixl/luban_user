@@ -21,27 +21,27 @@ public partial class TestConfig2 : Luban.TableBase
     private System.Collections.Generic.Dictionary<int, TestItem2> _dataMap;
     private System.Collections.Generic.List<TestItem2> _dataList;
     
-	public override string TableName { get { return "TestConfig2"; } }
-	
-	public override string FileName { get { return "testconfig2"; } }
-	
-	public override bool IsLazy { get { return false; } }
-	
-	public override bool HasLocationText { get { return true; } }
-	
+    public override string TableName { get { return "TestConfig2"; } }
+    
+    public override string FileName { get { return "Test/Test2"; } }
+    
+    public override bool IsLazy { get { return false; } }
+    
+    public override bool HasLocationText { get { return true; } }
+    
     public TestConfig2()
     {
-	
-	}
-	
+    
+    }
+    
     public void LoadData(ByteBuf _buf, string[] textList)
     {
-		bool isReload = Loaded;
+        bool isReload = Loaded;
         _dataMap = new System.Collections.Generic.Dictionary<int, TestItem2>();
         _dataList = new System.Collections.Generic.List<TestItem2>();
 
-		m_TextList = textList;
-		Count = _buf.ReadSize();
+        m_TextList = textList;
+        Count = _buf.ReadSize();
         for(int n = Count ; n > 0 ; --n)
         {
             TestItem2 _v;
@@ -49,8 +49,8 @@ public partial class TestConfig2 : Luban.TableBase
             _dataList.Add(_v);
             _dataMap.Add(_v.Id, _v);
         }
-		
-		Loaded = true;
+        
+        Loaded = true;
     }
 
     public System.Collections.Generic.Dictionary<int, TestItem2> DataMap => _dataMap;

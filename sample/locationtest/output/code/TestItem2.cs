@@ -11,6 +11,7 @@ using System;
 using Luban;
 
 
+
 namespace cfg
 {
     public sealed partial class TestItem2 : Luban.BeanBase

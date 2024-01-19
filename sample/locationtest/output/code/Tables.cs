@@ -15,23 +15,23 @@ namespace cfg
 {
     public partial class Tables
     {
-	    private System.Func<string, string, Task<string[]>> _loadTextMap;
-		public string Language {get; private set;} = null;
-	
-	    public List<Luban.TableBase> AllConfig { get; private set; } = new();
-	
+        private System.Func<string, string, Task<string[]>> _laodTextList;
+        public string Language {get; private set;} = null;
+    
+        public List<Luban.TableBase> AllConfig { get; private set; } = new();
+    
         
         
         public TestConfig TestConfig {get; private set; }
         
         public TestConfig2 TestConfig2 {get; private set; }
-		
+        
         public static readonly int TABLE_COUNT = 2;
 
         //public Tables(System.Func<string, ByteBuf> offsetLoader,  System.Func<string, int, int, ByteBuf> byteBufLoader)
         //{
-        //        //    TestConfig = new TestConfig(offsetLoader("testconfig"), "testconfig", byteBufLoader);
-        //        //    TestConfig2 = new TestConfig2(offsetLoader("testconfig2"), "testconfig2", byteBufLoader);
+        //        //    TestConfig = new TestConfig(offsetLoader("Test/Test"), "Test/Test", byteBufLoader);
+        //        //    TestConfig2 = new TestConfig2(offsetLoader("Test/Test2"), "Test/Test2", byteBufLoader);
         //        //    ResolveRef();
         //}
         
@@ -45,6 +45,7 @@ namespace cfg
         public async Task Init(string language, System.Func<string, Task<ByteBuf>> offsetLoader,  
                                 System.Func<string, int, int, ByteBuf> byteBufLoader, 
                                 System.Func<string, Task<ByteBuf>> loader,
+                                System.Func<string, string, Task<string[[>> loadTextList,
                                 float timeSlice = -1)
         {
             float time = 0;
@@ -52,60 +53,60 @@ namespace cfg
             {
                 timeSlice = float.MaxValue;
             }
-			
-			Language = language;
-			_loadTextMap = loadTextMap;
-			
-			AllConfig.Clear();
+            
+            Language = language;
+            _laodTextList = loadTextList;
+            
+            AllConfig.Clear();
             
             Task<ByteBuf> result = null;
-			Task<string[]> resultTextList = null;
-			string[] textList = null;
-			string fileName = null;
-			TableBase table = null;
+            Task<string[]> resultTextList = null;
+            string[] textList = null;
+            string fileName = null;
+            TableBase table = null;
             
-			
+            
             time = UnityEngine.Time.realtimeSinceStartup;
 
-			TestConfig = new TestConfig();
-			table = TestConfig;
-			fileName = table.FileName;
-			textList = null;
-			if(table.HasLocationText)
-			{
-				textList = await _loadTextMap(fileName, Language);
-			}
+            TestConfig = new TestConfig();
+            table = TestConfig;
+            fileName = table.FileName;
+            textList = null;
+            if(table.HasLocationText)
+            {
+                textList = await _laodTextList(fileName, Language);
+            }
             result = offsetLoader(fileName);
-			await result;
+            await result;
             TestConfig.LoadData(result.Result, byteBufLoader, textList);
-			AllConfig.Add(table);
+            AllConfig.Add(table);
             if (UnityEngine.Time.realtimeSinceStartup - time > timeSlice)
-			{
-				await Task.Yield();
-			}
-			
-			
+            {
+                await Task.Yield();
+            }
+            
+            
             time = UnityEngine.Time.realtimeSinceStartup;
 
-			TestConfig2 = new TestConfig2();
-			table = TestConfig2;
-			fileName = table.FileName;
-			textList = null;
-			if(table.HasLocationText)
-			{
-				textList = await _loadTextMap(fileName, Language);
-			}
+            TestConfig2 = new TestConfig2();
+            table = TestConfig2;
+            fileName = table.FileName;
+            textList = null;
+            if(table.HasLocationText)
+            {
+                textList = await _laodTextList(fileName, Language);
+            }
             result = offsetLoader(fileName);
-			await result;
+            await result;
             TestConfig2.LoadData(result.Result, textList);
-			AllConfig.Add(table);
+            AllConfig.Add(table);
             if (UnityEngine.Time.realtimeSinceStartup - time > timeSlice)
-			{
-				await Task.Yield();
-			}
-			
+            {
+                await Task.Yield();
+            }
+            
             ResolveRef();
-			
+            
             await Task.Yield();
         }
 
@@ -114,7 +115,7 @@ namespace cfg
             TestConfig.ResolveRef(this);
             TestConfig2.ResolveRef(this);
         }
-		
+        
         
         //async Task WaitOneFrameAsync()
         //{

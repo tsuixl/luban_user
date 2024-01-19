@@ -1,5 +1,6 @@
 using System;
 using Luban;
+
 {{
     parent_def_type = __bean.parent_def_type
     export_fields = __bean.export_fields
