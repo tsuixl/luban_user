@@ -87,7 +87,7 @@ public static class SheetLoadUtil
                     RawSheet sheet;
                     try
                     {
-                        sheet = ParseRawSheet(reader);
+                        sheet = ParseRawSheet(reader, firstIndex-1);
                     }
                     catch (Exception e)
                     {
@@ -102,7 +102,7 @@ public static class SheetLoadUtil
         }
     }
 
-    private static RawSheet ParseRawSheet(IExcelDataReader reader)
+    private static RawSheet ParseRawSheet(IExcelDataReader reader, int dataRowOffset)
     {
         bool orientRow;
 
@@ -112,7 +112,7 @@ public static class SheetLoadUtil
         }
         var cells = ParseRawSheetContent(reader, orientRow, false);
         ValidateTitles(cells);
-        var title = ParseTitle(cells, reader.MergeCells, orientRow);
+        var title = ParseTitle(cells, reader.MergeCells, orientRow, dataRowOffset);
         cells.RemoveAll(c => IsNotDataRow(c));
         return new RawSheet() { Title = title, TableName = tableName, Cells = cells };
     }
@@ -169,7 +169,7 @@ public static class SheetLoadUtil
         return !string.IsNullOrEmpty(s) && s.StartsWith("##");
     }
 
-    public static Title ParseTitle(List<List<Cell>> cells, CellRange[] mergeCells, bool orientRow)
+    public static Title ParseTitle(List<List<Cell>> cells, CellRange[] mergeCells, bool orientRow, int dataRowOffset)
     {
         var rootTitle = new Title()
         {
@@ -186,7 +186,7 @@ public static class SheetLoadUtil
         }
         //titleRowNum = GetTitleRowNum(mergeCells, orientRow);
 
-        ParseSubTitles(rootTitle, cells, mergeCells, orientRow, topTitleRowIndex + 1);
+        ParseSubTitles(rootTitle, cells, mergeCells, orientRow, topTitleRowIndex + 1, dataRowOffset);
 
         rootTitle.Init();
 
@@ -304,9 +304,10 @@ public static class SheetLoadUtil
         return (titleName, tags);
     }
 
-    private static void ParseSubTitles(Title title, List<List<Cell>> cells, CellRange[] mergeCells, bool orientRow, int excelRowIndex)
+    private static void ParseSubTitles(Title title, List<List<Cell>> cells, CellRange[] mergeCells, bool orientRow, int excelRowIndex, int dataRowOffset)
     {
         var rowIndex = excelRowIndex - 1;
+        var rawRowIndex = excelRowIndex - 1 + dataRowOffset;
         var titleRow = cells[rowIndex];
         if (mergeCells != null)
         {
@@ -316,7 +317,7 @@ public static class SheetLoadUtil
                 if (orientRow)
                 {
                     //if (mergeCell.FromRow <= 1 && mergeCell.ToRow >= 1)
-                    if (mergeCell.FromRow == rowIndex && mergeCell.FromColumn >= title.FromIndex && mergeCell.FromColumn <= title.ToIndex)
+                    if (mergeCell.FromRow == rawRowIndex && mergeCell.FromColumn >= title.FromIndex && mergeCell.FromColumn <= title.ToIndex)
                     {
                         var nameAndAttrs = titleRow[mergeCell.FromColumn].Value?.ToString()?.Trim();
                         if (IsIgnoreTitle(nameAndAttrs))
@@ -330,7 +331,7 @@ public static class SheetLoadUtil
                 }
                 else
                 {
-                    if (mergeCell.FromColumn == rowIndex && mergeCell.FromRow >= title.FromIndex && mergeCell.FromRow <= title.ToIndex)
+                    if (mergeCell.FromColumn == rawRowIndex && mergeCell.FromRow >= title.FromIndex && mergeCell.FromRow <= title.ToIndex)
                     {
                         // 标题 行
                         var nameAndAttrs = titleRow[mergeCell.FromRow].Value?.ToString()?.Trim();
@@ -349,7 +350,7 @@ public static class SheetLoadUtil
 
                 if (excelRowIndex < cells.Count && TryFindNextSubFieldRowIndex(cells, excelRowIndex, out int nextRowIndex))
                 {
-                    ParseSubTitles(subTitle, cells, mergeCells, orientRow, nextRowIndex + 1);
+                    ParseSubTitles(subTitle, cells, mergeCells, orientRow, nextRowIndex + 1, dataRowOffset);
                 }
                 title.AddSubTitle(subTitle);
 
@@ -409,7 +410,7 @@ public static class SheetLoadUtil
             }
             if (excelRowIndex < cells.Count && TryFindNextSubFieldRowIndex(cells, excelRowIndex, out int nextRowIndex))
             {
-                ParseSubTitles(subTitle, cells, mergeCells, orientRow, nextRowIndex + 1);
+                ParseSubTitles(subTitle, cells, mergeCells, orientRow, nextRowIndex + 1, dataRowOffset);
             }
             title.AddSubTitle(subTitle);
         }
@@ -622,14 +623,15 @@ public static class SheetLoadUtil
             {
                 reader.Read();
             }
-
+            //处理下row偏移
+            int dataRowOffset = firstIndex - 1;
             // do
             // {
                 if (sheetName == null || reader.Name == sheetName)
                 {
                     try
                     {
-                        var tableDefInfo = ParseSheetTableDefInfo(rawUrl, reader);
+                        var tableDefInfo = ParseSheetTableDefInfo(rawUrl, reader, dataRowOffset);
                         if (tableDefInfo != null)
                         {
                             return tableDefInfo;
@@ -647,7 +649,7 @@ public static class SheetLoadUtil
         throw new Exception($"{rawUrl} 没有找到有效的表定义");
     }
 
-    private static RawSheetTableDefInfo ParseSheetTableDefInfo(string rawUrl, IExcelDataReader reader)
+    private static RawSheetTableDefInfo ParseSheetTableDefInfo(string rawUrl, IExcelDataReader reader, int dataRowOffset)
     {
         bool orientRow;
 
@@ -656,7 +658,7 @@ public static class SheetLoadUtil
             return null;
         }
         var cells = ParseRawSheetContent(reader, orientRow, true);
-        var title = ParseTitle(cells, reader.MergeCells, orientRow);
+        var title = ParseTitle(cells, reader.MergeCells, orientRow, dataRowOffset);
 
         int typeRowIndex = cells.FindIndex(row => IsTypeRow(row));
 
