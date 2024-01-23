@@ -5,7 +5,6 @@ using Luban.DataVisitors;
 using Luban.Defs;
 using Luban.Location;
 using Luban.Lua.DataVisitors;
-using Luban.Serialization;
 using Luban.Types;
 using Luban.Utils;
 
@@ -13,7 +12,6 @@ namespace Luban.Lua;
 
 public class SGLuaDataVisitor : IDataFuncVisitor<TType, SGLuaDataVisitorContext, string>
 {
-    private static readonly NLog.Logger s_logger = NLog.LogManager.GetCurrentClassLogger();
     public static SGLuaDataVisitor Ins { get; } = new();
 
     public string Accept(DBool data, TType type, SGLuaDataVisitorContext x)
@@ -81,7 +79,7 @@ public class SGLuaDataVisitor : IDataFuncVisitor<TType, SGLuaDataVisitorContext,
             }
             else
             {
-                s_logger.Error($"找不到 text id value:{v}");
+                Console.WriteLine($"找不到 text id value:{v}");
             }
         }
 
@@ -168,5 +166,10 @@ public class SGLuaDataVisitor : IDataFuncVisitor<TType, SGLuaDataVisitorContext,
         }
         sb.Append('}');
         return sb.ToString();
+    }
+
+    public string Accept(DTable type, TType x, SGLuaDataVisitorContext y)
+    {
+        return "{"+ type.Value + "}";
     }
 }

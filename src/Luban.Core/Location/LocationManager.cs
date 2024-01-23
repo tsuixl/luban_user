@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Reflection;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Luban.DataVisitors;
@@ -95,14 +96,52 @@ public class LocationManager
                 m_AllDataMap = new();
                 DefaultLanguage = EnvManager.Current.GetOptionOrDefaultRaw(BuiltinOptionNames.LocationDefaultLanguage, "zh");
                 m_AllLanguages.Add(DefaultLanguage);
-                var text = File.Exists(locationFile) ? File.ReadAllText(locationFile) : null;
-                if (string.IsNullOrEmpty(text))
+                
+                // var text = File.Exists(locationFile) ? File.ReadAllText(locationFile) : null;
+                // if (string.IsNullOrEmpty(text))
+                // {
+                //     m_AllData = new LocationAllData();
+                // }
+                // else
+                // {
+                //     m_AllData = JsonSerializer.Deserialize<LocationAllData>(text);
+                // }
+                
+                m_AllData = new LocationAllData();
+                if (File.Exists(locationFile))
                 {
-                    m_AllData = new LocationAllData();
-                }
-                else
-                {
-                    m_AllData = JsonSerializer.Deserialize<LocationAllData>(text);
+                    Type SheetLoadUtil = null;
+                    SheetLoadUtil = Type.GetType("Luban.DataLoader.Builtin.Excel.SheetLoadUtil");
+                    var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+                    foreach (var assembly in assemblies)
+                    {
+                        SheetLoadUtil = assembly.GetType("Luban.DataLoader.Builtin.Excel.SheetLoadUtil");
+                        if(SheetLoadUtil!=null)
+                            break;
+                    }
+                    if (SheetLoadUtil != null)
+                    {
+                        var methods = SheetLoadUtil.GetMethods();
+                        var method = SheetLoadUtil.GetMethod("ReadExcel");
+                        var rowsObj = method.Invoke(null, new object[] {locationFile});
+                        var rows = rowsObj as List<List<string>>;
+                        var languages = rows[0].Skip(1).ToList();
+                        var headRow = rows[0];
+                        for (int i = 1; i < rows.Count; i++)
+                        {
+                            LocationContent content = new();
+                            content.id = i;
+                            var row = rows[i];
+                            for (int j = 1; j < row.Count; j++)
+                            {
+                                LocationItem item = new();
+                                item.content = row[j];
+                                item.language = headRow[j];
+                                content.items.Add(item);
+                            }
+                            m_AllData.datas.Add(content);
+                        }
+                    }
                 }
 
                 HandleData();
@@ -225,50 +264,80 @@ public class LocationManager
         }
 
         HandleData();
+        
         var locationFile = EnvManager.Current.GetOptionOrDefaultRaw(BuiltinOptionNames.LocationFile, "");
         var dir = Path.GetDirectoryName(locationFile);
-        var newFile = Path.GetFileNameWithoutExtension(locationFile) + "_new" +Path.GetExtension(locationFile);
-        newFile = Path.Combine(dir, newFile);
-        StringBuilder sb = new();
-        sb.Append("{\"datas\":[\n");
-        int idx1 = -1;
-        foreach (var content in m_AllData.datas)
-        {
-            idx1++;
-            sb.Append("{\"id\":" + content.id + ",\"items\":[\n");
-            int idx2 = -1;
-            foreach (var item in content.items)
-            {
-                idx2++;
-                sb.Append("\t");
-                // sb.Append( JsonSerializer.Serialize(item));
-                sb.Append( $"{{\"language\":\"{item.language}\", \"content\":\"{item.content}\"}}");
-                if (idx2 != content.items.Count-1)
-                {
-                    sb.Append(",");
-                }
-                sb.Append("\n");
-            }
-            sb.Append("]}");
-            if (idx1 != m_AllData.datas.Count-1)
-            {
-                sb.Append(",");
-            }
-
-            sb.Append("\n");
-        }
-        sb.Append("\n]}");
-        // var text = JsonSerializer.Serialize(m_AllData);
-        var text = sb.ToString();
-        
         if (!Directory.Exists(dir))
         {
             Directory.CreateDirectory(dir);
         }
+        
+        // var newFile = Path.GetFileNameWithoutExtension(locationFile) + "_new" +Path.GetExtension(locationFile);
+        // newFile = Path.Combine(dir, newFile);
+        // StringBuilder sb = new();
+        // sb.Append("{\"datas\":[\n");
+        // int idx1 = -1;
+        // foreach (var content in m_AllData.datas)
+        // {
+        //     idx1++;
+        //     sb.Append("{\"id\":" + content.id + ",\"items\":[\n");
+        //     int idx2 = -1;
+        //     foreach (var item in content.items)
+        //     {
+        //         idx2++;
+        //         sb.Append("\t");
+        //         // sb.Append( JsonSerializer.Serialize(item));
+        //         sb.Append( $"{{\"language\":\"{item.language}\", \"content\":\"{item.content}\"}}");
+        //         if (idx2 != content.items.Count-1)
+        //         {
+        //             sb.Append(",");
+        //         }
+        //         sb.Append("\n");
+        //     }
+        //     sb.Append("]}");
+        //     if (idx1 != m_AllData.datas.Count-1)
+        //     {
+        //         sb.Append(",");
+        //     }
+        //
+        //     sb.Append("\n");
+        // }
+        // sb.Append("\n]}");
+        // var text = sb.ToString();
+        // File.WriteAllText(newFile, text);
 
-        File.WriteAllText(newFile, text);
-
+        var newFileExcel = Path.GetFileNameWithoutExtension(locationFile) + "_new" +".xlsx";
+        newFileExcel = Path.Combine(dir, newFileExcel);
         List<List<string>> excelDatas = new();
+        excelDatas.Add(new(){"id"});
+        excelDatas[0].AddRange(m_AllLanguages);
+        foreach (var content in m_AllData.datas)
+        {
+            List<string> row = new();
+            row.Add(content.id.ToString());
+            foreach (var language in m_AllLanguages)
+            {
+                var item = content.GetItem(language);
+                var v = item != null ? item.content : "";
+                row.Add(v);
+            }
+            excelDatas.Add(row);
+        }
+
+        Type SheetLoadUtil = null;
+        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        foreach (var assembly in assemblies)
+        {
+            SheetLoadUtil = assembly.GetType("Luban.DataLoader.Builtin.Excel.SheetLoadUtil");
+            if(SheetLoadUtil!=null)
+                break;
+        }
+        if (SheetLoadUtil != null)
+        {
+            var methods = SheetLoadUtil.GetMethods();
+            var method = SheetLoadUtil.GetMethod("WriteExcelStringList");
+            method.Invoke(null, new object[] {newFileExcel, excelDatas});
+        }
     }
     
     

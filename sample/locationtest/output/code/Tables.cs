@@ -41,8 +41,8 @@ namespace Luban.Config
                                 System.Func<string, string, Task<string[]>> loadTextList,
                                 float timeSlice = -1)
         {
-			float timeBegin = UnityEngine.Time.realtimeSinceStartup;
-			UnityEngine.Debug.Log($"[Tables](Init) begin:{timeBegin}");
+            float timeBegin = UnityEngine.Time.realtimeSinceStartup;
+            UnityEngine.Debug.Log($"[Tables](Init) begin:{timeBegin}");
             float time = 0;
             if (timeSlice < 0)
             {
@@ -56,13 +56,12 @@ namespace Luban.Config
             
             Task<ByteBuf> result = null;
             Task<string[]> resultTextList = null;
-			ByteBuf dataByteBuf = null;
+            ByteBuf dataByteBuf = null;
             string[] textList = null;
             string fileName = null;
             TableBase table = null;
             
             
-			
             time = UnityEngine.Time.realtimeSinceStartup;
 
             TestConfig = new TestConfig();
@@ -73,14 +72,14 @@ namespace Luban.Config
             {
                 textList = await _laodTextList(fileName, Language);
             }
-			if (table.IsLazy)
-			{
-				dataByteBuf = await offsetLoader(fileName);
-			}
-			else
-			{
-				dataByteBuf = await loader(fileName);
-			}
+            if (table.IsLazy)
+            {
+                dataByteBuf = await offsetLoader(fileName);
+            }
+            else
+            {
+                dataByteBuf = await loader(fileName);
+            }
             TestConfig.LoadData(dataByteBuf, byteBufLoader, textList);
             AllConfig.Add(table);
             if (UnityEngine.Time.realtimeSinceStartup - time > timeSlice)
@@ -89,7 +88,6 @@ namespace Luban.Config
             }
             
             
-			
             time = UnityEngine.Time.realtimeSinceStartup;
 
             TestConfig2 = new TestConfig2();
@@ -100,14 +98,14 @@ namespace Luban.Config
             {
                 textList = await _laodTextList(fileName, Language);
             }
-			if (table.IsLazy)
-			{
-				dataByteBuf = await offsetLoader(fileName);
-			}
-			else
-			{
-				dataByteBuf = await loader(fileName);
-			}
+            if (table.IsLazy)
+            {
+                dataByteBuf = await offsetLoader(fileName);
+            }
+            else
+            {
+                dataByteBuf = await loader(fileName);
+            }
             TestConfig2.LoadData(dataByteBuf, textList);
             AllConfig.Add(table);
             if (UnityEngine.Time.realtimeSinceStartup - time > timeSlice)
@@ -115,13 +113,12 @@ namespace Luban.Config
                 await Task.Yield();
             }
             
-            
             ResolveRef();
             
             await Task.Yield();
-			
-			float costTime = UnityEngine.Time.realtimeSinceStartup - timeBegin;
-			UnityEngine.Debug.Log($"[Tables](Init) begin:{timeBegin} cost:{costTime}");
+            
+            float costTime = UnityEngine.Time.realtimeSinceStartup - timeBegin;
+            UnityEngine.Debug.Log($"[Tables](Init) begin:{timeBegin} cost:{costTime}");
         }
 
         private void ResolveRef()

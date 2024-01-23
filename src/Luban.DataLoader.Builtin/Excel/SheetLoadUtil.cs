@@ -746,6 +746,35 @@ public static class SheetLoadUtil
         } while (reader.Read());
         return originRows;
     }
+
+    public static List<List<string>> ReadExcel(string path)
+    {
+        string ext = Path.GetExtension(path);
+        using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        using (var reader = ext != ".csv"
+                   ? ExcelReaderFactory.CreateReader(stream)
+                   : ExcelReaderFactory.CreateCsvReader(stream, new ExcelReaderConfiguration()
+                   {
+                       FallbackEncoding = DetectCsvEncoding(stream)
+                   }))
+        {
+            var originRows = new List<List<string>>();
+            int rowIndex = 0;
+            reader.Read();
+            do
+            {
+                var row = new List<string>();
+                for (int i = 0, n = reader.FieldCount; i < n; i++)
+                {
+                    var vobj = reader.GetValue(i);
+                    row.Add(vobj==null?"":vobj.ToString());
+                }
+                originRows.Add(row);
+                ++rowIndex;
+            } while (reader.Read());
+            return originRows;
+        }
+    }
     
     public static void WriteExcel<T>(string path, List<List<T>> datas, Func<T, string> toValueString)
     {
@@ -777,6 +806,11 @@ public static class SheetLoadUtil
     }
     
     public static void WriteExcel(string path, List<List<string>> datas)
+    {
+        WriteExcel(path, datas, (cell) => cell?.ToString());
+    }
+    
+    public static void WriteExcelStringList(string path, List<List<string>> datas)
     {
         WriteExcel(path, datas, (cell) => cell?.ToString());
     }

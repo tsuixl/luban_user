@@ -109,7 +109,7 @@ namespace Luban.Config
             int offset = _offsetMap[key];
             int length = _lengthMap[key];
             ByteBuf buf = this._byteBufLoader(FileName, offset, length);
-			var textList = m_TextList;
+            var textList = m_TextList;
             v = TestItem.DeserializeTestItem(buf, textList);;
             _dataMap[key] = v;
             v.ResolveRef(_tables);

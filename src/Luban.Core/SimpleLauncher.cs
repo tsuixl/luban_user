@@ -41,12 +41,13 @@ public class SimpleLauncher
         PipelineManager.Ins.Init();
         L10NManager.Ins.Init();
         CustomBehaviourManager.Ins.Init();
-        LocationManager.Ins.Init();
+        
     }
 
     private void PostInitManagers()
     {
         CodeFormatManager.Ins.PostInit();
+        LocationManager.Ins.Init();
     }
 
     private void ScanRegisterAssemblyBehaviours()

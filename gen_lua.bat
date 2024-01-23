@@ -1,4 +1,6 @@
-D:\Moon\work\luban\luban_user\win64\Luban.exe ^
+cd /d %~dp0
+
+.\win64\Luban.exe ^
 -t client ^
 -c lua-bin ^
 -d sg-lua ^

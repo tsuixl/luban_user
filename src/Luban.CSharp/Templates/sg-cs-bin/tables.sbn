@@ -61,12 +61,12 @@ using System.Threading.Tasks;
             TableBase table = null;
             
             {{~for table in __tables ~}}
-            {{
+            {{~
               $tableName = format_property_name __code_style table.name
               $tableFullName = table.full_name
               $tableFile = table.output_data_file
               $tableExtension = __tables_extension[table]
-            }}
+            ~}}
             {{~ if table.is_only_lua
                     continue
                 end
