@@ -19,7 +19,7 @@ public class SGBinaryDataTarget : DataTargetBase
 
     public override void BeforeExport(List<DefTable> tables)
     {
-
+        
     }
 
     public override void AfterExport(List<DefTable> tables)
@@ -29,7 +29,13 @@ public class SGBinaryDataTarget : DataTargetBase
         {
             LocationManager.Ins.WriteLocationFile();
         }
-        
+
+        var outputAllType = EnvManager.Current.GetOptionRaw("outputAllType");
+        if (string.IsNullOrEmpty(outputAllType) == false)
+        {
+            var alltypStr = TypeToStringVisitor.Ins.SerializeAllType();
+            File.WriteAllText(outputAllType, alltypStr);
+        }
     }
 
     public override OutputFile ExportTable(DefTable table, List<Record> records)
@@ -88,20 +94,24 @@ public class SGBinaryDataTarget : DataTargetBase
         int lastOffset = 0;
         foreach (var d in records)
         {
-            foreach (var indexInfo in table.IndexList)
+            if (isLazy)
             {
-                DType keyData = d.Data.Fields[indexInfo.IndexFieldIdIndex];
-                keyData.Apply(BinaryDataVisitor.Ins, dataBuf);
+                foreach (var indexInfo in table.IndexList)
+                {
+                    DType keyData = d.Data.Fields[indexInfo.IndexFieldIdIndex];
+                    keyData.Apply(BinaryDataVisitor.Ins, offsetBuf);
+                }
             }
+
             int offset = dataBuf.Size;
-            if (offsetBuf != null)
+            if (isLazy)
             {
                 offsetBuf.WriteSize(offset);
             }
 
             d.Data.Apply(SGBinaryDataVisitor.Ins, table.ValueTType, visitorContext);
             int length = dataBuf.Size - lastOffset;
-            if (offsetBuf != null)
+            if (isLazy)
             {
                 offsetBuf.WriteSize(length);
             }

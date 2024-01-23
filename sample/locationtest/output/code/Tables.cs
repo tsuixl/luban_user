@@ -27,13 +27,6 @@ namespace Luban.Config
         public TestConfig2 TestConfig2 {get; private set; }
         
         public static readonly int TABLE_COUNT = 2;
-
-        //public Tables(System.Func<string, ByteBuf> offsetLoader,  System.Func<string, int, int, ByteBuf> byteBufLoader)
-        //{
-        //        //    TestConfig = new TestConfig(offsetLoader("Test/Test"), "Test/Test", byteBufLoader);
-        //        //    TestConfig2 = new TestConfig2(offsetLoader("Test/Test2"), "Test/Test2", byteBufLoader);
-        //        //    ResolveRef();
-        //}
         
         public async Task Init(System.Func<string, Task<SimpleJSON.JSONNode>> loader, float timeSlice = -1)
         {
@@ -66,6 +59,7 @@ namespace Luban.Config
             TableBase table = null;
             
             
+			
             time = UnityEngine.Time.realtimeSinceStartup;
 
             TestConfig = new TestConfig();
@@ -86,6 +80,7 @@ namespace Luban.Config
             }
             
             
+			
             time = UnityEngine.Time.realtimeSinceStartup;
 
             TestConfig2 = new TestConfig2();
@@ -104,6 +99,7 @@ namespace Luban.Config
             {
                 await Task.Yield();
             }
+            
             
             ResolveRef();
             

@@ -1,5 +1,9 @@
-﻿using ExcelDataReader;
+﻿using System.Data;
+using System.Xml;
+using ExcelDataReader;
 using Luban.Utils;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 
 namespace Luban.DataLoader.Builtin.Excel;
 
@@ -726,4 +730,54 @@ public static class SheetLoadUtil
         return new RawSheetTableDefInfo() { FieldInfos = fields };
     }
 
+    private static List<List<Cell>> ParseRawSheetContent(IExcelDataReader reader)
+    {
+        var originRows = new List<List<Cell>>();
+        int rowIndex = 0;
+        do
+        {
+            var row = new List<Cell>();
+            for (int i = 0, n = reader.FieldCount; i < n; i++)
+            {
+                row.Add(new Cell(rowIndex, i, reader.GetValue(i)));
+            }
+            originRows.Add(row);
+            ++rowIndex;
+        } while (reader.Read());
+        return originRows;
+    }
+    
+    public static void WriteExcel<T>(string path, List<List<T>> datas, Func<T, string> toValueString)
+    {
+        int rowCount = datas.Count;
+        int columnCount = datas.Max((sublist) => sublist.Count);
+        
+        using (var fs = new FileStream(path, FileMode.Create, FileAccess.Write))
+        {
+            IWorkbook workbook = new XSSFWorkbook();
+            ISheet excelSheet = workbook.CreateSheet("Sheet1");
+            for (int r = 0; r < rowCount; r++)
+            {
+                var rowdata = datas[r];
+                IRow row = excelSheet.CreateRow(r);
+                for (int c = 0; c < rowdata.Count; c++)
+                {
+                    var cellData = rowdata[c];
+                    ICell cell = row.CreateCell(c);
+                    cell.SetCellValue(toValueString(cellData));
+                }
+            }
+            workbook.Write(fs);
+        }
+    }
+
+    public static void WriteExcel(string path, List<List<Cell>> datas)
+    {
+        WriteExcel(path, datas, (cell) => cell.Value?.ToString());
+    }
+    
+    public static void WriteExcel(string path, List<List<string>> datas)
+    {
+        WriteExcel(path, datas, (cell) => cell?.ToString());
+    }
 }

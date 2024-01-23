@@ -267,6 +267,8 @@ public class LocationManager
         }
 
         File.WriteAllText(newFile, text);
+
+        List<List<string>> excelDatas = new();
     }
     
     

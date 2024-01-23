@@ -12,6 +12,10 @@ using System.Threading.Tasks;
     
         {{count = 0}}
         {{~for table in __tables ~}}
+		{{~ if table.is_only_lua
+				continue
+			end
+		~}}
         {{count = count + 1}}
         {{~if table.comment != '' ~}}
         /// <summary>
@@ -22,14 +26,6 @@ using System.Threading.Tasks;
         {{~end~}}
         
         public static readonly int TABLE_COUNT = {{count}};
-
-        //public {{__name}}(System.Func<string, ByteBuf> offsetLoader,  System.Func<string, int, int, ByteBuf> byteBufLoader)
-        //{
-        //    {{~for table in __tables ~}}
-        //    {{format_property_name __code_style table.name}} = new {{table.full_name}}(offsetLoader("{{table.output_data_file}}"), "{{table.output_data_file}}", byteBufLoader);
-        //    {{~end~}}
-        //    ResolveRef();
-        //}
         
         public async Task Init(System.Func<string, Task<SimpleJSON.JSONNode>> loader, float timeSlice = -1)
         {
@@ -68,6 +64,11 @@ using System.Threading.Tasks;
               $tableFile = table.output_data_file
               $tableExtension = __tables_extension[table]
             }}
+			{{~ if table.is_only_lua
+					continue
+				end
+			~}}
+			
             time = UnityEngine.Time.realtimeSinceStartup;
 
             {{$tableName}} = new {{$tableName}}();
@@ -100,6 +101,10 @@ using System.Threading.Tasks;
         private void ResolveRef()
         {
             {{~for table in __tables ~}}
+			{{~ if table.is_only_lua
+					continue
+				end
+			~}}
             {{format_property_name __code_style table.name}}.ResolveRef(this);
             {{~end~}}
         }
