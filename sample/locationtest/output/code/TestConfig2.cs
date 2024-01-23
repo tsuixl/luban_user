@@ -23,7 +23,7 @@ public partial class TestConfig2 : Luban.TableBase
     
     public override string TableName { get { return "TestConfig2"; } }
     
-    public override string FileName { get { return "Test/Test2"; } }
+    public override string FileName { get { return "Test/TestConfig2"; } }
     
     public override bool IsLazy { get { return false; } }
     

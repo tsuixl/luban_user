@@ -32,7 +32,7 @@ namespace Luban.Config
 
         public override string TableName { get { return "TestConfig"; } }
         
-        public override string FileName { get { return "Test/Test"; } }
+        public override string FileName { get { return "Test/TestConfig"; } }
         
         public override bool IsLazy { get { return true; } }
         

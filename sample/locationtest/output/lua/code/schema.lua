@@ -52,9 +52,9 @@ local enums =
 
 local tables =
 {
-    { name='TestConfig', file='Test/Test', mode='map', index='id', value_type='TestItem' },
-    { name='TestConfig2', file='Test/Test2', mode='map', index='id', value_type='TestItem2' },
-    { name='TestConfig3', file='Test/Test3', mode='map', index='id', value_type='TestItem3' },
+    { name='TestConfig', file='Test/TestConfig', mode='map', index='id', value_type='TestItem' },
+    { name='TestConfig2', file='Test/TestConfig2', mode='map', index='id', value_type='TestItem2' },
+    { name='TestConfig3', file='Test/TestConfig3', mode='map', index='id', value_type='TestItem3' },
 }
 
 local function InitTypes(methods)

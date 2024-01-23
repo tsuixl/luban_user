@@ -1,13 +1,13 @@
 {"Tables":[
-{"FullName":"TestConfig","Name":"TestConfig","OutputDataFile":"Test/Test","IsLazy":True,"IsOnlyLua":False
+{"FullName":"TestConfig","Name":"TestConfig","OutputDataFile":"Test/TestConfig","IsLazy":True,"IsOnlyLua":False
 ,"IsExported":True,"Mode":MAP,"Index":"id","ValueType":"TestItem","KeyTType":"int"
 ,"Tags":{}}
 ,
-{"FullName":"TestConfig2","Name":"TestConfig2","OutputDataFile":"Test/Test2","IsLazy":False,"IsOnlyLua":False
+{"FullName":"TestConfig2","Name":"TestConfig2","OutputDataFile":"Test/TestConfig2","IsLazy":False,"IsOnlyLua":False
 ,"IsExported":True,"Mode":MAP,"Index":"id","ValueType":"TestItem2","KeyTType":"int"
 ,"Tags":{}}
 ,
-{"FullName":"TestConfig3","Name":"TestConfig3","OutputDataFile":"Test/Test3","IsLazy":True,"IsOnlyLua":True
+{"FullName":"TestConfig3","Name":"TestConfig3","OutputDataFile":"Test/TestConfig3","IsLazy":True,"IsOnlyLua":True
 ,"IsExported":True,"Mode":MAP,"Index":"id","ValueType":"TestItem3","KeyTType":"int"
 ,"Tags":{}}
 ],"Beans":

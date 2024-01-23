@@ -12,10 +12,10 @@ using System.Threading.Tasks;
     
         {{count = 0}}
         {{~for table in __tables ~}}
-		{{~ if table.is_only_lua
-				continue
-			end
-		~}}
+        {{~ if table.is_only_lua
+                continue
+            end
+        ~}}
         {{count = count + 1}}
         {{~if table.comment != '' ~}}
         /// <summary>
@@ -40,6 +40,8 @@ using System.Threading.Tasks;
                                 System.Func<string, string, Task<string[]>> loadTextList,
                                 float timeSlice = -1)
         {
+            float timeBegin = UnityEngine.Time.realtimeSinceStartup;
+            UnityEngine.Debug.Log($"[Tables](Init) begin:{timeBegin}");
             float time = 0;
             if (timeSlice < 0)
             {
@@ -53,6 +55,7 @@ using System.Threading.Tasks;
             
             Task<ByteBuf> result = null;
             Task<string[]> resultTextList = null;
+            ByteBuf dataByteBuf = null;
             string[] textList = null;
             string fileName = null;
             TableBase table = null;
@@ -64,11 +67,11 @@ using System.Threading.Tasks;
               $tableFile = table.output_data_file
               $tableExtension = __tables_extension[table]
             }}
-			{{~ if table.is_only_lua
-					continue
-				end
-			~}}
-			
+            {{~ if table.is_only_lua
+                    continue
+                end
+            ~}}
+            
             time = UnityEngine.Time.realtimeSinceStartup;
 
             {{$tableName}} = new {{$tableName}}();
@@ -79,12 +82,18 @@ using System.Threading.Tasks;
             {
                 textList = await _laodTextList(fileName, Language);
             }
-            result = offsetLoader(fileName);
-            await result;
+            if (table.IsLazy)
+            {
+                dataByteBuf = await offsetLoader(fileName);
+            }
+            else
+            {
+                dataByteBuf = await loader(fileName);
+            }
             {{~ if table.is_lazy ~}}
-            {{$tableFullName}}.LoadData(result.Result, byteBufLoader, textList);
+            {{$tableFullName}}.LoadData(dataByteBuf, byteBufLoader, textList);
             {{~ else ~}}
-            {{$tableFullName}}.LoadData(result.Result, textList);
+            {{$tableFullName}}.LoadData(dataByteBuf, textList);
             {{~ end ~}}
             AllConfig.Add(table);
             if (UnityEngine.Time.realtimeSinceStartup - time > timeSlice)
@@ -96,15 +105,18 @@ using System.Threading.Tasks;
             ResolveRef();
             
             await Task.Yield();
+            
+            float costTime = UnityEngine.Time.realtimeSinceStartup - timeBegin;
+            UnityEngine.Debug.Log($"[Tables](Init) begin:{timeBegin} cost:{costTime}");
         }
 
         private void ResolveRef()
         {
             {{~for table in __tables ~}}
-			{{~ if table.is_only_lua
-					continue
-				end
-			~}}
+            {{~ if table.is_only_lua
+                    continue
+                end
+            ~}}
             {{format_property_name __code_style table.name}}.ResolveRef(this);
             {{~end~}}
         }
