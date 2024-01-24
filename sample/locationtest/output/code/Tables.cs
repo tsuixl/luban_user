@@ -15,9 +15,9 @@ namespace Luban.Config
 {
     public partial class Tables
     {
-		public const string k_ConfigDataType = "bytes";
-		public const string k_ExportDefaultLanguage = "zh";
-		
+        public const string k_ConfigDataType = "bytes";
+        public const string k_ExportDefaultLanguage = "zh";
+
         private System.Func<string, string, Task<string[]>> _laodTextList;
         public string Language {get; private set;} = null;
     
