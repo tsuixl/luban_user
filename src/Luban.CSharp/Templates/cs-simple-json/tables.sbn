@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 {{namespace_with_grace_begin __namespace}}
 public partial class {{__name}}
 {
+        public const string k_ConfigDataType = "json";
+        public const string k_ExportDefaultLanguage = "zh";
+        
     {{~for table in __tables ~}}
 {{~if table.comment != '' ~}}
     /// <summary>
