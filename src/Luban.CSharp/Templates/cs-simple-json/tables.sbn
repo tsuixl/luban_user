@@ -37,9 +37,10 @@ public partial class {{__name}}
         await Task.Yield();
     }
     
-    public async Task Init(System.Func<string, Task<ByteBuf>> offsetLoader,  
+    public async Task Init(string language, System.Func<string, Task<ByteBuf>> offsetLoader,  
                             System.Func<string, int, int, ByteBuf> byteBufLoader, 
                             System.Func<string, Task<ByteBuf>> loader,
+                            System.Func<string, string, Task<string[]>> loadTextList,
                             float timeSlice = -1)
     {
         await Task.Yield();

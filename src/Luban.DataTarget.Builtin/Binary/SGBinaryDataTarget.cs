@@ -64,22 +64,25 @@ public class SGBinaryDataTarget : DataTargetBase
 
         if (buildLocation)
         {
-            foreach (var language in LocationManager.Ins.ExportLanguages)
+            if (extension.hasText)
             {
-                var textBuf = buildLocation ? new ByteBuf() : null;
-                textBuf.WriteSize(textList.Count);
-                foreach (var text in textList)
+                foreach (var language in LocationManager.Ins.ExportLanguages)
                 {
-                    var textT = LocationManager.Ins.GetContentValue(text, language);
-                    textBuf.WriteString(textT);
+                    var textBuf = buildLocation ? new ByteBuf() : null;
+                    textBuf.WriteSize(textList.Count);
+                    foreach (var text in textList)
+                    {
+                        var textT = LocationManager.Ins.GetContentValue(text, language);
+                        textBuf.WriteString(textT);
+                    }
+
+                    subFile.Add(new OutputFile()
+                    {
+                        File = $"location/{table.OutputDataFile}_{language}.{OutputFileExt}", 
+                        Content = textBuf.CopyData(), OtherFiles = null,
+                    });
                 }
-                subFile.Add(new OutputFile()
-                {
-                    File = $"location/{table.OutputDataFile}_{language}.{OutputFileExt}", 
-                    Content = textBuf.CopyData(), OtherFiles = null,
-                });
             }
-            
 
         }
 
