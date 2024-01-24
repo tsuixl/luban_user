@@ -26,7 +26,9 @@ public static class BuiltinOptionNames
 
     public const string LocationFile = "locationFile";
     
-    public const string LocationDefaultLanguage = "locationDefaultLanguage";
+    public const string LocationConfigFileLanguage = "locationConfigFileLanguage";
+    
+    public const string LocationExportDefaultLanguage = "locationExportDefaultLanguage";
     
     public const string LocationExportLanguage = "locationExportLanguage";
     

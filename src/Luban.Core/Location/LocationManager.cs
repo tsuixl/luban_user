@@ -27,7 +27,7 @@ public class LocationManager
 
         public string ToDebugString()
         {
-            var language = LocationManager.Ins.DefaultLanguage;
+            var language = LocationManager.Ins.ConfigFileLanguage;
             var item = GetItem(language);
             string key = item?.content;
             return $"id:{id} key:{key}";
@@ -35,7 +35,7 @@ public class LocationManager
 
         public string GetKey()
         {
-            var language = LocationManager.Ins.DefaultLanguage;
+            var language = LocationManager.Ins.ConfigFileLanguage;
             var item = GetItem(language);
             if (item == null)
             {
@@ -67,7 +67,9 @@ public class LocationManager
     private List<string> m_AllLanguages = null;
     private List<string> m_ExportLanguages = null;
 
-    public string DefaultLanguage { get; set; } = "zh";
+    public string ConfigFileLanguage { get; set; } = "zh";
+    
+    public string ExportDefaultLanguage { get; set; } = "zh";
     public List<string> AllLanguages => m_AllLanguages;
     public List<string> ExportLanguages => m_ExportLanguages;
 
@@ -94,8 +96,8 @@ public class LocationManager
                 m_AllLanguages = new();
                 m_ExportLanguages = new();
                 m_AllDataMap = new();
-                DefaultLanguage = EnvManager.Current.GetOptionOrDefaultRaw(BuiltinOptionNames.LocationDefaultLanguage, "zh");
-                m_AllLanguages.Add(DefaultLanguage);
+                ConfigFileLanguage = EnvManager.Current.GetOptionOrDefaultRaw(BuiltinOptionNames.LocationConfigFileLanguage, "zh");
+                ExportDefaultLanguage = EnvManager.Current.GetOptionOrDefaultRaw(BuiltinOptionNames.LocationExportDefaultLanguage, "zh");
                 
                 // var text = File.Exists(locationFile) ? File.ReadAllText(locationFile) : null;
                 // if (string.IsNullOrEmpty(text))
@@ -155,16 +157,17 @@ public class LocationManager
     {
         m_AllDataMap.Clear();
         m_AllLanguages.Clear();
-        m_AllLanguages.Add(DefaultLanguage);
+        AddToAllLanguage(ConfigFileLanguage);
+        AddToAllLanguage(ExportDefaultLanguage);
         for (int i = 0; i < m_AllData.datas.Count; i++)
         {
             var data = m_AllData.datas[i];
             data.id = i + 1;
             var items = data.items;
-            var defaultItem = data.GetItem(DefaultLanguage);
+            var defaultItem = data.GetItem(ConfigFileLanguage);
             if (defaultItem == null)
             {
-                s_logger.Error($"LocationFile 有数据没找到默认文本 language:{DefaultLanguage} data:{data.ToDebugString()}");
+                s_logger.Error($"LocationFile 有数据没找到默认文本 language:{ConfigFileLanguage} data:{data.ToDebugString()}");
                 throw new Exception();
             }
 
@@ -180,10 +183,7 @@ public class LocationManager
             m_AllDataMap.Add(data.GetKey(), data);
             foreach (var item in items)
             {
-                if (m_AllLanguages.Contains(item.language) == false)
-                {
-                    m_AllLanguages.Add(item.language);
-                }
+                AddToAllLanguage(item.language);
             }
         }
         
@@ -195,7 +195,7 @@ public class LocationManager
         }
         else
         {
-            m_ExportLanguages.Add(DefaultLanguage);
+            m_ExportLanguages.Add(ExportDefaultLanguage);
             var lanList = exportLanguage.Split('|');
             foreach (var lan in lanList)
             {
@@ -204,11 +204,21 @@ public class LocationManager
                     throw new Exception($"{BuiltinOptionNames.LocationExportLanguage} error, language not find，{lan}");
                     return;
                 }
-                if (m_ExportLanguages.Contains(lan) == false)
-                {
-                    m_ExportLanguages.Add(lan);
-                }
+                AddToListUnique(m_ExportLanguages, lan);
             }
+        }
+    }
+
+    private void AddToAllLanguage(string lan)
+    {
+        AddToListUnique(m_AllLanguages, lan);
+    }
+    
+    private static void AddToListUnique<T>(List<T> list, T lan)
+    {
+        if (list.Contains(lan) == false)
+        {
+            list.Add(lan);
         }
     }
 
@@ -227,7 +237,7 @@ public class LocationManager
             var data = new LocationContent();
             foreach (var language in m_AllLanguages)
             {
-                data.items.Add(new LocationItem() { language = language, content = language == DefaultLanguage ? text : "" });
+                data.items.Add(new LocationItem() { language = language, content = language == ConfigFileLanguage ? text : "" });
             }
 
             m_AllData.datas.Add(data);
@@ -237,7 +247,7 @@ public class LocationManager
 
     public string GetContentValue(string key, string language)
     {
-        if (language == DefaultLanguage)
+        if (language == ConfigFileLanguage)
         {
             return key;
         }

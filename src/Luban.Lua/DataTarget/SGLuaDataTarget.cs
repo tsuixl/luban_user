@@ -85,7 +85,7 @@ public class SGLuaDataTarget : DataTargetBase
             }
 
             string lanExt = "";
-            if (buildLocation && context.language != LocationManager.Ins.DefaultLanguage)
+            if (buildLocation && context.language != LocationManager.Ins.ExportDefaultLanguage)
             {
                 lanExt = "_" + context.language;
             }
