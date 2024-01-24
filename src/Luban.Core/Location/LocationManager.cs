@@ -75,6 +75,8 @@ public class LocationManager
 
     private bool m_IsNeedBuildLocation = false;
 
+    private LocationAllData m_OldDdatas = new LocationAllData();
+
     public bool IsNeedBuildLocation
     {
         get
@@ -145,6 +147,11 @@ public class LocationManager
                         }
                     }
                 }
+
+                m_OldDdatas = new LocationAllData()
+                {
+                    datas = new(m_AllData.datas),
+                };
 
                 HandleData();
 
@@ -273,8 +280,20 @@ public class LocationManager
             return;
         }
 
-        HandleData();
-        
+        var addList = m_AllData.datas.Where((d)=>m_OldDdatas.datas.Contains(d)==false).ToList() ;
+        addList.Sort((d1, d2) =>
+        {
+            return d1.GetKey().CompareTo(d2.GetKey());
+        });
+        m_AllData.datas.Clear();
+        m_AllData.datas.AddRange(m_OldDdatas.datas);
+        m_AllData.datas.AddRange(addList);
+        for (int i = 0; i < m_AllData.datas.Count; i++)
+        {
+            var data = m_AllData.datas[i];
+            data.id = i + 1;
+        }
+
         var locationFile = EnvManager.Current.GetOptionOrDefaultRaw(BuiltinOptionNames.LocationFile, "");
         var dir = Path.GetDirectoryName(locationFile);
         if (!Directory.Exists(dir))
