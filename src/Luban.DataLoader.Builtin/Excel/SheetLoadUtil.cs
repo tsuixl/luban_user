@@ -131,6 +131,7 @@ public static class SheetLoadUtil
         "comment",
         "column",
         "group",
+        "tag",
     };
 
     private const char s_sep = '#';

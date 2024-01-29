@@ -58,6 +58,19 @@ public class GlobalConfigLoader : IConfigLoader
     {
         s_logger.Debug("load config file:{}", fileName);
         _curDir = Directory.GetParent(fileName).FullName;
+        var excelPath = EnvManager.Current.GetOptionRaw(BuiltinOptionNames.ExcelDataDir);
+        if (string.IsNullOrEmpty(excelPath) == false)
+        {
+            // _curDir = excelPath;
+        }
+        s_logger.Debug($" data path :{_curDir} {excelPath}");
+
+        Dictionary<string, string> replaceMap = new();
+        replaceMap["confFileDir"] = _curDir;
+        foreach (var kp in EnvManager.Current.GetAllOptions())
+        {
+            replaceMap[kp.Key] = kp.Value;
+        }
 
         var options = new JsonSerializerOptions
         {
@@ -71,19 +84,51 @@ public class GlobalConfigLoader : IConfigLoader
         List<SchemaFileInfo> importFiles = new();
         foreach (var schemaFile in globalConf.SchemaFiles)
         {
-            string fileOrDirectory = Path.Combine(_curDir, schemaFile.FileName);
+            string fileOrDirectory = ParsePath(schemaFile.FileName, replaceMap);
             foreach (var subFile in FileUtil.GetFileOrDirectory(fileOrDirectory))
             {
                 importFiles.Add(new SchemaFileInfo() { FileName = subFile, Type = schemaFile.Type });
             }
         }
+
+        var dataPath = ParsePath(globalConf.DataDir, replaceMap);
         return new LubanConfig()
         {
-            InputDataDir = Path.Combine(_curDir, globalConf.DataDir),
+            InputDataDir = dataPath,
             Groups = groups,
             Targets = targets,
             Imports = importFiles,
         };
+    }
+
+    private string ParsePath(string path, Dictionary<string, string> map)
+    {
+        var ret = path;
+        if (path.Contains("%") == false)
+        {
+            ret = "%confFileDir%/" + ret;
+        }
+
+        ret = FileUtil.ParsePath(ret, map);
+        return ret;
+    }
+
+    private string GetExistFile(params string[] paths)
+    {
+        for (int i = 0; i < paths.Length; i++)
+        {
+            var path = paths[i];
+            if (string.IsNullOrEmpty(path))
+            {
+                continue;
+            }
+            if (File.Exists(paths[i]))
+            {
+                return paths[i];
+            }
+        }
+        s_logger.Error($"file not exists {string.Join(',', paths)}");
+        return null;
     }
 
 }

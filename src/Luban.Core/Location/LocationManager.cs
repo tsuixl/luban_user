@@ -100,17 +100,7 @@ public class LocationManager
                 m_AllDataMap = new();
                 ConfigFileLanguage = EnvManager.Current.GetOptionOrDefaultRaw(BuiltinOptionNames.LocationConfigFileLanguage, "zh");
                 ExportDefaultLanguage = EnvManager.Current.GetOptionOrDefaultRaw(BuiltinOptionNames.LocationExportDefaultLanguage, "zh");
-                
-                // var text = File.Exists(locationFile) ? File.ReadAllText(locationFile) : null;
-                // if (string.IsNullOrEmpty(text))
-                // {
-                //     m_AllData = new LocationAllData();
-                // }
-                // else
-                // {
-                //     m_AllData = JsonSerializer.Deserialize<LocationAllData>(text);
-                // }
-                
+
                 m_AllData = new LocationAllData();
                 if (File.Exists(locationFile))
                 {
@@ -301,39 +291,6 @@ public class LocationManager
             Directory.CreateDirectory(dir);
         }
         
-        // var newFile = Path.GetFileNameWithoutExtension(locationFile) + "_new" +Path.GetExtension(locationFile);
-        // newFile = Path.Combine(dir, newFile);
-        // StringBuilder sb = new();
-        // sb.Append("{\"datas\":[\n");
-        // int idx1 = -1;
-        // foreach (var content in m_AllData.datas)
-        // {
-        //     idx1++;
-        //     sb.Append("{\"id\":" + content.id + ",\"items\":[\n");
-        //     int idx2 = -1;
-        //     foreach (var item in content.items)
-        //     {
-        //         idx2++;
-        //         sb.Append("\t");
-        //         // sb.Append( JsonSerializer.Serialize(item));
-        //         sb.Append( $"{{\"language\":\"{item.language}\", \"content\":\"{item.content}\"}}");
-        //         if (idx2 != content.items.Count-1)
-        //         {
-        //             sb.Append(",");
-        //         }
-        //         sb.Append("\n");
-        //     }
-        //     sb.Append("]}");
-        //     if (idx1 != m_AllData.datas.Count-1)
-        //     {
-        //         sb.Append(",");
-        //     }
-        //
-        //     sb.Append("\n");
-        // }
-        // sb.Append("\n]}");
-        // var text = sb.ToString();
-        // File.WriteAllText(newFile, text);
 
         var newFileExcel = Path.GetFileNameWithoutExtension(locationFile) + "_new" +".xlsx";
         newFileExcel = Path.Combine(dir, newFileExcel);
@@ -377,6 +334,7 @@ public class LocationManager
         public Dictionary<string, int> locationTextMap;
         public List<string> locationTextList;
         public List<DefField> textFields;
+        public List<TType> textTTypes;
     }
 
     private Dictionary<DefTable, TableExtensionData> m_ExtensionDataMap = new();
@@ -422,7 +380,10 @@ public class LocationManager
                 }
             }
 
+            var textTTypes = textFields.Select((f) => f.CType).ToList();
+
             extensionData.textFields = textFields;
+            extensionData.textTTypes = textTTypes;
         }
     }
 

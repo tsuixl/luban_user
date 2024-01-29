@@ -2,6 +2,8 @@ namespace Luban;
 
 public static class BuiltinOptionNames
 {
+    public const string ExcelDataDir = "excelDataDir";
+    
     public const string InputDataDir = "inputDataDir";
 
     public const string OutputCodeDir = "outputCodeDir";

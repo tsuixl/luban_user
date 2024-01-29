@@ -1,4 +1,4 @@
-﻿namespace Luban.L10N;
+﻿namespace Luban.Location;
 
 public class TextKeyCollection
 {

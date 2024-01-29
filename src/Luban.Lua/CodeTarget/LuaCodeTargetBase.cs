@@ -1,4 +1,5 @@
 ﻿using Luban.CodeTarget;
+using Luban.Location;
 using Luban.Lua.TemplateExtensions;
 using Luban.Tmpl;
 using Scriban;
@@ -16,6 +17,14 @@ public abstract class LuaCodeTargetBase : AllInOneTemplateCodeTargetBase
 
     protected override void OnCreateTemplateContext(TemplateContext ctx)
     {
+        var tableExtension = new ScriptObject
+        {
+            {"__tables_extension", LocationManager.Ins.ExtensionDataMap },
+            {"__location_build", LocationManager.Ins.IsNeedBuildLocation },
+            {"__location_config_file_language", LocationManager.Ins.ConfigFileLanguage },
+            {"__location_export_default_language", LocationManager.Ins.ExportDefaultLanguage },
+        };
+        ctx.PushGlobal(tableExtension);
         ctx.PushGlobal(new LuaCommonTemplateExtension());
     }
 }

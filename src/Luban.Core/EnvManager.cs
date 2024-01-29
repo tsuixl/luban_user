@@ -11,6 +11,12 @@ public class EnvManager
         _options = options;
     }
 
+    public Dictionary<string, string> GetAllOptions()
+    {
+        var map = new Dictionary<string, string>(_options);
+        return map;
+    }
+
     public bool HasOptionRaw(string optionName)
     {
         return _options.ContainsKey(optionName);

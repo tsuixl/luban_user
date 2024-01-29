@@ -5,7 +5,7 @@ using Luban.DataVisitors;
 using Luban.Defs;
 using Luban.Types;
 
-namespace Luban.L10N;
+namespace Luban.Location;
 
 
 /// <summary>
@@ -57,7 +57,7 @@ public class TextKeyListCollectorVisitor : IDataActionVisitor2<TextKeyCollection
 
     public void Accept(DString data, TType type, TextKeyCollection x)
     {
-        if (data != null && type.HasTag("text"))
+        if (data != null &&  LocationManager.IsTextField(type))
         {
             x.AddKey(data.Value);
         }

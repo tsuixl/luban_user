@@ -254,4 +254,17 @@ public static class FileUtil
     {
         return Path.GetExtension(file).Substring(1);
     }
+    
+    public static string ParsePath(string path, IDictionary<string, string> replaceMap)
+    {
+        var ret = path;
+        foreach (var kp in replaceMap)
+        {
+            var rkey = $"%{kp.Key}%";
+            var rv = kp.Value;
+            ret = ret.Replace(rkey, rv);
+        }
+
+        return ret;
+    }
 }
