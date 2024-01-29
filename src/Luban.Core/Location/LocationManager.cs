@@ -304,7 +304,11 @@ public class LocationManager
             foreach (var language in m_AllLanguages)
             {
                 var item = content.GetItem(language);
-                var v = item != null ? item.content : content.GetKey();
+                var v = item != null ? item.content : "";
+                if (string.IsNullOrEmpty(v))
+                {
+                    v = content.GetKey();
+                }
                 row.Add(v);
             }
             excelDatas.Add(row);
