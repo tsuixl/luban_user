@@ -7,82 +7,82 @@ public class LuaDeserializeMethodNameVisitor : ITypeFuncVisitor<string>
 {
     public static LuaDeserializeMethodNameVisitor Ins { get; } = new();
 
-    public string Accept(TBool type)
+    public virtual string Accept(TBool type)
     {
         return "readBool";
     }
 
-    public string Accept(TByte type)
+    public virtual string Accept(TByte type)
     {
         return "readByte";
     }
 
-    public string Accept(TShort type)
+    public virtual string Accept(TShort type)
     {
         return "readShort";
     }
 
-    public string Accept(TInt type)
+    public virtual string Accept(TInt type)
     {
         return "readInt";
     }
 
-    public string Accept(TLong type)
+    public virtual string Accept(TLong type)
     {
         return "readLong";
     }
 
-    public string Accept(TFloat type)
+    public virtual string Accept(TFloat type)
     {
         return "readFloat";
     }
 
-    public string Accept(TDouble type)
+    public virtual string Accept(TDouble type)
     {
         return "readDouble";
     }
 
-    public string Accept(TEnum type)
+    public virtual string Accept(TEnum type)
     {
         return "readInt";
     }
 
-    public string Accept(TString type)
+    public virtual string Accept(TString type)
     {
         return "readString";
     }
 
-    public string Accept(TBean type)
+    public virtual string Accept(TBean type)
     {
         return $"beans['{type.DefBean.FullName}']._deserialize";
     }
 
-    public string Accept(TArray type)
+    public virtual string Accept(TArray type)
     {
         return "readList";
     }
 
-    public string Accept(TList type)
+    public virtual string Accept(TList type)
     {
         return "readList";
     }
 
-    public string Accept(TSet type)
+    public virtual string Accept(TSet type)
     {
         return "readSet";
     }
 
-    public string Accept(TMap type)
+    public virtual string Accept(TMap type)
     {
         return "readMap";
     }
 
-    public string Accept(TTable type)
+    public virtual string Accept(TTable type)
     {
         return "readTable";
     }
 
-    public string Accept(TDateTime type)
+    public virtual string Accept(TDateTime type)
     {
         return "readLong";
     }

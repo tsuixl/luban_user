@@ -198,11 +198,11 @@ local function InitTypes(methods)
             local o = {
             id = readInt(bs),
             name = readString(bs),
-            desc = readString(bs),
+            desc = readText(bs),
             locationText = beans['LocationText']._deserialize(bs),
-            desc3 = readString(bs),
+            desc3 = readText(bs),
             descList = readList(bs, beans['LocationText']._deserialize),
-            descList2 = readList(bs, readString),
+            descList2 = readList(bs, readText),
             }
             setmetatable(o, class)
             return o
@@ -219,7 +219,7 @@ local function InitTypes(methods)
         local id2name = {  }
         class._deserialize = function(bs)
             local o = {
-            zh = readString(bs),
+            zh = readText(bs),
             en = readString(bs),
             }
             setmetatable(o, class)
@@ -244,11 +244,11 @@ local function InitTypes(methods)
             local o = {
             id = readInt(bs),
             name = readString(bs),
-            desc = readString(bs),
+            desc = readText(bs),
             locationText = beans['LocationText']._deserialize(bs),
-            desc3 = readString(bs),
+            desc3 = readText(bs),
             descList = readList(bs, beans['LocationText']._deserialize),
-            descList2 = readList(bs, readString),
+            descList2 = readList(bs, readText),
             }
             setmetatable(o, class)
             return o
@@ -272,11 +272,11 @@ local function InitTypes(methods)
             local o = {
             id = readInt(bs),
             name = readString(bs),
-            desc = readString(bs),
+            desc = readText(bs),
             locationText = beans['LocationText']._deserialize(bs),
-            desc3 = readString(bs),
+            desc3 = readText(bs),
             descList = readList(bs, beans['LocationText']._deserialize),
-            descList2 = readList(bs, readString),
+            descList2 = readList(bs, readText),
             }
             setmetatable(o, class)
             return o
