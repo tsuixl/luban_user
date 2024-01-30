@@ -21,4 +21,12 @@ public static class CollectionExtensions
             }
         }
     }
+
+    public static void Expand<T>(IList<T> list, int size)
+    {
+        while (list.Count < size)
+        {
+            list.Add(default(T));
+        }
+    }
 }

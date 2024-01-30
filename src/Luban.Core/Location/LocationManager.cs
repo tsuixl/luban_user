@@ -77,6 +77,7 @@ public class LocationManager
     private bool m_IsNeedBuildLocation = false;
 
     private LocationAllData m_OldDdatas = new LocationAllData();
+    private List<List<string>> m_OldRawDatas = null;
 
     public bool IsNeedBuildLocation
     {
@@ -120,14 +121,22 @@ public class LocationManager
                         var method = SheetLoadUtil.GetMethod("ReadExcel");
                         var rowsObj = method.Invoke(null, new object[] {locationFile});
                         var rows = rowsObj as List<List<string>>;
-                        var languages = rows[0].Skip(1).ToList();
+                        m_OldRawDatas = rows;
                         var headRow = rows[0];
+                        var emptyHeadIdx = headRow.FindIndex((v) => string.IsNullOrEmpty(v));
+                        emptyHeadIdx = emptyHeadIdx < 0 ? headRow.Count : emptyHeadIdx;
                         for (int i = 1; i < rows.Count; i++)
                         {
+                            var row = rows[i];
+                            var idV = row[0];
+                            if (string.IsNullOrEmpty(idV))
+                            {
+                                break;
+                            }
+                            
                             LocationContent content = new();
                             content.id = i;
-                            var row = rows[i];
-                            for (int j = 1; j < row.Count; j++)
+                            for (int j = 1; j < emptyHeadIdx; j++)
                             {
                                 LocationItem item = new();
                                 item.content = row[j];
@@ -309,11 +318,13 @@ public class LocationManager
 
         var newFileExcel = Path.GetFileNameWithoutExtension(locationFile) + "_new" +".xlsx";
         newFileExcel = Path.Combine(dir, newFileExcel);
-        List<List<string>> excelDatas = new();
-        excelDatas.Add(new(){"id"});
-        excelDatas[0].AddRange(m_AllLanguages);
-        foreach (var content in m_AllData.datas)
+        List<List<string>> excelDatas = m_OldRawDatas.Select((sub) => { return new List<string>(sub);}).ToList();
+        List<string> headRow = new(){"id"};
+        headRow.AddRange(m_AllLanguages);
+        ListSetValue(excelDatas, 0, headRow);
+        for(int i=0; i<m_AllData.datas.Count; i++)
         {
+            var content = m_AllData.datas[i];
             List<string> row = new();
             row.Add(content.id.ToString());
             foreach (var language in m_AllLanguages)
@@ -326,7 +337,7 @@ public class LocationManager
                 }
                 row.Add(v);
             }
-            excelDatas.Add(row);
+            ListSetValue(excelDatas, i+1, row);
         }
 
         Type SheetLoadUtil = null;
@@ -344,6 +355,35 @@ public class LocationManager
             method.Invoke(null, new object[] {newFileExcel, excelDatas});
         }
     }
+
+    private void ListSetValue<T>(List<List<T>> arr, int idx1, List<T> v)
+    {
+        for (int i = 0; i < v.Count; i++)
+        {
+            ListSetValue(arr, idx1, i, v[i]);
+        }
+    }
+    
+    private void ListSetValue<T>(List<List<T>> arr, int idx1, int idx2, T v)
+    {
+        ExpandList(arr, idx1+1);
+        var list1 = arr[idx1];
+        if (list1 == null)
+        {
+            list1 = new List<T>();
+            arr[idx1] = list1;
+        }
+        ExpandList(list1, idx2+1);
+        list1[idx2] = v;
+    }
+    private void ExpandList<T>(IList<T> list, int size)
+    {
+        while (list.Count < size)
+        {
+            list.Add(default(T));
+        }
+    }
+    
     
     
     public class TableExtensionData
