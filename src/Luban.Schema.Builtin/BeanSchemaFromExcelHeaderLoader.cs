@@ -92,6 +92,15 @@ public class BeanSchemaFromExcelHeaderLoader : IBeanSchemaLoader
             if (!string.IsNullOrEmpty(f.Groups))
             {
                 cf.Groups = f.Groups.Split(',').Select(s => s.Trim()).Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+            } 
+            
+            if (!string.IsNullOrEmpty(f.Extend))
+            {
+                var extend = DefUtil.ParseAttrs(f.Extend);
+                cf.Extends = extend;
+                // if (cf.Tags == null)
+                //     cf.Tags = new();
+                // cf.Tags.AddAll(extend);
             }
 
             cb.Fields.Add(cf);

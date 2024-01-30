@@ -13,4 +13,6 @@ public class RawField
     public bool NotNameValidation { get; set; }
 
     public List<string> Groups { get; set; }
+    
+    public Dictionary<string, string> Extends { get; set; }
 }

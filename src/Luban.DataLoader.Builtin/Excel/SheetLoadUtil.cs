@@ -131,7 +131,7 @@ public static class SheetLoadUtil
         "comment",
         "column",
         "group",
-        "tag",
+        "extend",
     };
 
     private const char s_sep = '#';
@@ -492,6 +492,16 @@ public static class SheetLoadUtil
         return TryParseMeta(metaStr, out orientRow, out tableName);
     }
 
+    private static bool IsTagRow(List<Cell> row)
+    {
+        return IsRowTagEqual(row, "##tag");
+    }
+    
+    private static bool IsExtendRow(List<Cell> row)
+    {
+        return IsRowTagEqual(row, "##extend");
+    }
+    
     private static bool IsTypeRow(List<Cell> row)
     {
         return IsRowTagEqual(row, "##type");
@@ -684,6 +694,7 @@ public static class SheetLoadUtil
             descRow = cells.Count > 1 ? cells.Skip(1).FirstOrDefault(row => IsRowTagEqual(row, "##")) : null;
         }
         List<Cell> groupRow = cells.Find(row => IsGroupRow(row));
+        List<Cell> extendRow = cells.Find(row => IsExtendRow(row));
         var fields = new Dictionary<string, FieldInfo>();
         foreach (var subTitle in title.SubTitleList)
         {
@@ -724,6 +735,7 @@ public static class SheetLoadUtil
                 Tags = subTitle.Tags,
                 Type = typeRow[subTitle.FromIndex].Value?.ToString() ?? "",
                 Groups = groupRow?[subTitle.FromIndex].Value?.ToString() ?? "",
+                Extend = extendRow?[subTitle.FromIndex].Value?.ToString() ?? "",
                 Desc = desc,
             });
         }

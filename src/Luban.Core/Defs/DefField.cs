@@ -26,6 +26,8 @@ public class DefField
     // public string EscapeComment => DefUtil.EscapeCommentByCurrentLanguage(Comment);
 
     public Dictionary<string, string> Tags { get; }
+    
+    public Dictionary<string, string> Extends { get; }
 
     public bool IgnoreNameValidation { get; set; }
 
@@ -51,6 +53,7 @@ public class DefField
         Type = f.Type;
         Comment = f.Comment;
         Tags = f.Tags;
+        Extends = f.Extends;
         IgnoreNameValidation = f.NotNameValidation;
         this.Groups = f.Groups;
         this.RawField = f;
@@ -71,6 +74,34 @@ public class DefField
         try
         {
             CType = Assembly.CreateType(HostType.Namespace, Type, false);
+            Action<TType> AddExtend = null;
+            AddExtend = (cType) =>
+            {
+                if (CType is TList t1)
+                {
+                    AddExtend(t1.ElementType);
+                }
+                else if (CType is TArray t2)
+                {
+                    AddExtend(t2.ElementType);
+                }
+                else if (CType is TSet t3)
+                {
+                    AddExtend(t3.ElementType);
+                }
+                else if (CType is TMap t4)
+                {
+                    AddExtend(t4.ElementType);
+                }
+                else
+                {
+                    cType.Tags?.AddAll(Extends, false);
+                }
+            };
+            if (Extends != null)
+            {
+                AddExtend(CType);
+            }
         }
         catch (Exception e)
         {
