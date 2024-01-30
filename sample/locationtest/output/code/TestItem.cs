@@ -19,7 +19,7 @@ namespace Luban.Config
         public TestItem(ByteBuf _buf, string[] textList) 
         {
             Id = _buf.ReadInt();
-            Name = _buf.ReadString();
+            Name = ReadText(_buf, textList);
             Desc = ReadText(_buf, textList);
             LocationText = LocationText.DeserializeLocationText(_buf, textList);
             Desc3 = ReadText(_buf, textList);

@@ -197,7 +197,7 @@ local function InitTypes(methods)
         class._deserialize = function(bs)
             local o = {
             id = readInt(bs),
-            name = readString(bs),
+            name = readText(bs),
             desc = readText(bs),
             locationText = beans['LocationText']._deserialize(bs),
             desc3 = readText(bs),
@@ -271,7 +271,7 @@ local function InitTypes(methods)
         class._deserialize = function(bs)
             local o = {
             id = readInt(bs),
-            name = readString(bs),
+            name = readText(bs),
             desc = readText(bs),
             locationText = beans['LocationText']._deserialize(bs),
             desc3 = readText(bs),

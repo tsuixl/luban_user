@@ -19,7 +19,7 @@
 ,"Tags":{}}
 ,
 {"TypeName":"string","FieldName,":"name","IsNullable":False,"IsCollection":False,"IsBean":False
-,"Tags":{}}
+,"Tags":{"text":"text"}}
 ,
 {"TypeName":"string","FieldName,":"desc","IsNullable":False,"IsCollection":False,"IsBean":False
 ,"Tags":{"text":"1"}}
@@ -94,7 +94,7 @@
 ,"Tags":{}}
 ,
 {"TypeName":"string","FieldName,":"name","IsNullable":False,"IsCollection":False,"IsBean":False
-,"Tags":{}}
+,"Tags":{"text":"text"}}
 ,
 {"TypeName":"string","FieldName,":"desc","IsNullable":False,"IsCollection":False,"IsBean":False
 ,"Tags":{"text":"1"}}
