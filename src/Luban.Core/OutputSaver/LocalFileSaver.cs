@@ -28,8 +28,13 @@ public class LocalFileSaver : OutputSaverBase
 
     public override void SaveFile(OutputFileManifest fileManifest, string outputDir, OutputFile outputFile)
     {
-        var id = Thread.CurrentThread.ManagedThreadId;
         string fullOutputPath = outputFile.IsFullPath?$"{outputFile.File}": $"{outputDir}/{outputFile.File}";
+        int mainid = GenerationContext.Current.MainThread.ManagedThreadId;
+        var id = Thread.CurrentThread.ManagedThreadId;
+        if (mainid != id)
+        {
+            s_logger.Error($"save file not in main thread current:{id} main:{mainid} file:{fullOutputPath}");
+        }
         Directory.CreateDirectory(Path.GetDirectoryName(fullOutputPath));
         if (FileUtil.WriteAllBytes(fullOutputPath, outputFile.GetContentBytes()))
         {

@@ -54,6 +54,9 @@ public class DefaultPipeline : IPipeline
     {
         s_logger.Debug("prepare generation context");
         _genCtx = new GenerationContext();
+        _genCtx.MainThread = Thread.CurrentThread;
+        _genCtx.MainThreadId = Thread.CurrentThread.ManagedThreadId;
+        _genCtx.MainProcessorId = Thread.GetCurrentProcessorId();
         _defAssembly = new DefAssembly(_rawAssembly, _args.Target, _args.OutputTables);
 
         var generationCtxBuilder = new GenerationContextBuilder
@@ -88,20 +91,26 @@ public class DefaultPipeline : IPipeline
         }
         
         LocationManager.Ins.OnLoadDatas();
+
+        List<OutputFileManifest> totalFiles = new(); 
         
-        var tasks = new List<Task>();
+        var tasks = new List<Task<List<OutputFileManifest>>>();
         tasks.Add(Task.Run(() =>
         {
+            List<OutputFileManifest> fileList = new();
             foreach (string target in _args.CodeTargets)
             {
                 // code target doesn't support run in parallel
                 ICodeTarget m = CodeTargetManager.Ins.CreateCodeTarget(target);
-                ProcessCodeTarget(target, m);
+                var outPutFile = ProcessCodeTarget(target, m);
+                fileList.Add(outPutFile);
             }
+            return fileList;
         }));
         Task.WaitAll(tasks.ToArray());
+        tasks.ForEach((t)=>{totalFiles.AddRange(t.Result);});
         
-        var tasksData = new List<Task>();
+        var tasksData = new List<Task<List<OutputFileManifest>>>();
         if (_args.DataTargets.Count > 0)
         {
             string dataExporterName = EnvManager.Current.GetOptionOrDefault("", BuiltinOptionNames.DataExporter, true, "default");
@@ -110,13 +119,28 @@ public class DefaultPipeline : IPipeline
             foreach (string mission in _args.DataTargets)
             {
                 IDataTarget dataTarget = DataTargetManager.Ins.CreateDataTarget(mission);
-                tasksData.Add(Task.Run(() => ProcessDataTarget(mission, dataExporter, dataTarget)));
+                tasksData.Add(Task.Run(() =>
+                {
+                    List<OutputFileManifest> fileList = new();
+                    var outPutFile = ProcessDataTarget(mission, dataExporter, dataTarget);
+                    fileList.Add(outPutFile);
+                    return fileList;
+                }));
             }
         }
         Task.WaitAll(tasksData.ToArray());
+        tasksData.ForEach((t)=>{totalFiles.AddRange(t.Result);});
+        
+        s_logger.Info("save files begin");
+        for (int i = 0; i < totalFiles.Count; i++)
+        {
+            var file = totalFiles[i];
+            Save(file);
+        }
+        s_logger.Info("save files finish");
     }
 
-    protected void ProcessCodeTarget(string name, ICodeTarget codeTarget)
+    protected OutputFileManifest ProcessCodeTarget(string name, ICodeTarget codeTarget)
     {
         s_logger.Info("process code target:{} begin", name);
         var outputManifest = new OutputFileManifest(name, OutputType.Code);
@@ -124,8 +148,9 @@ public class DefaultPipeline : IPipeline
         codeTarget.Handle(_genCtx, outputManifest);
 
         outputManifest = PostProcess(BuiltinOptionNames.CodePostprocess, outputManifest);
-        Save(outputManifest);
+        // Save(outputManifest);
         s_logger.Info("process code target:{} end", name);
+        return outputManifest;
     }
 
     protected OutputFileManifest PostProcess(string familyName, OutputFileManifest manifest)
@@ -140,15 +165,16 @@ public class DefaultPipeline : IPipeline
         return manifest;
     }
 
-    protected void ProcessDataTarget(string name, IDataExporter mission, IDataTarget dataTarget)
+    protected OutputFileManifest ProcessDataTarget(string name, IDataExporter mission, IDataTarget dataTarget)
     {
         s_logger.Info("process data target:{} begin", name);
         var outputManifest = new OutputFileManifest(name, OutputType.Data);
         mission.Handle(_genCtx, dataTarget, outputManifest);
 
         var newManifest = PostProcess(BuiltinOptionNames.DataPostprocess, outputManifest);
-        Save(newManifest);
+        // Save(newManifest);
         s_logger.Info("process data target:{} end", name);
+        return newManifest;
     }
 
     private void Save(OutputFileManifest manifest)

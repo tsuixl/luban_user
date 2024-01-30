@@ -58,10 +58,10 @@ public abstract class OutputSaverBase : IOutputSaver
             
             if (!IsOnlyLua)
             {
-                tasks.Add(Task.Run(() =>
-                {
+                // tasks.Add(Task.Run(() =>
+                // {
                     SaveFile(outputFileManifest, outputDir, outputFile);
-                }));
+                // }));
             }
         }
         Task.WaitAll(tasks.ToArray());

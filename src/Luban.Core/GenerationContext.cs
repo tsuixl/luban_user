@@ -247,4 +247,8 @@ public class GenerationContext
             }
         }
     }
+
+    public Thread MainThread { get; set; }
+    public int MainProcessorId { get; set; }
+    public int MainThreadId { get; set; }
 }
