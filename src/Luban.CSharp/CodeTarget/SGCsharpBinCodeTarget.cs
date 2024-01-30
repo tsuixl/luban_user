@@ -13,13 +13,7 @@ public class SGCsharpBinCodeTarget : CsharpCodeTargetBase
     {
         base.OnCreateTemplateContext(ctx);
         ctx.PushGlobal(new SGCsharpBinTemplateExtension());
-        var tableExtension = new ScriptObject
-        {
-            {"__tables_extension", LocationManager.Ins.ExtensionDataMap },
-            {"__location_build", LocationManager.Ins.IsNeedBuildLocation },
-            {"__location_config_file_language", LocationManager.Ins.ConfigFileLanguage },
-            {"__location_export_default_language", LocationManager.Ins.ExportDefaultLanguage },
-        };
+        var tableExtension = LocationManager.Ins.CreateExportScriptObject();
         ctx.PushGlobal(tableExtension);
     }
 }

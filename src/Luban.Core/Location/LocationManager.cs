@@ -6,6 +6,7 @@ using Luban.DataVisitors;
 using Luban.Defs;
 using Luban.L10N;
 using Luban.Types;
+using Scriban.Runtime;
 
 namespace Luban.Location;
 
@@ -261,6 +262,20 @@ public class LocationManager
         }
 
         return "";
+    }
+
+    public ScriptObject CreateExportScriptObject()
+    {
+        var tableExtension = new ScriptObject
+        {
+            {"__tables_extension", LocationManager.Ins.ExtensionDataMap },
+            {"__location_build", LocationManager.Ins.IsNeedBuildLocation },
+            {"__location_config_file_language", LocationManager.Ins.ConfigFileLanguage },
+            {"__location_export_default_language", LocationManager.Ins.ExportDefaultLanguage },
+            {"__location_export_languages", LocationManager.Ins.ExportLanguages },
+            {"__xargs", EnvManager.Current.GetAllOptions()},
+        };
+        return tableExtension;
     }
 
     public void WriteLocationFile()
