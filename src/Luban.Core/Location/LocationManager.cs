@@ -155,7 +155,6 @@ public class LocationManager
 
                 HandleData();
 
-                WriteLocationFile();
             }
         }
     }
