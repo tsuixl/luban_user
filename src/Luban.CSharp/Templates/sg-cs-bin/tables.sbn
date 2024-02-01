@@ -7,6 +7,12 @@ using System.Threading.Tasks;
     {
         public const string k_ConfigDataType = "bytes";
         public const string k_ExportDefaultLanguage = "{{__location_export_default_language}}";
+        public readonly string[] k_ExportLanguages = new string[]
+		{
+        {{~for lan in __location_export_languages~}}
+            "{{lan}}",
+        {{~end~}}
+		};
 
         private System.Func<string, string, Task<string[]>> _laodTextList;
         public string Language {get; private set;} = null;

@@ -65,8 +65,8 @@ public class LocationManager
 
     private LocationAllData m_AllData = null;
     private Dictionary<string, LocationContent> m_AllDataMap = null;
-    private List<string> m_AllLanguages = null;
-    private List<string> m_ExportLanguages = null;
+    private List<string> m_AllLanguages = new();
+    private List<string> m_ExportLanguages = new();
 
     public string ConfigFileLanguage { get; set; } = "zh";
     
@@ -157,6 +157,10 @@ public class LocationManager
 
             }
         }
+        
+        s_logger.Info($"LocationManager buildLocation:{buildLocation} ExportDefaultLanguage:{ExportDefaultLanguage} ConfigFileLanguage:{ConfigFileLanguage}" +
+                       $" m_AllLanguages:{string.Join(',',m_AllLanguages)}" +
+                       $" m_ExportLanguages:{string.Join(',',m_ExportLanguages)} ");
     }
 
     private void HandleData()

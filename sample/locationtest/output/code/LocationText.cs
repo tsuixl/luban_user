@@ -21,6 +21,12 @@ namespace Luban.Config
             Zh = ReadText(_buf, textList);
             En = _buf.ReadString();
         }
+        
+		public void ReDeserialize(ByteBuf _buf, string[] textList)
+        {
+            Zh = ReadText(_buf, textList);
+            En = _buf.ReadString();
+        }
 
         public static LocationText DeserializeLocationText(ByteBuf _buf, string[] textList)
         {

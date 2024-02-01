@@ -21,22 +21,57 @@ namespace Luban.Config
             Id = _buf.ReadInt();
             Name = _buf.ReadString();
             Desc = ReadText(_buf, textList);
-            LocationText = LocationText.DeserializeLocationText(_buf, textList);
+            LocationText = LocationText.S_Deserialize(_buf, textList);
             Desc3 = ReadText(_buf, textList);
-            {int n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);
+            {
+            int n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);
             DescList = new System.Collections.Generic.List<LocationText>(n0);
             for(var i0 = 0 ; i0 < n0 ; i0++) 
-            { LocationText _e0;  
-            _e0 = LocationText.DeserializeLocationText(_buf, textList);
+            {
+             LocationText _e0;  
+            _e0 = LocationText.S_Deserialize(_buf, textList);
              DescList.Add(_e0);
             }}
-            {int n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);
+            {
+            int n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);
             DescList2 = new System.Collections.Generic.List<string>(n0);
             for(var i0 = 0 ; i0 < n0 ; i0++) 
-            { string _e0;  
+            {
+             string _e0;  
             _e0 = ReadText(_buf, textList);
              DescList2.Add(_e0);
             }}
+        }
+        
+		public void ReDeserialize(ByteBuf _buf, string[] textList)
+        {
+            Id = _buf.ReadInt();
+            Name = _buf.ReadString();
+            Desc = ReadText(_buf, textList);
+            LocationText.ReDeserialize(_buf, textList);
+            Desc3 = ReadText(_buf, textList);
+            
+            {
+                int n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);
+                for(var i0 = 0 ; i0 < n0 ; i0++)
+                {
+                    LocationText _e0 = DescList[i0];
+                    LocationText.ReDeserialize(_buf, textList);
+                    DescList[i0] = _e0;
+                }
+            }
+
+            
+            {
+                int n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);
+                for(var i0 = 0 ; i0 < n0 ; i0++)
+                {
+                    string _e0;
+                    _e0 = ReadText(_buf, textList);
+                    DescList2[i0] = _e0;
+                }
+            }
+
         }
 
         public static TestItem2 DeserializeTestItem2(ByteBuf _buf, string[] textList)

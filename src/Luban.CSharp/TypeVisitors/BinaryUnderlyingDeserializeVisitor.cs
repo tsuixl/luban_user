@@ -86,7 +86,7 @@ public class BinaryUnderlyingDeserializeVisitor : ITypeFuncVisitor<string, strin
         }
         
         return 
-               $"{{int {n} = System.Math.Min({bufName}.ReadSize(), {bufName}.Size);" + "\n" +
+               $"{{\nint {n} = System.Math.Min({bufName}.ReadSize(), {bufName}.Size);" + "\n" +
                $"{fieldName} = new {typeStr};" + "\n" +
                $"for(var {index} = 0 ; {index} < {n} ; {index}++) " + "\n" +
                $"{{ " + "\n" +
@@ -101,10 +101,11 @@ public class BinaryUnderlyingDeserializeVisitor : ITypeFuncVisitor<string, strin
         string n = $"n{depth}";
         string e = $"_e{depth}";
         string i = $"i{depth}";
-        return $"{{int {n} = System.Math.Min({bufName}.ReadSize(), {bufName}.Size);" + "\n" +
+        return $"{{\nint {n} = System.Math.Min({bufName}.ReadSize(), {bufName}.Size);" + "\n" +
                $"{fieldName} = new {type.Apply(DeclaringTypeNameVisitor.Ins)}({n});" + "\n" +
                $"for(var {i} = 0 ; {i} < {n} ; {i}++) " + "\n" +
-               $"{{ {type.ElementType.Apply(DeclaringTypeNameVisitor.Ins)} {e};  " + "\n" +
+               $"{{\n" +
+               $" {type.ElementType.Apply(DeclaringTypeNameVisitor.Ins)} {e};  " + "\n" +
                $"{type.ElementType.Apply(this, bufName, $"{e}", depth + 1)}" + "\n" +
                $" {fieldName}.Add({e});" + "\n" +
                $"}}}}";
@@ -115,10 +116,11 @@ public class BinaryUnderlyingDeserializeVisitor : ITypeFuncVisitor<string, strin
         string n = $"n{depth}";
         string e = $"_e{depth}";
         string i = $"i{depth}";
-        return $"{{int {n} = System.Math.Min({bufName}.ReadSize(), {bufName}.Size);" + "\n" +
+        return $"{{\nint {n} = System.Math.Min({bufName}.ReadSize(), {bufName}.Size);" + "\n" +
                $"{fieldName} = new {type.Apply(DeclaringTypeNameVisitor.Ins)}(/*{n} * 3 / 2*/);" + "\n" +
                $"for(var {i} = 0 ; {i} < {n} ; {i}++) " + "\n" +
-               $"{{ {type.ElementType.Apply(DeclaringTypeNameVisitor.Ins)} {e}; " + "\n" +
+               $"{{\n" +
+               $" {type.ElementType.Apply(DeclaringTypeNameVisitor.Ins)} {e}; " + "\n" +
                $" {type.ElementType.Apply(this, bufName, $"{e}", +1)} " + "\n" +
                $"{fieldName}.Add({e});" + "\n" +
                $"}}}}";
@@ -130,10 +132,11 @@ public class BinaryUnderlyingDeserializeVisitor : ITypeFuncVisitor<string, strin
         string k = $"_k{depth}";
         string v = $"_v{depth}";
         string i = $"i{depth}";
-        return $"{{int {n} = System.Math.Min({bufName}.ReadSize(), {bufName}.Size);" + "\n" +
+        return $"{{\nint {n} = System.Math.Min({bufName}.ReadSize(), {bufName}.Size);" + "\n" +
                $"{fieldName} = new {type.Apply(DeclaringTypeNameVisitor.Ins)}({n} * 3 / 2);" + "\n" +
                $"for(var {i} = 0 ; {i} < {n} ; {i}++) " + "\n" +
-               $"{{ {type.KeyType.Apply(DeclaringTypeNameVisitor.Ins)} {k};  " + "\n" +
+               $"{{\n" +
+               $" {type.KeyType.Apply(DeclaringTypeNameVisitor.Ins)} {k};  " + "\n" +
                $"{type.KeyType.Apply(this, bufName, k, depth + 1)} {type.ValueType.Apply(DeclaringTypeNameVisitor.Ins)} {v};" + "\n" +
                $"  {type.ValueType.Apply(this, bufName, v, depth + 1)}" + "\n" +
                $"     {fieldName}.Add({k}, {v});" + "\n" +

@@ -79,7 +79,7 @@ namespace Luban.Config
             for(int n = Count ; n > 0 ; --n)
             {
                 TestItem _v;
-                _v = TestItem.DeserializeTestItem(buff, textList);
+                _v = TestItem.S_Deserialize(buff, textList);
                 _dataList.Add(_v);
                 _dataMap.Add(_v.Id, _v);
             }
@@ -110,7 +110,7 @@ namespace Luban.Config
             int length = _lengthMap[key];
             ByteBuf buf = this._byteBufLoader(FileName, offset, length);
             var textList = m_TextList;
-            v = TestItem.DeserializeTestItem(buf, textList);;
+            v = TestItem.S_Deserialize(buf, textList);;
             _dataMap[key] = v;
             v.ResolveRef(_tables);
             return v;

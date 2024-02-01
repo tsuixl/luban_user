@@ -69,6 +69,24 @@ using Luban;
                 {{~end~}}
             {{~end~}}
         }
+        
+		public void ReDeserialize(ByteBuf _buf, string[] textList)
+        {
+            {{~ for field in export_fields
+                fieldName = format_property_name __code_style field.name
+             ~}}
+            {{re_deserialize '_buf' fieldName field.ctype}}
+                {{~if can_generate_ref field~}}
+            {{get_ref_name field}} = null;
+                {{~end~}}
+                {{~if has_index field~}}
+            foreach(var _v in {{fieldName}})
+            { 
+                {{get_index_var_name field}}.Add(_v.{{format_property_name __code_style (get_index_field field).name}}, _v);
+            }
+                {{~end~}}
+            {{~end~}}
+        }
 
         public static {{__name}} Deserialize{{__name}}(ByteBuf _buf, string[] textList)
         {

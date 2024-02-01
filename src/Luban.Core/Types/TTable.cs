@@ -9,6 +9,8 @@ public class TTable : TType
         return new TTable(isNullable, tags);
     }
 
+    public override bool IsValueType => false;
+
     public override string TypeName => "table";
 
     private TTable(bool isNullable, Dictionary<string, string> tags) : base(isNullable, tags)

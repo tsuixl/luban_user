@@ -17,6 +17,11 @@ namespace Luban.Config
     {
         public const string k_ConfigDataType = "bytes";
         public const string k_ExportDefaultLanguage = "zh";
+        public readonly string[] k_ExportLanguages = new string[]
+		{
+            "zh",
+            "en",
+		};
 
         private System.Func<string, string, Task<string[]>> _laodTextList;
         public string Language {get; private set;} = null;
@@ -145,3 +150,4 @@ namespace Luban.Config
     }
 
 }
+

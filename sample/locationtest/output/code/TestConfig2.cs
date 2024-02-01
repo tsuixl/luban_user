@@ -45,7 +45,7 @@ public partial class TestConfig2 : Luban.TableBase
         for(int n = Count ; n > 0 ; --n)
         {
             TestItem2 _v;
-            _v = TestItem2.DeserializeTestItem2(_buf, textList);
+            _v = TestItem2.S_Deserialize(_buf, textList);
             _dataList.Add(_v);
             _dataMap.Add(_v.Id, _v);
         }
