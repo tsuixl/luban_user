@@ -103,7 +103,7 @@ public class SGBinaryUnderlyingReDeserializeVisitor:BinaryUnderlyingDeserializeV
     public override string Accept(TBean type, string bufName, string fieldName, int depth)
     {
         
-        string src = $"{type.DefBean.FullName}.ReDeserialize({bufName}, textList);";
+        string src = $"{type.DefBean.FullName}.S_ReDeserialize({fieldName}, {bufName}, textList);";
         return src;
     }
 

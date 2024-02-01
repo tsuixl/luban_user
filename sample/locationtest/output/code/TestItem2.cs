@@ -48,7 +48,7 @@ namespace Luban.Config
             Id = _buf.ReadInt();
             Name = _buf.ReadString();
             Desc = ReadText(_buf, textList);
-            LocationText.ReDeserialize(_buf, textList);
+            LocationText.S_ReDeserialize(LocationText, _buf, textList);
             Desc3 = ReadText(_buf, textList);
             
             {
@@ -56,7 +56,7 @@ namespace Luban.Config
                 for(var i0 = 0 ; i0 < n0 ; i0++)
                 {
                     LocationText _e0 = DescList[i0];
-                    LocationText.ReDeserialize(_buf, textList);
+                    LocationText.S_ReDeserialize(_e0, _buf, textList);
                     DescList[i0] = _e0;
                 }
             }
