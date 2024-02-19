@@ -67,15 +67,20 @@ public class SGBinaryDataVisitor : IDataActionVisitor2<SGBinaryDataVisitorContex
         {
             if (string.IsNullOrEmpty(data.Value))
             {
-                x.byteBuf.WriteSize(0);
+                // x.byteBuf.WriteSize(0);
+                x.textIndexBuf.WriteSize(0);
+                x.textIndexList.Add(0);
             }
             else if (x.locationTextMap.TryGetValue(data.Value, out var id))
             {
-                x.byteBuf.WriteSize(id);
+                // x.byteBuf.WriteSize(id);
+                x.textIndexBuf.WriteSize(id);
+                x.textIndexList.Add(id);
             }
             else
             {
                 s_logger.Error($"找不到 text id value:{data.Value}");
+                throw new Exception($"找不到 text id value:{data.Value}");
             }
         }
         else

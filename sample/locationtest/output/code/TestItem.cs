@@ -45,14 +45,14 @@ namespace Luban.Config
         
 		public void ReDeserialize(ByteBuf _buf, string[] textList)
         {
-            Id = _buf.ReadInt();
+            //Id = _buf.ReadInt();
             Name = ReadText(_buf, textList);
             Desc = ReadText(_buf, textList);
             LocationText.S_ReDeserialize(LocationText, _buf, textList);
             Desc3 = ReadText(_buf, textList);
             
             {
-                int n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);
+                int n0 = DescList.Count;
                 for(var i0 = 0 ; i0 < n0 ; i0++)
                 {
                     LocationText _e0 = DescList[i0];
@@ -63,7 +63,7 @@ namespace Luban.Config
 
             
             {
-                int n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);
+                int n0 = DescList2.Count;
                 for(var i0 = 0 ; i0 < n0 ; i0++)
                 {
                     string _e0;

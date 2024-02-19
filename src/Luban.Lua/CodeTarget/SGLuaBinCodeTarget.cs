@@ -15,4 +15,6 @@ public class SGLuaBinCodeTarget : LuaCodeTargetBase
         ctx.PushGlobal(new LuaBinTemplateExtension());
 
     }
+    
+    
 }

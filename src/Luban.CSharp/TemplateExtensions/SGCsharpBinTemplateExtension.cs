@@ -18,6 +18,7 @@ public class SGCsharpBinTemplateExtension : ScriptObject
     {
         return type.Apply(SGBinaryReDeserializeVisitor.Ins, bufName, fieldName);
     }
+    
 }
 
 
@@ -45,14 +46,10 @@ public class SGBinaryUnderlyingDeserializeVisitor:BinaryUnderlyingDeserializeVis
     
     public override string Accept(TString type, string bufName, string fieldName, int depth)
     {
-        if (LocationManager.Ins.IsNeedBuildLocation)
+        if (LocationManager.IsTextField(type))
         {
-            if (LocationManager.IsTextField(type))
-            {
-                return $"{fieldName} = ReadText({bufName}, textList);";
-            }
+            return $"{fieldName} = ReadText({bufName}, textList);";
         }
-
         return $"{fieldName} = {bufName}.ReadString();";
     }  
     
@@ -73,7 +70,16 @@ public class SGBinaryReDeserializeVisitor : DecoratorFuncVisitor<string, string,
     {
         if (type.IsNullable)
         {
-            return $"if({bufName}.ReadBool()){{ {type.Apply(SGBinaryUnderlyingReDeserializeVisitor.Ins, bufName, fieldName, 0)} }} else {{ {fieldName} = null; }}";
+            
+return $@"
+if({bufName}.ReadBool())
+{{ 
+    {type.Apply(SGBinaryUnderlyingReDeserializeVisitor.Ins, bufName, fieldName, 0)} 
+}} 
+else 
+{{ 
+    {fieldName} = null; 
+}}";
         }
         else
         {
@@ -86,20 +92,85 @@ public class SGBinaryReDeserializeVisitor : DecoratorFuncVisitor<string, string,
 public class SGBinaryUnderlyingReDeserializeVisitor:BinaryUnderlyingDeserializeVisitor
 {
     public static SGBinaryUnderlyingReDeserializeVisitor Ins { get; } = new();
+
+    public static bool IsShouldReLoadField(TType type)
+    {
+        if (type.IsValueType && !LocationManager.IsTextField(type))
+        {
+            return false;
+        }
+        return true;
+    }
+    
+    public static string AddHead(TType type)
+    {
+        if (IsShouldReLoadField(type))
+        {
+            return "";
+        }
+
+        return "//";
+    }
+    
+    public override string Accept(TBool type, string bufName, string fieldName, int depth)
+    {
+        return $"//{fieldName} = {bufName}.ReadBool();";
+    }
+
+    public override string Accept(TByte type, string bufName, string fieldName, int depth)
+    {
+        return $"//{fieldName} = {bufName}.ReadByte();";
+    }
+
+    public override string Accept(TShort type, string bufName, string fieldName, int depth)
+    {
+        return $"//{fieldName} = {bufName}.ReadShort();";
+    }
+    public override string Accept(TInt type, string bufName, string fieldName, int depth)
+    {
+        return $"//{fieldName} = {bufName}.ReadInt();";
+    }
+
+    public override string Accept(TLong type, string bufName, string fieldName, int depth)
+    {
+        return $"//{fieldName} = {bufName}.ReadLong();";
+    }
+
+    public override string Accept(TFloat type, string bufName, string fieldName, int depth)
+    {
+        return $"//{fieldName} = {bufName}.ReadFloat();";
+    }
+
+    public override string Accept(TDouble type, string bufName, string fieldName, int depth)
+    {
+        return $"//{fieldName} = {bufName}.ReadDouble();";
+    }
+
+    public override string Accept(TEnum type, string bufName, string fieldName, int depth)
+    {
+        return $"//{fieldName} = ({type.Apply(UnderlyingDeclaringTypeNameVisitor.Ins)}){bufName}.ReadInt();";
+    }
+
+    public override string Accept(TTable type, string bufName, string fieldName, int depth)
+    {
+        return $"//{fieldName} = {bufName}.ReadString();";
+    }
+
+    public override string Accept(TDateTime type, string bufName, string fieldName, int depth)
+    {
+        string src = $"{bufName}.ReadLong()";
+        return $"//{fieldName} = {src};";
+    }
     
     public override string Accept(TString type, string bufName, string fieldName, int depth)
     {
-        if (LocationManager.Ins.IsNeedBuildLocation)
+        if (LocationManager.IsTextField(type))
         {
-            if (LocationManager.IsTextField(type))
-            {
-                return $"{fieldName} = ReadText({bufName}, textList);";
-            }
+            return $"{fieldName} = ReadText({bufName}, textList);";
         }
+        return $"//{fieldName} = {bufName}.ReadString();";
+    }
 
-        return $"{fieldName} = {bufName}.ReadString();";
-    }  
-    
     public override string Accept(TBean type, string bufName, string fieldName, int depth)
     {
         
@@ -109,6 +180,10 @@ public class SGBinaryUnderlyingReDeserializeVisitor:BinaryUnderlyingDeserializeV
 
     public override string Accept(TArray type, string bufName, string fieldName, int depth)
     {
+        if (IsShouldReLoadField(type.ElementType) == false)
+        {
+            return $"//{fieldName}";
+        }
         string num = $"__n{depth}";
         string item = $"__e{depth}";
         string index = $"__index{depth}";
@@ -126,7 +201,7 @@ public class SGBinaryUnderlyingReDeserializeVisitor:BinaryUnderlyingDeserializeV
         string tmp =
             @$"
 {{
-    int {num} = System.Math.Min({bufName}.ReadSize(), {bufName}.Size);
+    int {num} = {fieldName}.Length;
     for(var {index} = 0 ; {index} < {num} ; {index}++)
     {{
         {type.ElementType.Apply(DeclaringTypeNameVisitor.Ins)} {item}{getStr};
@@ -141,6 +216,10 @@ public class SGBinaryUnderlyingReDeserializeVisitor:BinaryUnderlyingDeserializeV
 
     public override string Accept(TList type, string bufName, string fieldName, int depth)
     {
+        if (IsShouldReLoadField(type.ElementType) == false)
+        {
+            return $"//{fieldName}";
+        }
         string num = $"n{depth}";
         string item = $"_e{depth}";
         string index = $"i{depth}";
@@ -149,7 +228,7 @@ public class SGBinaryUnderlyingReDeserializeVisitor:BinaryUnderlyingDeserializeV
         string tmp =
 @$"
 {{
-    int {num} = System.Math.Min({bufName}.ReadSize(), {bufName}.Size);
+    int {num} = {fieldName}.Count;
     for(var {index} = 0 ; {index} < {num} ; {index}++)
     {{
         {type.ElementType.Apply(DeclaringTypeNameVisitor.Ins)} {item}{getStr};
@@ -164,11 +243,14 @@ public class SGBinaryUnderlyingReDeserializeVisitor:BinaryUnderlyingDeserializeV
 
     public override string Accept(TSet type, string bufName, string fieldName, int depth)
     {
-        
+        if (IsShouldReLoadField(type.ElementType) == false)
+        {
+            return $"//{fieldName}";
+        }
         string n = $"n{depth}";
         string e = $"_e{depth}";
         string i = $"i{depth}";
-        return $"{{\nint {n} = System.Math.Min({bufName}.ReadSize(), {bufName}.Size);" + "\n" +
+        return $"{{\nint {n} = {fieldName}.Count;" + "\n" +
                $"{fieldName} = new {type.Apply(DeclaringTypeNameVisitor.Ins)}(/*{n} * 3 / 2*/);" + "\n" +
                $"for(var {i} = 0 ; {i} < {n} ; {i}++) " + "\n" +
                $"{{\n" +
@@ -180,6 +262,10 @@ public class SGBinaryUnderlyingReDeserializeVisitor:BinaryUnderlyingDeserializeV
 
     public override string Accept(TMap type, string bufName, string fieldName, int depth)
     {
+        if (IsShouldReLoadField(type.ElementType) == false)
+        {
+            return $"//{fieldName}";
+        }
         string num = $"n{depth}";
         string key = $"_k{depth}";
         string item = $"_v{depth}";
@@ -189,7 +275,7 @@ public class SGBinaryUnderlyingReDeserializeVisitor:BinaryUnderlyingDeserializeV
         string tmp =
 @$"
 {{
-    int {num} = System.Math.Min({bufName}.ReadSize(), {bufName}.Size);
+    int {num} = {fieldName}.Count;
     for(var {index} = 0 ; {index} < {num} ; {index}++)
     {{
         {type.KeyType.Apply(DeclaringTypeNameVisitor.Ins)} {key};

@@ -57,7 +57,7 @@ public class TextKeyListCollectorVisitor : IDataActionVisitor2<TextKeyCollection
 
     public void Accept(DString data, TType type, TextKeyCollection x)
     {
-        if (data != null &&  LocationManager.IsTextField(type))
+        if (data != null &&  LocationManager.IsTextField(type, false))
         {
             x.AddKey(data.Value);
         }

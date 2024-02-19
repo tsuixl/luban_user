@@ -18,4 +18,14 @@ public class LuaBinTemplateExtension : ScriptObject
         return type.Apply(SGLuaUnderlyingDeserializeVisitor.Ins, bufName);
     }
     
+    public static string SgDeserialize(string bufName, TType type)
+    {
+        return type.Apply(SGLuaUnderlyingDeserializeVisitor.Ins, bufName);
+    }
+    
+    public static string SgReDeserialize(string bufName, TType type)
+    {
+        return type.Apply(SGLuaUnderlyingReDeserializeVisitor.Ins, bufName);
+    }
+    
 }

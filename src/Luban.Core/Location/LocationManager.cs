@@ -436,7 +436,7 @@ public class LocationManager
             List<DefField> textFields = new();
             foreach (var field in table.ValueTType.DefBean.Fields)
             {
-                if (IsTextField(field.CType))
+                if (IsTextField(field.CType, false))
                 {
                     textFields.Add(field);
                 }
@@ -449,8 +449,12 @@ public class LocationManager
         }
     }
 
-    public static bool IsTextField(TType type)
+    public static bool IsTextField(TType type, bool checkNeedBuilLocation = true)
     {
+        if (checkNeedBuilLocation && !LocationManager.Ins.IsNeedBuildLocation)
+        {
+            return false;
+        }
         if (type is TString)
         {
             if (type != null && type.HasTag("text"))

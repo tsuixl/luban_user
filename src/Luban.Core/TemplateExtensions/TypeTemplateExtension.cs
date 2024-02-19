@@ -1,5 +1,6 @@
 using Luban.CodeFormat;
 using Luban.Defs;
+using Luban.Location;
 using Luban.Types;
 using Luban.Utils;
 using Scriban.Runtime;
@@ -130,5 +131,15 @@ public class TypeTemplateExtension : ScriptObject
     public static string EscapeComment(string comment)
     {
         return System.Web.HttpUtility.HtmlEncode(comment).Replace("\n", "<br/>");
+    }
+    
+    public static bool IsTextField(TType type)
+    {
+        return LocationManager.IsTextField(type);
+    }
+    
+    public static bool IsValueType(TType type)
+    {
+        return type.IsValueType;
     }
 }

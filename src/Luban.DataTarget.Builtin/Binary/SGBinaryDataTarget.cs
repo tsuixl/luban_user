@@ -54,7 +54,9 @@ public class SGBinaryDataTarget : DataTargetBase
         List<string> textList = extension.locationTextList;
 
         var isLazy = table.IsLazy;
+        var isLazyAndText = table.IsLazy && extension.hasText;
         var offsetBuf = isLazy ? new ByteBuf() : null;
+        var textIndexBuf = buildLocation ? new ByteBuf() : null;
         
         ByteBuf dataBuf = new ByteBuf(10 * 1024);
         if (offsetBuf != null)
@@ -62,6 +64,60 @@ public class SGBinaryDataTarget : DataTargetBase
             offsetBuf.WriteSize(records.Count);
         }
 
+        SGBinaryDataVisitorContext visitorContext = new SGBinaryDataVisitorContext()
+        {
+            byteBuf = dataBuf, 
+            locationTextMap = tableText,
+            textIndexBuf =  textIndexBuf,
+            buildLocation = buildLocation,
+        };
+        dataBuf.WriteSize(records.Count);
+        int lastOffset = 0;
+        foreach (var d in records)
+        {
+            if (isLazy)
+            {
+                foreach (var indexInfo in table.IndexList)
+                {
+                    DType keyData = d.Data.Fields[indexInfo.IndexFieldIdIndex];
+                    keyData.Apply(BinaryDataVisitor.Ins, offsetBuf);
+                }
+            }
+            
+            int offset = dataBuf.Size;
+            if (isLazy)
+            {
+                offsetBuf.WriteSize(offset);
+            }
+
+            int textIndexCount = isLazyAndText ? visitorContext.textIndexList.Count : 0;
+            d.Data.Apply(SGBinaryDataVisitor.Ins, table.ValueTType, visitorContext);
+            int length = dataBuf.Size - lastOffset;
+            if (isLazy)
+            {
+                offsetBuf.WriteSize(length);
+                if (isLazyAndText)
+                {
+                    offsetBuf.WriteSize(textIndexCount);
+                }
+            }
+
+            lastOffset = dataBuf.Size;
+        }
+
+       
+        if (isLazy)
+        {
+            subFile.Add(new OutputFile()
+            {
+                File = $"offset/{table.OutputDataFile}.{OutputFileExt}",
+                Content = offsetBuf.CopyData(),
+                OtherFiles = null,
+            });
+        }
+        
+        #region textList
+ 
         if (buildLocation)
         {
             if (extension.hasText)
@@ -82,56 +138,16 @@ public class SGBinaryDataTarget : DataTargetBase
                         Content = textBuf.CopyData(), OtherFiles = null,
                     });
                 }
-            }
-
-        }
-
-
-        SGBinaryDataVisitorContext visitorContext = new SGBinaryDataVisitorContext()
-        {
-            byteBuf = dataBuf, 
-            locationTextMap = tableText,
-            buildLocation = buildLocation,
-        };
-        dataBuf.WriteSize(records.Count);
-        int lastOffset = 0;
-        foreach (var d in records)
-        {
-            if (isLazy)
-            {
-                foreach (var indexInfo in table.IndexList)
+                
+                subFile.Add(new OutputFile()
                 {
-                    DType keyData = d.Data.Fields[indexInfo.IndexFieldIdIndex];
-                    keyData.Apply(BinaryDataVisitor.Ins, offsetBuf);
-                }
+                    File = $"location/{table.OutputDataFile}_text_index.{OutputFileExt}", 
+                    Content = visitorContext.textIndexBuf.CopyData(), OtherFiles = null,
+                });
             }
 
-            int offset = dataBuf.Size;
-            if (isLazy)
-            {
-                offsetBuf.WriteSize(offset);
-            }
-
-            d.Data.Apply(SGBinaryDataVisitor.Ins, table.ValueTType, visitorContext);
-            int length = dataBuf.Size - lastOffset;
-            if (isLazy)
-            {
-                offsetBuf.WriteSize(length);
-            }
-
-            lastOffset = dataBuf.Size;
         }
-
-       
-        if (isLazy)
-        {
-            subFile.Add(new OutputFile()
-            {
-                File = $"offset/{table.OutputDataFile}.{OutputFileExt}",
-                Content = offsetBuf.CopyData(),
-                OtherFiles = null,
-            });
-        }
+        #endregion
 
 
         var file = new OutputFile()

@@ -11,7 +11,7 @@ public class SGLuaUnderlyingDeserializeVisitor : DecoratorFuncVisitor<string, st
         public static SGLuaDeserializeMethodNameVisitor Ins { get; } = new();
         public override string Accept(TString type)
         {
-            if (LocationManager.Ins.IsNeedBuildLocation && LocationManager.IsTextField(type))
+            if (LocationManager.IsTextField(type))
             {
                 return $"readText";
             }
@@ -24,6 +24,15 @@ public class SGLuaUnderlyingDeserializeVisitor : DecoratorFuncVisitor<string, st
     public override string DoAccept(TType type, string x)
     {
         return $"{type.Apply(SGLuaDeserializeMethodNameVisitor.Ins)}({x})";
+    }
+    
+    public override string Accept(TString type, string x)
+    {
+        if (LocationManager.IsTextField(type))
+        {
+            return $"readText({x})";
+        }
+        return "readString({x})";
     }
     
     public override string Accept(TArray type, string x)
