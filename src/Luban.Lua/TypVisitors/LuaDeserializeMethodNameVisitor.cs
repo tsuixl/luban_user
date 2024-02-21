@@ -54,7 +54,7 @@ public class LuaDeserializeMethodNameVisitor : ITypeFuncVisitor<string>
 
     public virtual string Accept(TBean type)
     {
-        return $"beans['{type.DefBean.FullName}']._deserialize";
+        return $"beans.{type.DefBean.FullName}.__deserialize";
     }
 
     public virtual string Accept(TArray type)

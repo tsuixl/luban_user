@@ -464,6 +464,61 @@ public class LocationManager
         }
         return false;
     }
+
+    private static int s_IsShouldReLoadTextFieldCalls = 0;
+    public static bool IsShouldReLoadTextField(TType type)
+    {
+        s_IsShouldReLoadTextFieldCalls = 0;
+        var ret = IsShouldReLoadTextFieldPrivate(type);
+        s_IsShouldReLoadTextFieldCalls = 0;
+        return ret;
+    }
+    
+    private static bool IsShouldReLoadTextFieldPrivate(TType type)
+    {
+        s_IsShouldReLoadTextFieldCalls++;
+        if (s_IsShouldReLoadTextFieldCalls > 100)
+        {
+            throw new Exception("IsShouldReLoadTextField call max");
+        }
+        
+        if (type is TList tList)
+        {
+            return IsShouldReLoadTextFieldPrivate(tList.ElementType);
+        }
+        else if(type is TArray tArray)
+        {
+            return IsShouldReLoadTextFieldPrivate(tArray.ElementType);
+        }
+        else if(type is TSet tSet)
+        {
+            return IsShouldReLoadTextFieldPrivate(tSet.ElementType);
+        }
+        else if(type is TMap tMap)
+        {
+            return IsShouldReLoadTextFieldPrivate(tMap.ElementType);
+        }
+        else if (type is TBean tBean)
+        {
+            var fields = tBean.DefBean.HierarchyExportFields;
+            foreach (var field in fields)
+            {
+                if (IsShouldReLoadTextFieldPrivate(field.CType))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        if (type.IsValueType && !LocationManager.IsTextField(type))
+        {
+            return false;
+        }
+        return true;
+    }
+    
+    
     
     private Dictionary<string, int> GetTableAllText(DefTable table, List<Record> records, List<string> oldData, out List<string> textList)
     {

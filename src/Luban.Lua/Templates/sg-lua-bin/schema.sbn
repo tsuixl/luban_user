@@ -136,7 +136,12 @@ local function InitTypes(methods)
             local o = {
         {{~ for field in bean.hierarchy_export_fields ~}}
             {{~if !(need_marshal_bool_prefix field.ctype)~}}
-            {{field.name}} = {{sgdeserialize 'bs' field.ctype}},
+			{{sg_deserialize  '1|self.'+field.name+'|bs, textList' field.ctype}}
+			
+			{{sg_deserialize  '2|self.'+field.name+'|bs, textList' field.ctype}}
+			
+			{{sg_deserialize  '3|self.'+field.name+'|bs, textList' field.ctype}}
+
             {{~else~}}
             {{field.name}} = {{if !field.ctype.is_bool}}readBool(bs) and {{sgdeserialize 'bs' field.ctype}} or nil {{-else-}} readNullableBool(bs) {{-end-}},
             {{~end~}}

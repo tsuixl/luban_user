@@ -1,14 +1,19 @@
-return
+local _keyToIndex = 
 {
-[10000] = {id=10000,name="",desc="Apple",locationText={zh="Apple",en="Apple",},desc3="",descList={{zh="",en="AppledescList",},{zh="",en="pealdescList",},},descList2={"","","",},},
-[10001] = {id=10001,name="",desc="",locationText={zh="",en="ApplelocationText",},desc3="Bnana",descList={},descList2={},},
-[10002] = {id=10002,name="",desc="",locationText={zh="",en="",},desc3="peal",descList={},descList2={},},
-[10003] = {id=10003,name="",desc="",locationText={zh="",en="",},desc3="Apple",descList={},descList2={},},
-[10004] = {id=10004,name="",desc="",locationText={zh="",en="",},desc3="Bnana",descList={},descList2={},},
-[10005] = {id=10005,name="",desc="",locationText={zh="",en="",},desc3="",descList={},descList2={},},
-[10006] = {id=10006,name="",desc="",locationText={zh="",en="",},desc3="",descList={},descList2={},},
-[10007] = {id=10007,name="middle",desc="middle",locationText={zh="",en="",},desc3="",descList={},descList2={},},
-[10008] = {id=10008,name="",desc="",locationText={zh="",en="",},desc3="",descList={},descList2={},},
-[10009] = {id=10009,name="",desc="",locationText={zh="",en="",},desc3="",descList={},descList2={},},
-[10010] = {id=10010,name="",desc="",locationText={zh="",en="gandong",},desc3="",descList={{zh="",en="hardly",},},descList2={"",},},
+
+}
+
+local _datas = 
+{
+		beans.TestItem3.__itemSetMeta({10000,13,24,beans.LocationText.__itemSetMeta({24,"Apple",}),30,{beans.LocationText.__itemSetMeta({27,"AppledescList",}),beans.LocationText.__itemSetMeta({19,"pealdescList",}),},{28,1,20,},}),
+		beans.TestItem3.__itemSetMeta({10001,18,25,beans.LocationText.__itemSetMeta({29,"ApplelocationText",}),34,{},{},}),
+		beans.TestItem3.__itemSetMeta({10002,2,8,beans.LocationText.__itemSetMeta({"","",}),21,{},{},}),
+		beans.TestItem3.__itemSetMeta({10003,32,9,beans.LocationText.__itemSetMeta({"","",}),24,{},{},}),
+		beans.TestItem3.__itemSetMeta({10004,31,11,beans.LocationText.__itemSetMeta({"","",}),34,{},{},}),
+		beans.TestItem3.__itemSetMeta({10005,33,12,beans.LocationText.__itemSetMeta({"","",}),26,{},{},}),
+		beans.TestItem3.__itemSetMeta({10006,14,10,beans.LocationText.__itemSetMeta({"","",}),"",{},{},}),
+		beans.TestItem3.__itemSetMeta({10007,3,3,beans.LocationText.__itemSetMeta({"","",}),"",{},{},}),
+		beans.TestItem3.__itemSetMeta({10008,5,5,beans.LocationText.__itemSetMeta({"","",}),"",{},{},}),
+		beans.TestItem3.__itemSetMeta({10009,22,4,beans.LocationText.__itemSetMeta({"","",}),"",{},{},}),
+		beans.TestItem3.__itemSetMeta({10010,17,15,beans.LocationText.__itemSetMeta({16,"gandong",}),23,{beans.LocationText.__itemSetMeta({6,"hardly",}),},{7,},}),
 }

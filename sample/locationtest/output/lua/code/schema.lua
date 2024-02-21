@@ -196,13 +196,98 @@ local function InitTypes(methods)
         local id2name = {  }
         class._deserialize = function(bs)
             local o = {
-            id = readInt(bs),
-            name = readText(bs),
-            desc = readText(bs),
-            locationText = beans['LocationText']._deserialize(bs),
-            desc3 = readText(bs),
-            descList = readList(bs, beans['LocationText']._deserialize),
-            descList2 = readList(bs, readText),
+			self.id = readInt(bs, textList)
+			
+			--self.id = readInt(bs, textList)
+			
+			--self.id = readInt(bs, textList)
+
+			self.name = readText(bs, textList)
+			
+			self.name = readText(bs, textList)
+			
+			self.name = readText(bs, textList)
+
+			self.desc = readText(bs, textList)
+			
+			self.desc = readText(bs, textList)
+			
+			self.desc = readText(bs, textList)
+
+			self.locationText = beans.LocationText.__deserialize(bs, textList)
+			
+			beans.LocationText.__reDeserializeText(self.locationText, bs, textList)
+			
+			beans.LocationText.__reDeserializeTextLua(self.locationText, bs, textList)
+
+			self.desc3 = readText(bs, textList)
+			
+			self.desc3 = readText(bs, textList)
+			
+			self.desc3 = readText(bs, textList)
+
+			
+			do
+			    self.descList = {}
+			    local _n0 = readSize()
+			    for _i0=1, _n0 do
+			        local _e0
+			        _e0 = beans.LocationText.__deserialize(bs, textList)
+			        tinsert(self.descList, _e0)
+			    end
+			end
+			
+			
+			do
+			    local _n0 = #self.descList
+			    for _i0=1, _n0 do
+			        local _e0 = self.descList[_i0]
+			        beans.LocationText.__reDeserializeText(_e0, bs, textList)
+			        --self.descList[_i0] = _i0
+			    end
+			end
+			
+			
+			do
+			    local _n0 = #self.descList
+			    for _i0=1, _n0 do
+			        local _e0 = self.descList[_i0]
+			        beans.LocationText.__reDeserializeTextLua(_e0, bs, textList)
+			        --self.descList[_i0] = _i0
+			    end
+			end
+
+			
+			do
+			    self.descList2 = {}
+			    local _n0 = readSize()
+			    for _i0=1, _n0 do
+			        local _e0
+			        _e0 = readText(bs, textList)
+			        tinsert(self.descList2, _e0)
+			    end
+			end
+			
+			
+			do
+			    local _n0 = #self.descList2
+			    for _i0=1, _n0 do
+			        local _e0 = nil
+			        _e0 = readText(bs, textList)
+			        self.descList2[_i0] = _i0
+			    end
+			end
+			
+			
+			do
+			    local _n0 = #self.descList2
+			    for _i0=1, _n0 do
+			        local _e0 = nil
+			        _e0 = readText(bs, textList)
+			        self.descList2[_i0] = _i0
+			    end
+			end
+
             }
             setmetatable(o, class)
             return o
@@ -219,8 +304,18 @@ local function InitTypes(methods)
         local id2name = {  }
         class._deserialize = function(bs)
             local o = {
-            zh = readText(bs),
-            en = readString(bs),
+			self.zh = readText(bs, textList)
+			
+			self.zh = readText(bs, textList)
+			
+			self.zh = readText(bs, textList)
+
+			self.en = readString(bs, textList)
+			
+			--self.en = readString(bs, textList)
+			
+			--self.en = readString(bs, textList)
+
             }
             setmetatable(o, class)
             return o
@@ -242,13 +337,98 @@ local function InitTypes(methods)
         local id2name = {  }
         class._deserialize = function(bs)
             local o = {
-            id = readInt(bs),
-            name = readString(bs),
-            desc = readText(bs),
-            locationText = beans['LocationText']._deserialize(bs),
-            desc3 = readText(bs),
-            descList = readList(bs, beans['LocationText']._deserialize),
-            descList2 = readList(bs, readText),
+			self.id = readInt(bs, textList)
+			
+			--self.id = readInt(bs, textList)
+			
+			--self.id = readInt(bs, textList)
+
+			self.name = readString(bs, textList)
+			
+			--self.name = readString(bs, textList)
+			
+			--self.name = readString(bs, textList)
+
+			self.desc = readText(bs, textList)
+			
+			self.desc = readText(bs, textList)
+			
+			self.desc = readText(bs, textList)
+
+			self.locationText = beans.LocationText.__deserialize(bs, textList)
+			
+			beans.LocationText.__reDeserializeText(self.locationText, bs, textList)
+			
+			beans.LocationText.__reDeserializeTextLua(self.locationText, bs, textList)
+
+			self.desc3 = readText(bs, textList)
+			
+			self.desc3 = readText(bs, textList)
+			
+			self.desc3 = readText(bs, textList)
+
+			
+			do
+			    self.descList = {}
+			    local _n0 = readSize()
+			    for _i0=1, _n0 do
+			        local _e0
+			        _e0 = beans.LocationText.__deserialize(bs, textList)
+			        tinsert(self.descList, _e0)
+			    end
+			end
+			
+			
+			do
+			    local _n0 = #self.descList
+			    for _i0=1, _n0 do
+			        local _e0 = self.descList[_i0]
+			        beans.LocationText.__reDeserializeText(_e0, bs, textList)
+			        --self.descList[_i0] = _i0
+			    end
+			end
+			
+			
+			do
+			    local _n0 = #self.descList
+			    for _i0=1, _n0 do
+			        local _e0 = self.descList[_i0]
+			        beans.LocationText.__reDeserializeTextLua(_e0, bs, textList)
+			        --self.descList[_i0] = _i0
+			    end
+			end
+
+			
+			do
+			    self.descList2 = {}
+			    local _n0 = readSize()
+			    for _i0=1, _n0 do
+			        local _e0
+			        _e0 = readText(bs, textList)
+			        tinsert(self.descList2, _e0)
+			    end
+			end
+			
+			
+			do
+			    local _n0 = #self.descList2
+			    for _i0=1, _n0 do
+			        local _e0 = nil
+			        _e0 = readText(bs, textList)
+			        self.descList2[_i0] = _i0
+			    end
+			end
+			
+			
+			do
+			    local _n0 = #self.descList2
+			    for _i0=1, _n0 do
+			        local _e0 = nil
+			        _e0 = readText(bs, textList)
+			        self.descList2[_i0] = _i0
+			    end
+			end
+
             }
             setmetatable(o, class)
             return o
@@ -270,13 +450,98 @@ local function InitTypes(methods)
         local id2name = {  }
         class._deserialize = function(bs)
             local o = {
-            id = readInt(bs),
-            name = readText(bs),
-            desc = readText(bs),
-            locationText = beans['LocationText']._deserialize(bs),
-            desc3 = readText(bs),
-            descList = readList(bs, beans['LocationText']._deserialize),
-            descList2 = readList(bs, readText),
+			self.id = readInt(bs, textList)
+			
+			--self.id = readInt(bs, textList)
+			
+			--self.id = readInt(bs, textList)
+
+			self.name = readText(bs, textList)
+			
+			self.name = readText(bs, textList)
+			
+			self.name = readText(bs, textList)
+
+			self.desc = readText(bs, textList)
+			
+			self.desc = readText(bs, textList)
+			
+			self.desc = readText(bs, textList)
+
+			self.locationText = beans.LocationText.__deserialize(bs, textList)
+			
+			beans.LocationText.__reDeserializeText(self.locationText, bs, textList)
+			
+			beans.LocationText.__reDeserializeTextLua(self.locationText, bs, textList)
+
+			self.desc3 = readText(bs, textList)
+			
+			self.desc3 = readText(bs, textList)
+			
+			self.desc3 = readText(bs, textList)
+
+			
+			do
+			    self.descList = {}
+			    local _n0 = readSize()
+			    for _i0=1, _n0 do
+			        local _e0
+			        _e0 = beans.LocationText.__deserialize(bs, textList)
+			        tinsert(self.descList, _e0)
+			    end
+			end
+			
+			
+			do
+			    local _n0 = #self.descList
+			    for _i0=1, _n0 do
+			        local _e0 = self.descList[_i0]
+			        beans.LocationText.__reDeserializeText(_e0, bs, textList)
+			        --self.descList[_i0] = _i0
+			    end
+			end
+			
+			
+			do
+			    local _n0 = #self.descList
+			    for _i0=1, _n0 do
+			        local _e0 = self.descList[_i0]
+			        beans.LocationText.__reDeserializeTextLua(_e0, bs, textList)
+			        --self.descList[_i0] = _i0
+			    end
+			end
+
+			
+			do
+			    self.descList2 = {}
+			    local _n0 = readSize()
+			    for _i0=1, _n0 do
+			        local _e0
+			        _e0 = readText(bs, textList)
+			        tinsert(self.descList2, _e0)
+			    end
+			end
+			
+			
+			do
+			    local _n0 = #self.descList2
+			    for _i0=1, _n0 do
+			        local _e0 = nil
+			        _e0 = readText(bs, textList)
+			        self.descList2[_i0] = _i0
+			    end
+			end
+			
+			
+			do
+			    local _n0 = #self.descList2
+			    for _i0=1, _n0 do
+			        local _e0 = nil
+			        _e0 = readText(bs, textList)
+			        self.descList2[_i0] = _i0
+			    end
+			end
+
             }
             setmetatable(o, class)
             return o

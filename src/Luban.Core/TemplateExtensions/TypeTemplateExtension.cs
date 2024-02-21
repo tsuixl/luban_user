@@ -142,4 +142,9 @@ public class TypeTemplateExtension : ScriptObject
     {
         return type.IsValueType;
     }
+    
+    public static bool IsShouldReLoadTextField(TType type)
+    {
+        return LocationManager.IsShouldReLoadTextField(type);
+    }
 }

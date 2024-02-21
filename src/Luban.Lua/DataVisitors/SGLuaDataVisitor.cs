@@ -75,7 +75,9 @@ public class SGLuaDataVisitor : IDataFuncVisitor<TType, SGLuaDataVisitorContext,
             }
             else if (x.locationTextMap.TryGetValue(v, out var id))
             {
-                finnalV = LocationManager.Ins.GetContentValue(v, x.language);
+                // finnalV = LocationManager.Ins.GetContentValue(v, x.language);
+                finnalV = $"{id}";
+                return finnalV;
             }
             else
             {
@@ -96,15 +98,16 @@ public class SGLuaDataVisitor : IDataFuncVisitor<TType, SGLuaDataVisitorContext,
     public string Accept(DBean data, TType type, SGLuaDataVisitorContext x)
     {
         var sb = new StringBuilder();
-        if (data.Type.IsAbstractType)
-        {
-            sb.Append($"{{ {FieldNames.LuaTypeNameKey}='{DataUtil.GetImplTypeName(data)}',");
-        }
-        else
-        {
-            sb.Append('{');
-        }
-
+        // if (data.Type.IsAbstractType)
+        // {
+        //     sb.Append($"{{ {FieldNames.LuaTypeNameKey}='{DataUtil.GetImplTypeName(data)}',");
+        // }
+        // else
+        // {
+        //     sb.Append('{');
+        // }
+        sb.Append($"beans.{data.ImplType.Name}.__itemSetMeta(");
+        sb.Append('{');
         int index = 0;
         foreach (var f in data.Fields)
         {
@@ -114,11 +117,12 @@ public class SGLuaDataVisitor : IDataFuncVisitor<TType, SGLuaDataVisitorContext,
                 continue;
             }
             var fieldType = defField.CType;
-            sb.Append(defField.Name).Append('=');
+            // sb.Append(defField.Name).Append('=');
             sb.Append(f.Apply(this, fieldType, x));
             sb.Append(',');
         }
         sb.Append('}');
+        sb.Append(')');
         return sb.ToString();
     }
 
