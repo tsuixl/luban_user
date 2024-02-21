@@ -255,7 +255,7 @@ public class LocationManager
         }
     }
 
-    public string GetContentValue(string key, string language)
+    public string GetContentValue(string key, string language, bool returnSelfIfNotExist = true)
     {
         if (language == ConfigFileLanguage)
         {
@@ -270,10 +270,10 @@ public class LocationManager
                 return item.content;
             }
 
-            return "";
+            return returnSelfIfNotExist? key :  "";
         }
 
-        return "";
+        return returnSelfIfNotExist? key :  "";
     }
 
     public ScriptObject CreateExportScriptObject()

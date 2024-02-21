@@ -54,22 +54,23 @@ public class SGLuaDataTarget : DataTargetBase
         List<OutputFile> files = new();
         List<SGLuaDataVisitorContext> contexts = new();
         
-        if (buildLocation)
-        {
-            foreach (var language in LocationManager.Ins.ExportLanguages)
-            {
-                SGLuaDataVisitorContext context = new SGLuaDataVisitorContext();
-                context.buildLocation = buildLocation;
-                context.locationTextMap = tableText;
-                context.language = language;
-                contexts.Add(context);
-            }
-        }
-        else
+        // if (buildLocation)
+        // {
+        //     foreach (var language in LocationManager.Ins.ExportLanguages)
+        //     {
+        //         SGLuaDataVisitorContext context = new SGLuaDataVisitorContext();
+        //         context.buildLocation = buildLocation;
+        //         context.locationTextMap = tableText;
+        //         context.language = language;
+        //         contexts.Add(context);
+        //     }
+        // }
+        // else
         {
             SGLuaDataVisitorContext context = new SGLuaDataVisitorContext();
             context.buildLocation = buildLocation;
             context.locationTextMap = tableText;
+            context.language = LocationManager.Ins.ExportDefaultLanguage;
             contexts.Add(context);
         }
 
@@ -103,6 +104,57 @@ public class SGLuaDataTarget : DataTargetBase
             };
             files.Add(file);
         }
+        
+        #region textList
+ 
+        if (buildLocation)
+        {
+            if (extension.hasText)
+            {
+                foreach (var language in LocationManager.Ins.ExportLanguages)
+                {
+                    var textBuf = buildLocation ? new StringBuilder() : null;
+                    textBuf.Append("return\n{\n");
+                    foreach (var text in textList)
+                    {
+                        string finalStr = text;
+                        finalStr = LocationManager.Ins.GetContentValue(text, language); 
+                        finalStr = DataUtil.EscapeLuaStringWithQuote(finalStr);
+                        textBuf.Append(finalStr);
+                        textBuf.Append(",\n");
+                    }
+                    textBuf.Append("\n}");
+
+                    files.Add(new OutputFile()
+                    {
+                        File = $"location/{table.OutputDataFile}_text_{language}.{OutputFileExt}", 
+                        Content = textBuf.ToString(), 
+                        OtherFiles = null,
+                    });
+                }
+                
+                SGLuaDataVisitorContext textListIndexContext = new SGLuaDataVisitorContext();
+                textListIndexContext.buildLocation = buildLocation;
+                textListIndexContext.locationTextMap = tableText;
+                foreach (Record r in records)
+                {
+                    DBean d = r.Data;
+                    d.Apply(SGLuaDataVisitor.Ins, d.TType, textListIndexContext);
+                }
+                
+                var indexList = textListIndexContext.textIndexList;
+                indexList = indexList.Select((t) => t + 1).ToList();
+                string indexContent = $"return {{ {string.Join(',', indexList)} }}";
+                files.Add(new OutputFile()
+                {
+                    File = $"location/{table.OutputDataFile}_text_index.{OutputFileExt}", 
+                    Content = indexContent, 
+                    OtherFiles = null,
+                });
+            }
+
+        }
+        #endregion
 
         var ret = new OutputFile()
         {

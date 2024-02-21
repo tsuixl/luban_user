@@ -8,4 +8,5 @@ public class SGLuaDataVisitorContext
     public Dictionary<string, int> locationTextMap;
     public bool buildLocation = false;
     public string language;
+    public List<int> textIndexList = new();
 }

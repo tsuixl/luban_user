@@ -72,15 +72,18 @@ public class SGLuaDataVisitor : IDataFuncVisitor<TType, SGLuaDataVisitorContext,
             if (string.IsNullOrEmpty(v))
             {
                 finnalV = "";
+                x.textIndexList.Add(0);
             }
             else if (x.locationTextMap.TryGetValue(v, out var id))
             {
                 // finnalV = LocationManager.Ins.GetContentValue(v, x.language);
-                finnalV = $"{id}";
+                finnalV = $"{id + 1}";
+                x.textIndexList.Add(id);
                 return finnalV;
             }
             else
             {
+                x.textIndexList.Add(0);
                 Console.WriteLine($"找不到 text id value:{v}");
             }
         }
