@@ -248,7 +248,7 @@ public class SGLuaUnderlyingDeserializeVisitor : DecoratorFuncVisitor<SGLuaUnder
         {
             if (LocationManager.IsTextField(type))
             {
-                return $"{fieldName} = readText({paramStr})";
+                return $"{fieldName} = readTextLua({paramStr})";
             }
 
             return $"--{fieldName} = readString({paramStr})";
@@ -273,7 +273,7 @@ public class SGLuaUnderlyingDeserializeVisitor : DecoratorFuncVisitor<SGLuaUnder
         }
         else if (methodType == 3)
         {
-            return $"beans.{type.DefBean.FullName}.__reDeserializeTextLua({fieldName}, {paramStr})";
+            return $"getmetatable({fieldName}).__type.__reDeserializeTextLua({fieldName}, {paramStr})";
         }
 
         return "error";
@@ -301,7 +301,7 @@ public class SGLuaUnderlyingDeserializeVisitor : DecoratorFuncVisitor<SGLuaUnder
             result = $@"
 do
     {fieldName} = {{}}
-    local {countName} = readSize()
+    local {countName} = readSize({paramStr})
     for {indexName}=1, {countName} do
         local {itemName}
         {type.ElementType.Apply(SGLuaUnderlyingDeserializeVisitor.Ins, itemContext)}
@@ -325,7 +325,7 @@ do
     for {indexName}=1, {countName} do
         local {itemName} = {getStr}
         {type.ElementType.Apply(SGLuaUnderlyingDeserializeVisitor.Ins, itemContext)}
-        {(type.ElementType.IsValueType?"":"--")}{fieldName}[{indexName}] = {indexName}
+        {(type.ElementType.IsValueType?"":"--")}{fieldName}[{indexName}] = {itemName}
     end
 end";
             }
@@ -346,7 +346,7 @@ do
     for {indexName}=1, {countName} do
         local {itemName} = {getStr}
         {type.ElementType.Apply(SGLuaUnderlyingDeserializeVisitor.Ins, itemContext)}
-        {(type.ElementType.IsValueType?"":"--")}{fieldName}[{indexName}] = {indexName}
+        {(type.ElementType.IsValueType?"":"--")}{fieldName}[{indexName}] = {itemName}
     end
 end";
             }
@@ -378,7 +378,7 @@ end";
             result = $@"
 do
     {fieldName} = {{}}
-    local {countName} = readSize()
+    local {countName} = readSize({paramStr})
     for {indexName}=1, {countName} do
         local {itemName}
         {type.ElementType.Apply(SGLuaUnderlyingDeserializeVisitor.Ins, itemContext)}
@@ -402,7 +402,7 @@ do
     for {indexName}=1, {countName} do
         local {itemName} = {getStr}
         {type.ElementType.Apply(SGLuaUnderlyingDeserializeVisitor.Ins, itemContext)}
-        {(type.ElementType.IsValueType?"":"--")}{fieldName}[{indexName}] = {indexName}
+        {(type.ElementType.IsValueType?"":"--")}{fieldName}[{indexName}] = {itemName}
     end
 end";
             }
@@ -423,7 +423,7 @@ do
     for {indexName}=1, {countName} do
         local {itemName} = {getStr}
         {type.ElementType.Apply(SGLuaUnderlyingDeserializeVisitor.Ins, itemContext)}
-        {(type.ElementType.IsValueType?"":"--")}{fieldName}[{indexName}] = {indexName}
+        {(type.ElementType.IsValueType?"":"--")}{fieldName}[{indexName}] = {itemName}
     end
 end";
             }
@@ -455,7 +455,7 @@ end";
             result = $@"
 do
     {fieldName} = {{}}
-    local {countName} = readSize()
+    local {countName} = readSize({paramStr})
     for {indexName}=1, {countName} do
         local {itemName}
         {type.ElementType.Apply(SGLuaUnderlyingDeserializeVisitor.Ins, itemContext)}
@@ -479,7 +479,7 @@ do
     for {indexName}=1, {countName} do
         local {itemName} = {getStr}
         {type.ElementType.Apply(SGLuaUnderlyingDeserializeVisitor.Ins, itemContext)}
-        {(type.ElementType.IsValueType?"":"--")}{fieldName}[{indexName}] = {indexName}
+        {(type.ElementType.IsValueType?"":"--")}{fieldName}[{indexName}] = {itemName}
     end
 end";
             }
@@ -500,7 +500,7 @@ do
     for {indexName}=1, {countName} do
         local {itemName} = {getStr}
         {type.ElementType.Apply(SGLuaUnderlyingDeserializeVisitor.Ins, itemContext)}
-        {(type.ElementType.IsValueType?"":"--")}{fieldName}[{indexName}] = {indexName}
+        {(type.ElementType.IsValueType?"":"--")}{fieldName}[{indexName}] = {itemName}
     end
 end";
             }
@@ -535,7 +535,7 @@ end";
             result = $@"
 do
     {fieldName} = {{}}
-    local {countName} = readSize()
+    local {countName} = readSize({paramStr})
     for {indexName}=1, {countName} do
         local {keyName}
         {type.KeyType.Apply(SGLuaUnderlyingDeserializeVisitor.Ins, keyContext)}

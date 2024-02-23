@@ -206,30 +206,30 @@ local function InitTypes(methods)
 			
 			self.name = readText(bs, textList)
 			
-			self.name = readText(bs, textList)
+			self.name = readTextLua(bs, textList)
 
 			self.desc = readText(bs, textList)
 			
 			self.desc = readText(bs, textList)
 			
-			self.desc = readText(bs, textList)
+			self.desc = readTextLua(bs, textList)
 
 			self.locationText = beans.LocationText.__deserialize(bs, textList)
 			
 			beans.LocationText.__reDeserializeText(self.locationText, bs, textList)
 			
-			beans.LocationText.__reDeserializeTextLua(self.locationText, bs, textList)
+			getmetatable(self.locationText).__type.__reDeserializeTextLua(self.locationText, bs, textList)
 
 			self.desc3 = readText(bs, textList)
 			
 			self.desc3 = readText(bs, textList)
 			
-			self.desc3 = readText(bs, textList)
+			self.desc3 = readTextLua(bs, textList)
 
 			
 			do
 			    self.descList = {}
-			    local _n0 = readSize()
+			    local _n0 = readSize(bs, textList)
 			    for _i0=1, _n0 do
 			        local _e0
 			        _e0 = beans.LocationText.__deserialize(bs, textList)
@@ -243,7 +243,7 @@ local function InitTypes(methods)
 			    for _i0=1, _n0 do
 			        local _e0 = self.descList[_i0]
 			        beans.LocationText.__reDeserializeText(_e0, bs, textList)
-			        --self.descList[_i0] = _i0
+			        --self.descList[_i0] = _e0
 			    end
 			end
 			
@@ -252,15 +252,15 @@ local function InitTypes(methods)
 			    local _n0 = #self.descList
 			    for _i0=1, _n0 do
 			        local _e0 = self.descList[_i0]
-			        beans.LocationText.__reDeserializeTextLua(_e0, bs, textList)
-			        --self.descList[_i0] = _i0
+			        getmetatable(_e0).__type.__reDeserializeTextLua(_e0, bs, textList)
+			        --self.descList[_i0] = _e0
 			    end
 			end
 
 			
 			do
 			    self.descList2 = {}
-			    local _n0 = readSize()
+			    local _n0 = readSize(bs, textList)
 			    for _i0=1, _n0 do
 			        local _e0
 			        _e0 = readText(bs, textList)
@@ -274,7 +274,7 @@ local function InitTypes(methods)
 			    for _i0=1, _n0 do
 			        local _e0 = nil
 			        _e0 = readText(bs, textList)
-			        self.descList2[_i0] = _i0
+			        self.descList2[_i0] = _e0
 			    end
 			end
 			
@@ -283,8 +283,8 @@ local function InitTypes(methods)
 			    local _n0 = #self.descList2
 			    for _i0=1, _n0 do
 			        local _e0 = nil
-			        _e0 = readText(bs, textList)
-			        self.descList2[_i0] = _i0
+			        _e0 = readTextLua(bs, textList)
+			        self.descList2[_i0] = _e0
 			    end
 			end
 
@@ -308,7 +308,7 @@ local function InitTypes(methods)
 			
 			self.zh = readText(bs, textList)
 			
-			self.zh = readText(bs, textList)
+			self.zh = readTextLua(bs, textList)
 
 			self.en = readString(bs, textList)
 			
@@ -353,24 +353,24 @@ local function InitTypes(methods)
 			
 			self.desc = readText(bs, textList)
 			
-			self.desc = readText(bs, textList)
+			self.desc = readTextLua(bs, textList)
 
 			self.locationText = beans.LocationText.__deserialize(bs, textList)
 			
 			beans.LocationText.__reDeserializeText(self.locationText, bs, textList)
 			
-			beans.LocationText.__reDeserializeTextLua(self.locationText, bs, textList)
+			getmetatable(self.locationText).__type.__reDeserializeTextLua(self.locationText, bs, textList)
 
 			self.desc3 = readText(bs, textList)
 			
 			self.desc3 = readText(bs, textList)
 			
-			self.desc3 = readText(bs, textList)
+			self.desc3 = readTextLua(bs, textList)
 
 			
 			do
 			    self.descList = {}
-			    local _n0 = readSize()
+			    local _n0 = readSize(bs, textList)
 			    for _i0=1, _n0 do
 			        local _e0
 			        _e0 = beans.LocationText.__deserialize(bs, textList)
@@ -384,7 +384,7 @@ local function InitTypes(methods)
 			    for _i0=1, _n0 do
 			        local _e0 = self.descList[_i0]
 			        beans.LocationText.__reDeserializeText(_e0, bs, textList)
-			        --self.descList[_i0] = _i0
+			        --self.descList[_i0] = _e0
 			    end
 			end
 			
@@ -393,15 +393,15 @@ local function InitTypes(methods)
 			    local _n0 = #self.descList
 			    for _i0=1, _n0 do
 			        local _e0 = self.descList[_i0]
-			        beans.LocationText.__reDeserializeTextLua(_e0, bs, textList)
-			        --self.descList[_i0] = _i0
+			        getmetatable(_e0).__type.__reDeserializeTextLua(_e0, bs, textList)
+			        --self.descList[_i0] = _e0
 			    end
 			end
 
 			
 			do
 			    self.descList2 = {}
-			    local _n0 = readSize()
+			    local _n0 = readSize(bs, textList)
 			    for _i0=1, _n0 do
 			        local _e0
 			        _e0 = readText(bs, textList)
@@ -415,7 +415,7 @@ local function InitTypes(methods)
 			    for _i0=1, _n0 do
 			        local _e0 = nil
 			        _e0 = readText(bs, textList)
-			        self.descList2[_i0] = _i0
+			        self.descList2[_i0] = _e0
 			    end
 			end
 			
@@ -424,8 +424,8 @@ local function InitTypes(methods)
 			    local _n0 = #self.descList2
 			    for _i0=1, _n0 do
 			        local _e0 = nil
-			        _e0 = readText(bs, textList)
-			        self.descList2[_i0] = _i0
+			        _e0 = readTextLua(bs, textList)
+			        self.descList2[_i0] = _e0
 			    end
 			end
 
@@ -460,30 +460,30 @@ local function InitTypes(methods)
 			
 			self.name = readText(bs, textList)
 			
-			self.name = readText(bs, textList)
+			self.name = readTextLua(bs, textList)
 
 			self.desc = readText(bs, textList)
 			
 			self.desc = readText(bs, textList)
 			
-			self.desc = readText(bs, textList)
+			self.desc = readTextLua(bs, textList)
 
 			self.locationText = beans.LocationText.__deserialize(bs, textList)
 			
 			beans.LocationText.__reDeserializeText(self.locationText, bs, textList)
 			
-			beans.LocationText.__reDeserializeTextLua(self.locationText, bs, textList)
+			getmetatable(self.locationText).__type.__reDeserializeTextLua(self.locationText, bs, textList)
 
 			self.desc3 = readText(bs, textList)
 			
 			self.desc3 = readText(bs, textList)
 			
-			self.desc3 = readText(bs, textList)
+			self.desc3 = readTextLua(bs, textList)
 
 			
 			do
 			    self.descList = {}
-			    local _n0 = readSize()
+			    local _n0 = readSize(bs, textList)
 			    for _i0=1, _n0 do
 			        local _e0
 			        _e0 = beans.LocationText.__deserialize(bs, textList)
@@ -497,7 +497,7 @@ local function InitTypes(methods)
 			    for _i0=1, _n0 do
 			        local _e0 = self.descList[_i0]
 			        beans.LocationText.__reDeserializeText(_e0, bs, textList)
-			        --self.descList[_i0] = _i0
+			        --self.descList[_i0] = _e0
 			    end
 			end
 			
@@ -506,15 +506,15 @@ local function InitTypes(methods)
 			    local _n0 = #self.descList
 			    for _i0=1, _n0 do
 			        local _e0 = self.descList[_i0]
-			        beans.LocationText.__reDeserializeTextLua(_e0, bs, textList)
-			        --self.descList[_i0] = _i0
+			        getmetatable(_e0).__type.__reDeserializeTextLua(_e0, bs, textList)
+			        --self.descList[_i0] = _e0
 			    end
 			end
 
 			
 			do
 			    self.descList2 = {}
-			    local _n0 = readSize()
+			    local _n0 = readSize(bs, textList)
 			    for _i0=1, _n0 do
 			        local _e0
 			        _e0 = readText(bs, textList)
@@ -528,7 +528,7 @@ local function InitTypes(methods)
 			    for _i0=1, _n0 do
 			        local _e0 = nil
 			        _e0 = readText(bs, textList)
-			        self.descList2[_i0] = _i0
+			        self.descList2[_i0] = _e0
 			    end
 			end
 			
@@ -537,8 +537,8 @@ local function InitTypes(methods)
 			    local _n0 = #self.descList2
 			    for _i0=1, _n0 do
 			        local _e0 = nil
-			        _e0 = readText(bs, textList)
-			        self.descList2[_i0] = _i0
+			        _e0 = readTextLua(bs, textList)
+			        self.descList2[_i0] = _e0
 			    end
 			end
 

@@ -115,6 +115,10 @@ public class DefAssembly
 
     public bool NeedExport(List<string> groups)
     {
+        if (groups == null)
+        {
+            return true;
+        }
         if (groups.Count == 0)
         {
             return true;

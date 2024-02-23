@@ -149,7 +149,9 @@ public class DefBean : DefTypeBase
                 throw new Exception($"bean:'{FullName}' alias:{c.Alias} 重复");
             }
         }
+
         DefField.CompileFields(this, HierarchyFields);
+        // DefField.CompileFields(this, HierarchyExportFields);
     }
 
     public override void PostCompile()

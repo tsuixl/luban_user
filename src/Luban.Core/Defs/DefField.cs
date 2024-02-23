@@ -21,7 +21,9 @@ public class DefField
 
     public string Comment { get; }
 
-    public int AutoId { get; set; }
+    public int AutoId { get; set; } = -1;
+
+    public int RawAutoId { get; set; } = -1;
 
     // public string EscapeComment => DefUtil.EscapeCommentByCurrentLanguage(Comment);
 
@@ -146,6 +148,7 @@ public class DefField
     {
         var names = new HashSet<string>();
         int nextAutoId = 1;
+        int nextAutoIdRaw = 1;
         foreach (var f in fields)
         {
             var name = f.Name;
@@ -161,7 +164,11 @@ public class DefField
             {
                 throw new Exception($"type:'{hostType.FullName}' field:'{name}' 生成的c#字段名与类型名相同，会引起编译错误");
             }
-            f.AutoId = nextAutoId++;
+            f.RawAutoId = nextAutoIdRaw++;
+            if (f.NeedExport())
+            {
+                f.AutoId = nextAutoId++;
+            }
         }
 
         foreach (var f in fields)
