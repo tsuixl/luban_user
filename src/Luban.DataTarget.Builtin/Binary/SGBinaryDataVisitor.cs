@@ -1,6 +1,7 @@
 using Luban.Datas;
 using Luban.DataVisitors;
 using Luban.Defs;
+using Luban.Location;
 using Luban.Serialization;
 using Luban.Types;
 using Luban.Utils;
@@ -71,16 +72,20 @@ public class SGBinaryDataVisitor : IDataActionVisitor2<SGBinaryDataVisitorContex
                 x.textIndexBuf.WriteSize(0);
                 x.textIndexList.Add(0);
             }
-            else if (x.locationTextMap.TryGetValue(data.Value, out var id))
-            {
-                // x.byteBuf.WriteSize(id);
-                x.textIndexBuf.WriteSize(id);
-                x.textIndexList.Add(id);
-            }
             else
             {
-                s_logger.Error($"找不到 text id value:{data.Value}");
-                throw new Exception($"找不到 text id value:{data.Value}");
+                var fullKey = SGTextKeyCollectionData.GetFullKey(data.Value, x.table, x.record);
+                if (x.locationTextMap.TryGetValue(fullKey, out var id))
+                {
+                    // x.byteBuf.WriteSize(id);
+                    x.textIndexBuf.WriteSize(id);
+                    x.textIndexList.Add(id);
+                }
+                else
+                {
+                    s_logger.Error($"找不到 text id value:{data.Value}");
+                    throw new Exception($"找不到 text id value:{data.Value}");
+                }
             }
         }
         else

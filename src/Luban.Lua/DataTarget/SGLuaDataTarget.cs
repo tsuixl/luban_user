@@ -49,7 +49,7 @@ public class SGLuaDataTarget : DataTargetBase
         List<OutputFile> subFile = new();
         bool buildLocation = LocationManager.Ins.IsNeedBuildLocation && extension.hasText;
         Dictionary<string, int> tableText = extension.locationTextMap;
-        List<string> textList = extension.locationTextList;
+        var textList = extension.locationTextList;
 
         List<OutputFile> files = new();
         List<SGLuaDataVisitorContext> contexts = new();
@@ -70,6 +70,7 @@ public class SGLuaDataTarget : DataTargetBase
             SGLuaDataVisitorContext context = new SGLuaDataVisitorContext();
             context.buildLocation = buildLocation;
             context.locationTextMap = tableText;
+            context.table = table;
             context.language = LocationManager.Ins.ExportDefaultLanguage;
             contexts.Add(context);
         }
@@ -117,8 +118,8 @@ public class SGLuaDataTarget : DataTargetBase
                     textBuf.Append("return\n{\n");
                     foreach (var text in textList)
                     {
-                        string finalStr = text;
-                        finalStr = LocationManager.Ins.GetContentValue(text, language); 
+                        string finalStr = text.text;
+                        finalStr = LocationManager.Ins.GetContentValueByFullKey(text.fullKey, language); 
                         finalStr = DataUtil.EscapeLuaStringWithQuote(finalStr);
                         textBuf.Append(finalStr);
                         textBuf.Append(",\n");
@@ -136,9 +137,11 @@ public class SGLuaDataTarget : DataTargetBase
                 SGLuaDataVisitorContext textListIndexContext = new SGLuaDataVisitorContext();
                 textListIndexContext.buildLocation = buildLocation;
                 textListIndexContext.locationTextMap = tableText;
+                textListIndexContext.table = table;
                 foreach (Record r in records)
                 {
                     DBean d = r.Data;
+                    textListIndexContext.record = r;
                     d.Apply(SGLuaDataVisitor.Ins, d.TType, textListIndexContext);
                 }
                 
@@ -222,6 +225,7 @@ public class SGLuaDataTarget : DataTargetBase
     
     private  void GenerateTable(DefTable table, List<Record> records, StringBuilder s, SGLuaDataVisitorContext context)
     {
+        context.table = table;
         GenerationContext ctx = GenerationContext.Current;
         var template = GetTemplate("table_data");
         var tplCtx = CreateTemplateContext(template);

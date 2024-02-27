@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Luban.Datas;
 using Luban.DataVisitors;
 using Luban.Defs;
 using Luban.L10N;
@@ -24,6 +25,7 @@ public class LocationManager
     {
         // public string key;
         public int id { get; set; } = 0;
+        public string extendKey;
         public List<LocationItem> items { get; set; } = new();
 
         public string ToDebugString()
@@ -43,7 +45,14 @@ public class LocationManager
                 Console.WriteLine($"找不到默认语言文本 id:{id} {language} ");
             }
 
-            return item != null ? item.content : "";
+            if (string.IsNullOrEmpty(extendKey))
+            {
+                return item != null ? item.content : "";
+            }
+            else
+            {
+                return item != null ? extendKey +"_"+ item.content : "";
+            }
         }
 
         public LocationItem GetItem(string language)
@@ -136,7 +145,8 @@ public class LocationManager
                             
                             LocationContent content = new();
                             content.id = i;
-                            for (int j = 1; j < emptyHeadIdx; j++)
+                            content.extendKey = row[1];
+                            for (int j = 2; j < emptyHeadIdx; j++)
                             {
                                 LocationItem item = new();
                                 item.content = row[j];
@@ -181,7 +191,7 @@ public class LocationManager
                 throw new Exception();
             }
 
-            var key = defaultItem.content;
+            var key = data.GetKey();
             if (m_AllDataMap.ContainsKey(key))
             {
                 s_logger.Error($"LocationFile 重复key {data.ToDebugString()}");
@@ -190,7 +200,7 @@ public class LocationManager
                 continue;
             }
 
-            m_AllDataMap.Add(data.GetKey(), data);
+            m_AllDataMap.Add(key, data);
             foreach (var item in items)
             {
                 AddToAllLanguage(item.language);
@@ -237,32 +247,35 @@ public class LocationManager
         return m_AllData;
     }
 
-    public void AddText(string text)
+    public void AddText(string text, DefTable table, Record record)
     {
-        if (m_AllDataMap.TryGetValue(text, out var content))
+        var fullKey = GetContentFullKey(text, table, record);
+        
+        if (m_AllDataMap.TryGetValue(fullKey, out var content))
         {
         }
         else
         {
             var data = new LocationContent();
+            data.extendKey = SGTextKeyCollectionData.GetExtendKey(text, table, record);
             foreach (var language in m_AllLanguages)
             {
                 data.items.Add(new LocationItem() { language = language, content = language == ConfigFileLanguage ? text : "" });
             }
 
             m_AllData.datas.Add(data);
-            m_AllDataMap.Add(text, data);
+            m_AllDataMap.Add(data.GetKey(), data);
         }
     }
 
-    public string GetContentValue(string key, string language, bool returnSelfIfNotExist = true)
+    public string GetContentValue(string key, string language, DefTable table, Record record, bool returnSelfIfNotExist = true)
     {
         if (language == ConfigFileLanguage)
         {
             return key;
         }
-
-        if (m_AllDataMap.TryGetValue(key, out var content))
+        var fullKey = GetContentFullKey(key, table, record);
+        if (m_AllDataMap.TryGetValue(fullKey, out var content))
         {
             var item = content.GetItem(language);
             if (item != null)
@@ -274,6 +287,22 @@ public class LocationManager
         }
 
         return returnSelfIfNotExist? key :  "";
+    }
+
+    public string GetContentValueByFullKey(string fullKey, string language, bool returnSelfIfNotExist = true)
+    {
+        if (m_AllDataMap.TryGetValue(fullKey, out var content))
+        {
+            var item = content.GetItem(language);
+            if (item != null)
+            {
+                return item.content;
+            }
+
+            return returnSelfIfNotExist? fullKey :  "";
+        }
+
+        return returnSelfIfNotExist? fullKey :  "";
     }
 
     public ScriptObject CreateExportScriptObject()
@@ -322,7 +351,7 @@ public class LocationManager
         var newFileExcel = Path.GetFileNameWithoutExtension(locationFile) + "_new" +".xlsx";
         newFileExcel = Path.Combine(dir, newFileExcel);
         List<List<string>> excelDatas = m_OldRawDatas.Select((sub) => { return new List<string>(sub);}).ToList();
-        List<string> headRow = new(){"id"};
+        List<string> headRow = new(){"id","extend_key"};
         headRow.AddRange(m_AllLanguages);
         ListSetValue(excelDatas, 0, headRow);
         for(int i=0; i<m_AllData.datas.Count; i++)
@@ -330,6 +359,7 @@ public class LocationManager
             var content = m_AllData.datas[i];
             List<string> row = new();
             row.Add(content.id.ToString());
+            row.Add(content.extendKey.ToString());
             foreach (var language in m_AllLanguages)
             {
                 var item = content.GetItem(language);
@@ -394,7 +424,7 @@ public class LocationManager
         public DefTable table;
         public bool hasText = false;
         public Dictionary<string, int> locationTextMap;
-        public List<string> locationTextList;
+        public List<SGTextKeyCollectionData> locationTextList;
         public List<DefField> textFields;
         public List<TType> textTTypes;
     }
@@ -420,16 +450,21 @@ public class LocationManager
         foreach (var table in tables)
         {
             var records = GenerationContext.Current.GetTableExportDataList(table);
-            List<string> textList = null;
+            List<SGTextKeyCollectionData> textList = null;
             Dictionary<string, int> textMap = buildLocation? GetTableAllText(table, records, null, out textList) : null;
-            var extensionData = new TableExtensionData() { table = table, locationTextMap = textMap, locationTextList = textList};
+            var extensionData = new TableExtensionData()
+            {
+                table = table, 
+                locationTextMap = textMap, 
+                locationTextList = textList,
+            };
             extensionData.hasText = textList != null && textList.Count > 1;
             m_ExtensionDataMap.Add(table, extensionData);
-            if (extensionData.locationTextMap != null)
+            if (extensionData.locationTextList != null)
             {
-                foreach (var text in extensionData.locationTextMap.Keys)
+                foreach (var text in extensionData.locationTextList)
                 {
-                    LocationManager.Ins.AddText(text);
+                    LocationManager.Ins.AddText(text.text, text.table, text.record);
                 }
             }
 
@@ -447,6 +482,16 @@ public class LocationManager
             extensionData.textFields = textFields;
             extensionData.textTTypes = textTTypes;
         }
+    }
+
+    public static string GetContentFullKey(string key, DefTable table, Record record)
+    {
+        return SGTextKeyCollectionData.GetFullKey(key, table, record);
+    }
+    public static SGTextKeyCollectionData GetSGTextKeyCollectionData(string key, DefTable table, Record record)
+    {
+        var data = SGTextKeyCollectionData.Get(key, table, record);
+        return data;
     }
 
     public static bool IsTextField(TType type, bool checkNeedBuilLocation = true)
@@ -520,43 +565,51 @@ public class LocationManager
     
     
     
-    private Dictionary<string, int> GetTableAllText(DefTable table, List<Record> records, List<string> oldData, out List<string> textList)
+    private Dictionary<string, int> GetTableAllText(DefTable table, List<Record> records, List<SGTextKeyCollectionData> oldData, out List<SGTextKeyCollectionData> textList)
     {
-        var textCollection = new TextKeyCollection();
+        var textCollection = new SGTextKeyCollection();
 
-        var visitor = new DataActionHelpVisitor2<TextKeyCollection>(TextKeyListCollectorVisitor.Ins);
+        var visitor = new DataActionHelpVisitor2<SGTextKeyCollection>(SGTextKeyListCollectorVisitor.Ins);
 
-        TableVisitor.Ins.Visit(table, visitor, textCollection);
+        // TableVisitor.Ins.Visit(table, visitor, textCollection);
+        foreach (Record r in records)
+        {
+            DBean data = r.Data;
+            textCollection.table = table;
+            textCollection.curRecord = r;
+            data.Apply(visitor, table.ValueTType, textCollection);
+        }
 
-        var keys = textCollection.Keys.ToList();
+        
+        var keys = textCollection.textMap.Keys.ToList();
         keys.Sort((a, b) => string.Compare(a, b, StringComparison.Ordinal));
 
-        var datas = new List<string>();
+        var datas = new List<SGTextKeyCollectionData>();
         textList = datas;
-        datas.Add("");
+        datas.Add(new SGTextKeyCollectionData(){fullKey = "", text = "", extendTextKey = ""});
         if (oldData != null)
         {
-            foreach (var key in oldData)
+            foreach (var data in oldData)
             {
-                if (datas.Contains(key) == false)
+                if (SGTextKeyCollectionData.GetFromList(datas, data.fullKey) == null)
                 {
-                    datas.Add(key);
+                    datas.Add(data);
                 }
             }
         }
 
         foreach (var key in keys)
         {
-            if (datas.Contains(key) == false)
+            if (SGTextKeyCollectionData.GetFromList(datas, key) == null)
             {
-                datas.Add(key);
+                datas.Add(textCollection.textMap[key]);
             }
         }
 
         var map = new Dictionary<string, int>();
         for(int i=0; i<datas.Count; i++)
         {
-            map.Add(datas[i], i);
+            map.Add(datas[i].fullKey, i);
         }
 
         // string outputFile = EnvManager.Current.GetOption(BuiltinOptionNames.L10NFamily, BuiltinOptionNames.TextKeyListFile, false);

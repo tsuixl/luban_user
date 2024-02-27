@@ -74,17 +74,21 @@ public class SGLuaDataVisitor : IDataFuncVisitor<TType, SGLuaDataVisitorContext,
                 finnalV = "";
                 x.textIndexList.Add(0);
             }
-            else if (x.locationTextMap.TryGetValue(v, out var id))
-            {
-                // finnalV = LocationManager.Ins.GetContentValue(v, x.language);
-                finnalV = $"{id + 1}";
-                x.textIndexList.Add(id);
-                return finnalV;
-            }
             else
             {
-                x.textIndexList.Add(0);
-                Console.WriteLine($"找不到 text id value:{v}");
+                var fullKey = SGTextKeyCollectionData.GetFullKey(v, x.table, x.record);
+                if (x.locationTextMap.TryGetValue(fullKey, out var id))
+                {
+                    // finnalV = LocationManager.Ins.GetContentValue(v, x.language);
+                    finnalV = $"{id + 1}";
+                    x.textIndexList.Add(id);
+                    return finnalV;
+                }
+                else
+                {
+                    x.textIndexList.Add(0);
+                    Console.WriteLine($"找不到 text id value:{v}");
+                }
             }
         }
 

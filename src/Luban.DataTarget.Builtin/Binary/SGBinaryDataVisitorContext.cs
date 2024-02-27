@@ -1,4 +1,5 @@
-﻿using Luban.Serialization;
+﻿using Luban.Defs;
+using Luban.Serialization;
 using NLog.LayoutRenderers.Wrappers;
 
 namespace Luban.DataExporter.Builtin.Binary;
@@ -10,4 +11,7 @@ public class SGBinaryDataVisitorContext
     public List<int> textIndexList = new();
     public Dictionary<string, int> locationTextMap;
     public bool buildLocation = false;
+
+    public DefTable table;
+    public Record record;
 }

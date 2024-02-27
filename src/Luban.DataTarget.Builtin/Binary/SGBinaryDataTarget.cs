@@ -51,7 +51,7 @@ public class SGBinaryDataTarget : DataTargetBase
         List<OutputFile> subFile = new();
         bool buildLocation = LocationManager.Ins.IsNeedBuildLocation;
         Dictionary<string, int> tableText = extension.locationTextMap;
-        List<string> textList = extension.locationTextList;
+        var textList = extension.locationTextList;
 
         var isLazy = table.IsLazy;
         var isLazyAndText = table.IsLazy && extension.hasText;
@@ -71,6 +71,7 @@ public class SGBinaryDataTarget : DataTargetBase
             textIndexBuf =  textIndexBuf,
             buildLocation = buildLocation,
         };
+        visitorContext.table = table;
         dataBuf.WriteSize(records.Count);
         int lastOffset = 0;
         foreach (var d in records)
@@ -91,6 +92,7 @@ public class SGBinaryDataTarget : DataTargetBase
             }
 
             int textIndexCount = isLazyAndText ? visitorContext.textIndexList.Count : 0;
+            visitorContext.record = d;
             d.Data.Apply(SGBinaryDataVisitor.Ins, table.ValueTType, visitorContext);
             int length = dataBuf.Size - lastOffset;
             if (isLazy)
@@ -128,7 +130,7 @@ public class SGBinaryDataTarget : DataTargetBase
                     textBuf.WriteSize(textList.Count);
                     foreach (var text in textList)
                     {
-                        var textT = LocationManager.Ins.GetContentValue(text, language);
+                        var textT = LocationManager.Ins.GetContentValueByFullKey(text.fullKey, language);
                         textBuf.WriteString(textT);
                     }
 
