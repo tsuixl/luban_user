@@ -581,8 +581,22 @@ public class LocationManager
         }
 
         
-        var keys = textCollection.textMap.Keys.ToList();
-        keys.Sort((a, b) => string.Compare(a, b, StringComparison.Ordinal));
+        var keys = textCollection.textList.Select((t)=>t.fullKey).ToList();
+        // var keys = textCollection.textMap.Keys.ToList();
+        // keys.Sort((a, b) =>
+        //     {
+        //         var dataA = textCollection.textMap[a];
+        //         var dataB = textCollection.textMap[b];
+        //         if (dataA.extendTextKey == dataB.extendTextKey)
+        //         {
+        //             return string.Compare(a, b, StringComparison.Ordinal);
+        //         }
+        //         else
+        //         {
+        //             return string.Compare(dataA.extendTextKey, dataB.extendTextKey);
+        //         }
+        //     }
+        // );
 
         var datas = new List<SGTextKeyCollectionData>();
         textList = datas;

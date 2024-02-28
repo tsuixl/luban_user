@@ -72,7 +72,7 @@ public class SGBinaryReDeserializeVisitor : DecoratorFuncVisitor<string, string,
         {
             
 return $@"
-if({bufName}.ReadBool())
+if({fieldName} != null)
 {{ 
     {type.Apply(SGBinaryUnderlyingReDeserializeVisitor.Ins, bufName, fieldName, 0)} 
 }} 
@@ -95,11 +95,7 @@ public class SGBinaryUnderlyingReDeserializeVisitor:BinaryUnderlyingDeserializeV
 
     public static bool IsShouldReLoadField(TType type)
     {
-        if (type.IsValueType && !LocationManager.IsTextField(type))
-        {
-            return false;
-        }
-        return true;
+        return LocationManager.IsShouldReLoadTextField(type);
     }
     
     public static string AddHead(TType type)
@@ -173,7 +169,10 @@ public class SGBinaryUnderlyingReDeserializeVisitor:BinaryUnderlyingDeserializeV
 
     public override string Accept(TBean type, string bufName, string fieldName, int depth)
     {
-        
+        if (IsShouldReLoadField(type) == false)
+        {
+            return $"//{fieldName}";
+        }
         string src = $"{type.DefBean.FullName}.S_ReDeserialize({fieldName}, {bufName}, textList);";
         return src;
     }

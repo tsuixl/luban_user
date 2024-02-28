@@ -73,7 +73,8 @@ public class TypeTemplateExtension : ScriptObject
 
     public static DefTable GetRefTable(DefField field)
     {
-        if (field.CType.GetTag("ref") is { } value && GenerationContext.Current.Assembly.GetCfgTable(value.Replace("?", "")) is { } cfgTable)
+        if (field.CType.GetTag("ref") is { } value 
+            && GenerationContext.Current.Assembly.GetCfgTable(value.Replace("?", "")) is { } cfgTable)
         {
             return cfgTable;
         }

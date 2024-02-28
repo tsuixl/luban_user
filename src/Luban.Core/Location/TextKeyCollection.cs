@@ -24,6 +24,7 @@ public class SGTextKeyCollectionData
         var extendTextKey = "";
         var fullKey = "";
         string tableKey = table.GetTag("text_key");
+        
         if (tableKey == null)
             tableKey = "0";
             
@@ -126,14 +127,19 @@ public class SGTextKeyCollection
     public Record curRecord;
 
     public Dictionary<string, SGTextKeyCollectionData> textMap = new();
-
+    public List<SGTextKeyCollectionData> textList = new();
 
     public void AddKey(string key, SGTextKeyCollection x)
     {
         if (!string.IsNullOrWhiteSpace(key))
         {
             var data = SGTextKeyCollectionData.Get(key, x.table, x.curRecord);
-            textMap[data.fullKey] = data;
+            if (textMap.ContainsKey(data.fullKey) == false)
+            {
+                textList.Add(data);
+                textMap[data.fullKey] = data;
+            }
+
         }
     }
 
