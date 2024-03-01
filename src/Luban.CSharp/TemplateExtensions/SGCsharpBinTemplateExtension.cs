@@ -269,6 +269,7 @@ public class SGBinaryUnderlyingReDeserializeVisitor:BinaryUnderlyingDeserializeV
         string key = $"_k{depth}";
         string item = $"_v{depth}";
         string index = $"i{depth}";
+        string rawKeys = $"m_MapRawKeys{fieldName}";
         
         string getStr = type.ElementType.IsValueType ? "" : $" = {fieldName}[{index}]";
         string tmp =
@@ -278,10 +279,10 @@ public class SGBinaryUnderlyingReDeserializeVisitor:BinaryUnderlyingDeserializeV
     for(var {index} = 0 ; {index} < {num} ; {index}++)
     {{
         {type.KeyType.Apply(DeclaringTypeNameVisitor.Ins)} {key};
-        {type.KeyType.Apply(this, bufName, key, depth + 1)}
+        {key} = {rawKeys}[{index}];
         {type.ElementType.Apply(DeclaringTypeNameVisitor.Ins)} {item}{getStr};
         {type.ElementType.Apply(this, bufName, $"{item}", depth + 1)}
-        {fieldName}[{index}] = {item};
+        {fieldName}[{key}] = {item};
     }}
 }}
 ";

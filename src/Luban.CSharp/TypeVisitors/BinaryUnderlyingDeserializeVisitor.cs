@@ -136,10 +136,11 @@ public class BinaryUnderlyingDeserializeVisitor : ITypeFuncVisitor<string, strin
                $"{fieldName} = new {type.Apply(DeclaringTypeNameVisitor.Ins)}({n} * 3 / 2);" + "\n" +
                $"for(var {i} = 0 ; {i} < {n} ; {i}++) " + "\n" +
                $"{{\n" +
-               $" {type.KeyType.Apply(DeclaringTypeNameVisitor.Ins)} {k};  " + "\n" +
-               $"{type.KeyType.Apply(this, bufName, k, depth + 1)} {type.ValueType.Apply(DeclaringTypeNameVisitor.Ins)} {v};" + "\n" +
-               $"  {type.ValueType.Apply(this, bufName, v, depth + 1)}" + "\n" +
-               $"     {fieldName}.Add({k}, {v});" + "\n" +
+               $"{type.KeyType.Apply(DeclaringTypeNameVisitor.Ins)} {k};  " + "\n" +
+               $"{type.KeyType.Apply(this, bufName, k, depth + 1)}" + "\n" +
+               $"{type.ValueType.Apply(DeclaringTypeNameVisitor.Ins)} {v};" + "\n" +
+               $"{type.ValueType.Apply(this, bufName, v, depth + 1)}" + "\n" +
+               $"{fieldName}.Add({k}, {v});" + "\n" +
                $"}}}}";
     }
 }

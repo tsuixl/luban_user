@@ -148,4 +148,9 @@ public class TypeTemplateExtension : ScriptObject
     {
         return LocationManager.IsShouldReLoadTextField(type);
     }
+
+    public static string GetTypeNameWithTypeMapper(DefBean bean)
+    {
+        return bean.TypeNameWithTypeMapper();
+    }
 }
